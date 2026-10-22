@@ -7,6 +7,7 @@
   var els = {}, st, me = { x: 50, y: 85, view: 'front', flip: false, action: 'idle', phase: 0, tool: 'none' };
   var path = [], pending = null, busyUntil = 0, last = 0, fxHtml = '', fxUntil = 0, toastTimer = 0, sitting = false;
 
+  var kinds = {}, propDrawers = {}, panels = [], hudItems = [];
   function $(id) { return doc.getElementById(id); }
   function today() { return S.today(); }
   function scene() { return W.SCENES[st.scene]; }
@@ -32,6 +33,7 @@
     if (st.scene === 'farm') s.beds.forEach(function (b, i) { out += PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
     if (st.scene === 'bedroom') { var c = s.spots[0]; out += PR.cushion(c.at.x, c.at.y, near && near.spot === c); }
     if (st.scene === 'waterfall') out += PR.shimmer();
+    (propDrawers[st.scene] || []).forEach(function (fn) { try { out += fn(api, near) || ''; } catch (e) { console.error(e); } });
     els.props.innerHTML = out;
   }
 
@@ -94,6 +96,7 @@
       updateHud(); drawProps(); return;
     }
     var sp = t.spot;
+    if (kinds[sp.kind]) { try { kinds[sp.kind](sp, api); } catch (e) { console.error(e); } return; }
     if (sp.kind === 'shed') {
       var got = F.takeSeeds(st.farm, today()); S.save(); updateHud();
       toast(got ? 'A ' + F.CROPS[got].name.toLowerCase() + ' seed. ' + st.farm.seedsLeft + ' more today.' : 'That’s today’s seeds. More tomorrow.');
@@ -159,6 +162,7 @@
     var basket = Object.keys(st.farm.basket).reduce(function (n, k) { return n + st.farm.basket[k]; }, 0);
     var seeds = Object.keys(st.farm.seeds).reduce(function (n, k) { return n + st.farm.seeds[k]; }, 0);
     els.hudSeeds.textContent = seeds; els.hudBasket.textContent = basket; els.hudPond.textContent = st.pond.offerings;
+    hudItems.forEach(function (h) { try { h.el.textContent = h.value(api); } catch (e) { } });
   }
 
   function keys(ev) {
@@ -176,12 +180,36 @@
     els.prompt.addEventListener('click', function (e) { e.stopPropagation(); useNear(); });
     doc.addEventListener('keydown', keys);
     $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
+    $('moreBtn').addEventListener('click', function () { var m = $('moreMenu'); m.hidden = !m.hidden; });
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();
     root.requestAnimationFrame(step);
     root.EbbGame._ready = true;
+    doc.dispatchEvent(new CustomEvent('ebb:ready', { detail: api }));
   }
 
-  root.EbbGame = { boot: boot, state: function () { return st; }, me: function () { return me; }, walkTo: walkTo, act: act, enter: enter };
-  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot); else boot();
+  /* the api handed to extension modules */
+  var api = {
+    state: function () { return st; }, save: function () { S.save(); }, today: today, toast: toast, me: function () { return me; },
+    scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
+    work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.view = 'front'; path = []; },
+    stand: function (y) { sitting = false; me.action = 'idle'; if (y) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
+  };
+  function registerKind(kind, fn) { kinds[kind] = fn; }
+  function registerProps(sceneId, fn) { (propDrawers[sceneId] = propDrawers[sceneId] || []).push(fn); }
+  function registerPanel(p) { /* { id, label, open(api) } shown in the More menu */
+    panels.push(p);
+    var menu = $('moreMenu'); if (!menu) return;
+    var b = doc.createElement('button'); b.type = 'button'; b.className = 'menu-item'; b.textContent = p.label; b.id = 'panel-' + p.id;
+    b.addEventListener('click', function () { menu.hidden = true; p.open(api); });
+    menu.appendChild(b);
+  }
+  function registerHud(label, value) { /* a small counter in the top bar */
+    var span = doc.createElement('span'); span.innerHTML = label + ' <b></b>'; $('counts').appendChild(span);
+    hudItems.push({ el: span.querySelector('b'), value: value }); updateHud();
+  }
+
+  root.EbbGame = { boot: boot, api: api, registerKind: registerKind, registerProps: registerProps, registerPanel: registerPanel, registerHud: registerHud, state: function () { return st; }, me: function () { return me; }, walkTo: walkTo, act: act, enter: enter };
+  /* extensions register before boot, so places and kinds exist when the saved scene is entered */
+  if (doc.readyState === 'complete') boot(); else root.addEventListener('load', boot);
 })(window);

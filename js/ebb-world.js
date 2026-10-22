@@ -116,6 +116,14 @@
   /* figure size by depth: further up the floor is further away */
   function scaleAt(y) { return 0.17 + 0.11 * Math.max(0, Math.min(1, (y - 60) / 38)); }
 
-  root.EbbWorld = { SCENES: SCENES, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
+  /* extension points: other modules add places and doors without editing this file */
+  function register(id, scene) {
+    if (!id || SCENES[id]) return false;
+    scene.solids = scene.solids || []; scene.doors = scene.doors || []; scene.spots = scene.spots || [];
+    SCENES[id] = scene; return true;
+  }
+  function addDoor(sceneId, door) { var s = SCENES[sceneId]; if (!s) return false; s.doors.push(door); return true; }
+
+  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
     doorAt: doorAt, inRect: inRect, scaleAt: scaleAt };
 })(typeof window !== 'undefined' ? window : globalThis);

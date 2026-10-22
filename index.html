@@ -5,17 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ebb</title>
 <link rel="stylesheet" href="css/ebb.css">
+<!-- extension styles: each workstream owns one file; a missing file is harmless -->
+<link rel="stylesheet" href="css/ext/log.css">
+<link rel="stylesheet" href="css/ext/safety.css">
+<link rel="stylesheet" href="css/ext/world.css">
+<link rel="stylesheet" href="css/ext/course.css">
+<link rel="stylesheet" href="css/ext/settings.css">
 </head>
 <body>
 <main class="app">
   <header class="top">
     <span class="place" id="place">Bedroom</span>
-    <span class="counts" aria-label="Your things">
+    <span class="counts" id="counts" aria-label="Your things">
       <span title="Seeds">Seeds <b id="hudSeeds">0</b></span>
       <span title="Basket">Basket <b id="hudBasket">0</b></span>
       <span title="Offerings">Pond <b id="hudPond">0</b></span>
     </span>
     <button type="button" class="btn small" id="wardrobeBtn">Wardrobe</button>
+    <button type="button" class="btn small" id="moreBtn" aria-haspopup="true">More</button>
+    <nav class="menu" id="moreMenu" hidden aria-label="More"></nav>
   </header>
   <div class="scene" id="scene" aria-label="Game scene. Tap the floor to walk.">
     <img id="plate" alt="" draggable="false">
@@ -37,5 +45,11 @@
 <script src="js/ebb-props.js"></script>
 <script src="js/ebb-ui.js"></script>
 <script src="js/ebb-game.js"></script>
+<!-- extensions: each workstream owns one entry file and registers through EbbWorld / EbbGame; a missing file is harmless -->
+<script src="js/ext/log.js"></script>
+<script src="js/ext/safety.js"></script>
+<script src="js/ext/world.js"></script>
+<script src="js/ext/course.js"></script>
+<script src="js/ext/settings.js"></script>
 </body>
 </html>
