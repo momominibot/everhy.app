@@ -45,20 +45,17 @@ nothing is offered for hot flushes.
   a neutral line and a disabled "Not available yet" button. It needs a real booking or message route before launch;
   the evidence favours courses with some human contact.
 
-## Art: blocked
-`python3 tools/run_batch.py tools/jobs_course.json` stopped on the first image (`course_sheet`, RemoteDisconnected at
-61.3 s, the known ~62 s cutoff). `art/BLOCKED.json` stays in this worktree (copy committed at
-`art/blocks/2026-10-22-course-sheet-timeout.json`). No retry was made. Until art exists the UI shows soft plain circles
-with the week number and a gradient cover. After Jamie approves a rerun (consider a shorter sheet prompt):
-
-    python3 tools/slice_sheet.py art/raw/course_sheet.png art/course/icons --count 9 --height 256
-    python3 -c "from PIL import Image; Image.open('art/raw/course_cover.png').convert('RGB').resize((768,768)).save('art/course/cover.webp', quality=82)"
-
-Then check the sheet's reading order against `ICON` in `content.js` (cushion, feather, cloud, mat, tea, pebbles,
-heart, lantern, bell) and fix the indices if Seedream ordered them differently. The CSS picks the files up on its own.
+## Art: not made yet
+- My own run stopped on `course_sheet` at 61.3 s (RemoteDisconnected); `art/BLOCKED.json` stays in this worktree (copy
+  at `art/blocks/2026-10-22-course-sheet-timeout.json`). Main took over the course art as three 3-icon sheets plus the
+  cover in its single queue, but that queue stopped at 22:50 on `map_world` (same cutoff) before reaching them.
+- Until art exists the panel shows plain soft circles with week numbers and a gradient cover.
+- When `course_icons_1..3.png` and `course_cover.png` exist, run `tools/course_art.sh <their art/raw dir>`. It copies
+  them in, cuts each sheet with `slice_sheet.py --count 3 --height 160` into `art/course/icons_N.webp` and writes
+  `art/course/cover.webp`. The panel picks each file up on its own once it loads. Check that each strip reads
+  cushion, feather, cloud / mat, tea, pebbles / heart, lantern, bell; the smoke test then also checks the icons show.
 
 ## For the integrator
-- Engine bug seen in the smoke screenshots: `.menu { display: flex }` in `css/ebb.css` overrides the `hidden`
-  attribute, so the More menu never closes. One line fixes it: `.menu[hidden] { display: none; }`.
 - `registerKind('cushion')` replaces the engine's cushion handler; the fallback reproduces it (sit at the cushion,
   `EbbUi.openPractice`, stand at the stand point).
+- Checked merged onto main `2355466` (full screen, 390x844): test-core 227, test-course 134, smoke 42, all pass.
