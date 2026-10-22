@@ -1,0 +1,82 @@
+import json, sys, time, threading, http.server, socketserver, functools, os
+from playwright.sync_api import sync_playwright
+ROOT, OUT = sys.argv[1], sys.argv[2]
+H = functools.partial(http.server.SimpleHTTPRequestHandler, directory=ROOT)
+class Q(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+srv = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Q, directory=ROOT)); port = srv.server_address[1]
+threading.Thread(target=srv.serve_forever, daemon=True).start()
+fails, errs = [], []
+def ok(name, cond):
+    print(('ok   ' if cond else 'FAIL ') + name); (None if cond else fails.append(name))
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2)
+    pg = ctx.new_page()
+    pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and 'Failed to load resource' not in m.text else None)
+    pg.on('pageerror', lambda e: errs.append(str(e)))
+    t0 = time.time()
+    pg.goto(f'http://127.0.0.1:{port}/index.html')
+    pg.wait_for_selector('.sf-onboard', timeout=8000)
+    pg.wait_for_function("document.querySelector('.sf-hero') && document.querySelector('.sf-hero').complete && document.querySelector('.sf-hero').naturalWidth > 0")
+    pg.screenshot(path=f'{OUT}/01-welcome.png')
+    ok('EbbSafety interface present', pg.evaluate("['check','crisis','showAlert','consented'].every(k => typeof EbbSafety[k] === 'function')"))
+    def tap(text): pg.locator('.sf-reply button', has_text=text).first.click()
+    tap('Let’s start'); tap('Yes, keep my notes here')
+    pg.fill('.sf-date input[type=date]', '2026-10-08'); tap('Save date')
+    tap('26 to 30 days'); tap('Understand my cycle'); tap('Regular periods'); tap('18 to 34'); tap('None')
+    pg.locator('.sf-reply button', has_text='Endometriosis').click(); tap('Done')
+    tap('Gentle'); tap('Once a day')
+    pg.screenshot(path=f'{OUT}/02-quiet-hours.png')
+    tap('Save')
+    tap('Yes, use my logs for this'); tap('No thanks'); tap('No thanks'); tap('Yes, tell me')
+    pg.screenshot(path=f'{OUT}/03-done.png')
+    tap('Start playing')
+    ok('onboarding taps finish well under 2 minutes', time.time() - t0 < 120)
+    st = pg.evaluate("JSON.parse(localStorage.getItem('ebb_save_v1'))")
+    pr = st.get('profile', {})
+    ok('profile saved', pr.get('lastPeriodStart') == '2026-10-08' and pr.get('cycleLength') == 28 and pr.get('lifeStage') == 'cycling' and pr.get('age') == 18 and pr.get('flags') == ['endometriosis'] and pr.get('quietHours') == {'from': '22:00', 'to': '08:00'})
+    ev = st['consent']['events']
+    ok('five dated consent events', len(ev) == 5 and all(e['at'] for e in ev))
+    ok('consented() reflects choices', pg.evaluate("EbbSafety.consented('core') && EbbSafety.consented('physiology') && !EbbSafety.consented('research') && !EbbSafety.consented('partner') && EbbSafety.consented('course')"))
+    ok('no horizontal scroll at 390px', pg.evaluate("document.documentElement.scrollWidth <= 390"))
+    # panel
+    pg.click('#moreBtn'); pg.click('#panel-safety')
+    pg.wait_for_selector('.sf-panel'); pg.screenshot(path=f'{OUT}/04-panel.png', full_page=True)
+    pg.locator('.sf-panel button[aria-label="Turn on: Help the research study"]').click()
+    pg.wait_for_selector('.sf-panel')
+    ok('panel toggle appends an event', pg.evaluate("EbbSafety.consented('research') && JSON.parse(localStorage.getItem('ebb_save_v1')).consent.events.length === 6"))
+    ok('no horizontal scroll in panel', pg.evaluate("document.querySelector('.sf-sheet').scrollWidth <= document.querySelector('.sf-sheet').clientWidth + 1"))
+    pg.locator('.sf-panel .sheet-actions button', has_text='Close').click()
+    # urgent alert
+    pg.evaluate("EbbSafety.showAlerts(EbbSafety.check([{id:'x1',type:'pain',value:9,side:'left',start:new Date().toISOString(),confirmed:true}], [], EbbGame.state().profile))")
+    pg.wait_for_selector('.sf-alert.sf-urgent'); pg.screenshot(path=f'{OUT}/05-urgent.png')
+    ok('urgent alert names 995 and offers a call link', pg.locator('.sf-alert a[href="tel:995"]').count() == 1)
+    pg.locator('.sf-alert button', has_text='I understand').click()
+    # crisis: card only, then deferred alerts
+    pg.evaluate("EbbSafety.showAlerts(EbbSafety.check([{id:'x2',type:'mood',value:9,text:'cramps so bad and honestly I want to die',start:new Date().toISOString(),confirmed:true},{id:'x3',type:'pain',value:9,side:'right',start:new Date().toISOString(),confirmed:true}], [], EbbGame.state().profile))")
+    pg.wait_for_selector('.sf-crisis'); pg.screenshot(path=f'{OUT}/06-crisis.png')
+    ok('crisis card is the only sheet', pg.locator('.sheet-wrap').count() == 1 and pg.locator('.sf-alert').count() == 0)
+    ok('crisis card has 1767, CareText, 1771, 995', all(pg.locator(f'.sf-crisis a[href="{h}"]').count() == 1 for h in ['tel:1767', 'https://wa.me/6591511767', 'tel:1771', 'tel:995']))
+    pg.locator('.sf-crisis button', has_text='I’m safe for now').click()
+    pg.wait_for_selector('.sf-alert.sf-urgent', timeout=3000)
+    ok('physical alert follows once the crisis card is closed', True)
+    pg.locator('.sf-alert button', has_text='I understand').click()
+    # reload: onboarding does not come back
+    pg.reload(); pg.wait_for_timeout(800)
+    ok('onboarding not repeated after reload', pg.locator('.sf-onboard').count() == 0)
+    # skip path in a fresh context
+    c2 = b.new_context(viewport={'width': 390, 'height': 844}); p2 = c2.new_page()
+    p2.goto(f'http://127.0.0.1:{port}/index.html'); p2.wait_for_selector('.sf-onboard')
+    p2.locator('.sf-reply button', has_text='Not now').click()
+    p2.wait_for_timeout(300)
+    s2 = p2.evaluate("JSON.parse(localStorage.getItem('ebb_save_v1'))")
+    ok('Not now skips with no health data or consent stored', p2.locator('.sf-onboard').count() == 0 and not s2.get('consent') and not s2['profile'].get('lastPeriodStart') and s2['safety'].get('onboardSkippedAt'))
+    x0 = p2.evaluate("EbbGame.me().x + ',' + EbbGame.me().y")
+    p2.click('#scene', position={'x': 200, 'y': 300}); p2.wait_for_timeout(400)
+    ok('game still playable after skipping (she moves on a tap)', p2.evaluate("EbbGame.me().x + ',' + EbbGame.me().y") != x0)
+    b.close()
+ok('no console errors', not errs)
+for e in errs: print('  console:', e)
+srv.shutdown()
+sys.exit(1 if fails else 0)

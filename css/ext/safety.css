@@ -52,3 +52,6 @@ a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 .sf-rules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--soft); }
 .sf-rules b { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .sf-msg { scroll-behavior: auto; } }
+/* Guard for the engine menu: `.menu { display: flex }` in css/ebb.css overrides [hidden], so the More menu showed over
+ * the scene once a panel was registered. Belongs in css/ebb.css; the integrator can move it there. */
+.menu[hidden] { display: none; }
