@@ -1,0 +1,58 @@
+[
+ {
+  "id": "farm_garden",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge. A small cosy farm seen from the front and above like a side-on game stage: soft sky and rolling hills across the top, a little wooden shed with glass jars on the left, a fence along the middle, and in the lower half a neat vegetable garden: six square raised soil beds with low wooden edges, arranged in two rows of three, evenly spaced, each bed empty dark tilled soil, with a clear sandy path around and between them so a character can walk, a stone path leaving at the right edge. No plants in the beds, no people, no animals, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "char_genz",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png",
+  "prompt": "Character turnaround of the same chibi clay girl as the reference (same face, long wavy dark brown hair, warm light-brown skin), now wearing an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body standing, arms relaxed. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_front_genz",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_front.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_back_genz",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_back.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_side_genz",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_side.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_sit_genz",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_sit.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_work_genz",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_work.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Redraw the first reference farm work poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ }
+]
