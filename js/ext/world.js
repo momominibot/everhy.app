@@ -1,39 +1,40 @@
 /* Ebb world extension: the barn (two hens and a cow), a hidden hot spring past the waterfall, and fishing at the pond
  * edge. Places register with EbbWorld (pure, so the node harness checks every door and stand point); the page part
  * below only runs in a browser. Rules live in js/world/rules.js. Floors and spots were read from each plate on a 10%
- * grid. Nothing here gets sick, wilts or dies, and nothing asks about health. */
+ * grid (tall 4:7 plates: x 0..100 across, y 0..175 down). Nothing here gets sick, wilts or dies, and nothing asks about health. */
 (function (root) {
   'use strict';
   var W = root.EbbWorld;
   if (!W) return;
 
   /* ---------- places ---------- */
-  W.register('barn', { /* bird's-eye room like the bedroom: floor is the plank diamond, furniture footprints are solids */
-    name: 'Barn', plate: 'art/world/barn-birdseye.webp', depth: [45, 0.19, 95, 0.23],
-    floor: [[10, 53], [17, 46], [27, 44], [78, 45], [92, 65], [90, 84], [60, 96], [8, 77]],
-    solids: [[33, 50, 70, 70], [8, 60, 18, 71], [64, 78, 75, 89], [82, 54, 91, 66], [66, 43, 78, 50], [78, 45, 90, 56], [22, 79, 41, 86]],
-    doors: [{ id: 'toFarm', rect: [16, 45, 24, 50], to: 'farm', arrive: { x: 12, y: 85 }, label: 'Out to the farm' }],
+  W.register('barn', { /* tall bird's-eye barn: back wall across the top, plank floor from y 83, wide doorway in the right wall */
+    name: 'Barn', plate: 'art/plates/barn-tall.webp', aspect: [4, 7], indoor: true, depth: [83, 0.27, 175, 0.34],
+    floor: [[0, 101], [30, 83], [64, 83], [80, 85], [94, 87], [100, 95], [100, 175], [0, 175]],
+    solids: [[21, 80, 43, 90], [45, 86, 62, 95], [85, 95, 98, 104], [59, 110, 89, 128], [16, 141, 40, 149]],
+    doors: [{ id: 'toFarm', rect: [81, 86, 93, 92], to: 'farm', arrive: { x: 10, y: 126 }, label: 'Out to the farm' }],
     spots: [
-      { id: 'hen1', kind: 'hen', at: { x: 39, y: 47 }, stand: { x: 29, y: 51 }, label: 'Say hello to Pip', flip: true },
-      { id: 'hen2', kind: 'hen', at: { x: 55, y: 78 }, stand: { x: 57, y: 86 }, label: 'Say hello to Clover' },
-      { id: 'cow', kind: 'cow', at: { x: 32, y: 84 }, stand: { x: 46, y: 85 }, label: 'Say hello to Mochi', flip: true }
+      { id: 'hen1', kind: 'hen', at: { x: 14, y: 100 }, stand: { x: 24, y: 106 }, label: 'Say hello to Pip', flip: true },
+      { id: 'hen2', kind: 'hen', at: { x: 52, y: 101 }, stand: { x: 52, y: 109 }, label: 'Say hello to Clover' },
+      { id: 'cow', kind: 'cow', at: { x: 28, y: 148 }, stand: { x: 46, y: 148 }, label: 'Say hello to Mochi', flip: true }
     ],
-    start: { x: 22, y: 58 }
+    start: { x: 60, y: 140 }
   });
-  W.register('spring', {
-    name: 'Hot spring', plate: 'art/world/spring.webp', depth: [56, 0.125, 98, 0.19],
-    floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]],
-    doors: [{ id: 'toFalls', rect: [2, 56, 9, 66], to: 'waterfall', arrive: { x: 90, y: 77 }, label: 'Back to the waterfall' }],
-    spots: [{ id: 'soak', kind: 'soak', at: { x: 52, y: 62 }, stand: { x: 52, y: 80 }, label: 'Slip into the warm water' }],
-    start: { x: 12, y: 82 }
+  W.register('spring', { /* tall plate: steaming pool upper middle, stone deck from y 91, steps and path out at bottom left */
+    name: 'Hot spring', plate: 'art/plates/spring-tall.webp', aspect: [4, 7], depth: [91, 0.22, 175, 0.33], water: '#6c5641', /* sampled from the pool */
+    floor: [[20, 94], [40, 91], [72, 91], [84, 97], [82, 108], [82, 128], [73, 132], [34, 132], [34, 150], [30, 160], [28, 175],
+      [2, 175], [4, 160], [12, 150], [16, 135], [20, 128]],
+    doors: [{ id: 'toFalls', rect: [2, 158, 26, 175], to: 'waterfall', arrive: { x: 90, y: 118 }, label: 'Back to the waterfall' }],
+    spots: [{ id: 'soak', kind: 'soak', at: { x: 56, y: 72 }, stand: { x: 56, y: 96 }, label: 'Slip into the warm water' }],
+    start: { x: 50, y: 115 }
   });
-  W.addDoor('farm', { id: 'toBarn', rect: [3, 76.5, 6, 85.5], to: 'barn', arrive: { x: 22, y: 58 }, label: 'Path to the barn' });
-  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 70, 98, 84], to: 'spring', arrive: { x: 12, y: 82 }, label: 'Steam past the trees' });
+  W.addDoor('farm', { id: 'toBarn', rect: [0, 118, 6, 134], to: 'barn', arrive: { x: 78, y: 99 }, label: 'Path to the barn' });
+  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 110, 100, 126], to: 'spring', arrive: { x: 24, y: 152 }, label: 'Steam past the trees' });
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
   if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
-    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 36, y: 65 }, stand: { x: 36, y: 74 }, label: 'Fish at the pond edge' });
+    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 88, y: 80 }, stand: { x: 88, y: 110 }, float: { x: 73, y: 97 }, label: 'Fish from the pier' });
   }
-  var SIT_IN_WATER = { x: 52, y: 66 };
+  var SIT_IN_WATER = { x: 56, y: 75.5 };
 
   var doc = root.document;
   if (!doc || !root.EbbGame) return; /* the node harness stops here */
@@ -189,14 +190,14 @@
     });
     return out;
   });
-  root.EbbGame.registerProps('farm', function () { return sign(10, 92, 'Barn', true); });
+  root.EbbGame.registerProps('farm', function () { return sign(10, 142, 'Barn', true); });
 
   /* ---------- hot spring ---------- */
   var soaking = false;
   function waterOver() { /* the pool surface drawn over her lower half so she sits in the water */
     var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y, sc = W.scaleAt(y, 'spring'), h = 247 * 104 / 300 * sc, w = 169 * 104 / 300 * sc;
     var f = function (v) { return v.toFixed(2); };
-    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.3) + '" fill="#b2e0d4" opacity="0.88"/>' +
+    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.2) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.25) + '" fill="' + (W.SCENES.spring.water || '#b2e0d4') + '" opacity="0.9"/>' +
       '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.25" opacity="0.55"/>' +
       '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
   }
@@ -226,7 +227,7 @@
     }, out);
   });
   root.EbbGame.registerProps('waterfall', function (api, near) {
-    var sp = W.SCENES.waterfall.spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(92, 66, 'Hot spring');
+    var sp = W.SCENES.waterfall.spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(90, 134, 'Hot spring');
     if (!sp) return out;
     /* a little rod resting at the pond edge */
     out += '<g class="world-rod"><path d="M' + (sp.at.x - 2) + ' ' + (sp.at.y + 3) + ' L' + (sp.at.x + 5) + ' ' + (sp.at.y - 5) + '" stroke="#9a7552" stroke-width="0.6" stroke-linecap="round"/>' +
@@ -244,7 +245,7 @@
       '<circle cx="' + r(x) + '" cy="' + r(fy - 0.35) + '" r="0.8" fill="#e8836f"/><rect x="' + r(x - 0.8) + '" y="' + r(fy - 0.35) + '" width="1.6" height="0.65" rx="0.2" fill="#fffaf3"/></g>';
   }
   root.EbbGame.registerKind('fish', function (spot, api) {
-    var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.at.x + 9, fy = spot.at.y - 5.5;
+    var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.float ? spot.float.x : spot.at.x + 9, fy = spot.float ? spot.float.y : spot.at.y - 5.5;
     api.work('none', 36e5, 'back');
     function clear() { timers.forEach(clearTimeout); timers = []; }
     sheet('Fishing', function (body, buttons) {
