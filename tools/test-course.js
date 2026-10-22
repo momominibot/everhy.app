@@ -7,9 +7,9 @@ ctx.globalThis = ctx;
 const mem = {};
 ctx.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
 vm.createContext(ctx);
-['js/ebb-farm.js', 'js/ebb-store.js', 'js/course/content.js', 'js/course/core.js'].forEach(f =>
+['js/ebb-farm.js', 'js/ebb-store.js', 'js/course/content.js', 'js/course/voice.js', 'js/course/core.js'].forEach(f =>
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'), ctx, { filename: f }));
-const { EbbStore: S, EbbCourse: E, EbbCourseContent: T } = ctx;
+const { EbbStore: S, EbbCourse: E, EbbCourseContent: T, EbbCourseVoice: V } = ctx;
 
 let pass = 0, fail = 0;
 function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', name); } }
@@ -115,6 +115,25 @@ function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', na
   check('a few seconds read as under a minute', /under a minute/.test(E.summaryText(E.monthSummary([{ type: 'mindfulness', date: '2026-10-05', activeSec: 4, status: 'partial' }], '2026-10'))) && E.minutesText(4) === 'under a minute' && E.minutesText(300) === 'about 5 min');
   check('empty month is fine', /No practices saved in November/.test(E.summaryText(E.monthSummary(obs, '2026-11'))));
   check('history newest first, practices only', E.practices(obs)[0].date === '2026-10-09' && E.practices(obs).length === 4);
+})();
+
+/* ---------- Erin's voice: optional, exact-caption clips only ---------- */
+(() => {
+  const P = T.PRACTICES, texts = new Set();
+  Object.keys(P).forEach(k => [P[k].cues, P[k].seated].filter(Boolean).forEach(cs => cs.forEach(c => texts.add(c[1]))));
+  check('voice is Erin', V && V.voice === 'Erin' && V.scriptVersion === T.VERSION);
+  check('every caption has a clip', [...texts].every(t => E.clipFor(V, t)));
+  check('no clip for a caption that no longer exists', Object.keys(V.clips).every(t => texts.has(t)));
+  check('every clip file is on disk with a length', Object.values(V.clips).every(c => fs.existsSync(path.join(__dirname, '..', c.src)) && c.sec > 0.5));
+  check('a changed caption gets no stale clip', E.clipFor(V, 'Let your body settle where it is.') === null && E.clipFor(V, 'constructor') === null && E.clipFor(null, [...texts][0]) === null);
+  check('voice on by default, off when she says so', E.clean(null).voice === 'erin' && E.clean({ voice: 'off' }).voice === 'off' && E.clean({ voice: 'loud' }).voice === 'erin');
+  const sp = Object.values(V.clips).map(c => c.sec);
+  let fits = true;
+  Object.keys(P).forEach(k => [P[k].cues, P[k].seated].filter(Boolean).forEach(cs => cs.forEach((c, i) => {
+    const gap = ((i + 1 < cs.length ? cs[i + 1][0] : 1) - c[0]) * 180;
+    if (V.clips[c[1]].sec > gap - 2) fits = false;
+  })));
+  check('every clip ends before the next cue, even at 3 minutes', fits && Math.max(...sp) < 20);
 })();
 
 /* ---------- content rules ---------- */

@@ -1,14 +1,14 @@
 /* Ebb course workstream: an MBSR-informed eight-week course (More > Course), a practice runner richer than the cushion's,
  * practice history with an opt-in monthly summary, and the bedroom cushion opening the runner once the course has
  * started. Rules live in js/course/core.js and copy in js/course/content.js; both load from here so index.html needs no
- * change. Captions carry every cue, so no audio is needed. Nothing is scored and nothing counts while the page is hidden. */
+ * change. Captions carry every cue; Erin's voice (js/course/voice.js) is optional and never required. Nothing is scored and nothing counts while the page is hidden. */
 (function (root) {
   'use strict';
   var doc = root.document;
   if (!doc || !root.EbbGame) return;
 
   /* load the pure modules in order; scripts added before the load event still run before the game boots */
-  ['js/course/content.js', 'js/course/core.js'].forEach(function (src) {
+  ['js/course/content.js', 'js/course/voice.js', 'js/course/core.js'].forEach(function (src) {
     if (doc.querySelector('script[src="' + src + '"]')) return;
     var s = doc.createElement('script'); s.src = src; s.async = false; doc.head.appendChild(s);
   });
@@ -134,14 +134,16 @@
 
   /* ---------- choosing length, anchor or the seated version ---------- */
   function setup(api, id, back, after) {
-    var p = T().PRACTICES[id], opts = { minutes: p.minutes, anchor: p.anchors ? p.anchors[0] : p.anchor, variant: 'standard' }, nodes = [];
+    var c = course(api), voice = root.EbbCourseVoice;
+    var p = T().PRACTICES[id], opts = { minutes: p.minutes, anchor: p.anchors ? p.anchors[0] : p.anchor, variant: 'standard', voice: voice ? c.voice : 'off' }, nodes = [];
     var head = el('div', 'course-head'); head.appendChild(icon(p.icon, p.title.charAt(0))); head.appendChild(el('b', '', p.title)); nodes.push(head);
     nodes.push(para(p.blurb));
     if (p.note) nodes.push(para(p.note, 'muted'));
     nodes.push(pills('Length', [{ v: 3, label: '3 min' }, { v: 5, label: '5 min' }, { v: 10, label: '10 min (longer)' }], opts.minutes, function (v) { opts.minutes = v; }));
     if (p.anchors) nodes.push(pills('Rest attention on', p.anchors.map(function (a) { return { v: a, label: { breath: 'Breath', sound: 'Sounds', touch: 'Touch' }[a] }; }), opts.anchor, function (v) { opts.anchor = v; }));
     if (p.seated) nodes.push(pills('Position', [{ v: 'standard', label: 'Standing' }, { v: 'seated', label: 'Seated' }], 'standard', function (v) { opts.variant = v; }));
-    nodes.push(para('You can pause or end at any time. Captions show every cue; there is no audio.', 'muted small'));
+    if (voice) nodes.push(pills('Voice', [{ v: 'erin', label: 'Erin’s voice' }, { v: 'off', label: 'Captions only' }], opts.voice, function (v) { opts.voice = v; c.voice = v; api.save(); }));
+    nodes.push(para('You can pause or end at any time. Captions show every cue, with or without the voice.', 'muted small'));
     show(p.title, nodes, [{ label: 'Back', id: 'back', fn: back }, { label: 'Begin', primary: true, id: 'begin', fn: function () { run(api, id, opts, after); } }]);
   }
 
@@ -150,25 +152,36 @@
     var E = K(), p = T().PRACTICES[id], cues = E.cuesFor(id, opts.variant), t = E.timer(opts.minutes * 60), startIso = new Date().toISOString();
     var cap = el('p', 'course-cue'); cap.setAttribute('aria-live', 'polite');
     var clock = el('p', 'course-clock'), back = el('p', 'muted small course-back');
+    var audio = el('audio', 'course-voice'); audio.preload = 'auto'; audio.hidden = true; /* one element for every cue, first played inside the Begin tap */
     var head = el('div', 'course-head'); head.appendChild(icon(p.icon, p.title.charAt(0))); head.appendChild(el('b', '', p.title + (opts.variant === 'seated' ? ' (seated)' : '')));
-    var sh = show('Practice', [head, cap, clock, back], [
-      { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) E.resume(t, Date.now()); else E.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; paint(); } },
+    var sh = show('Practice', [head, cap, clock, back, audio], [
+      { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) E.resume(t, Date.now()); else E.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; listen(); paint(); } },
       { label: 'End', primary: true, id: 'end', fn: function () { E.end(t, Date.now()); done(); } }]);
     sh.classList.add('running');
     var shown = -1, backTimer = 0;
     function paint() {
-      var i = E.cueAt(cues, t); if (i !== shown) { shown = i; cap.textContent = cues[i][1]; }
+      var i = E.cueAt(cues, t); if (i !== shown) { shown = i; cap.textContent = cues[i][1]; say(cues[i][1]); }
       var left = E.leftSec(t);
       clock.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0') + ' left' + (t.paused ? ', paused' : '');
     }
+    function say(text) {
+      var src = opts.voice === 'erin' ? E.clipFor(root.EbbCourseVoice, text) : null;
+      audio.pause();
+      if (!src) { audio.removeAttribute('src'); return; }
+      audio.src = src; listen();
+    }
+    function listen() { /* the voice follows the timer: silent while paused, hidden or ended */
+      if (!audio.getAttribute('src') || audio.ended) return;
+      if (E.counting(t)) { var pr = audio.play(); if (pr && pr.catch) pr.catch(function () { }); } else audio.pause();
+    }
     function onVis() {
-      E.setHidden(t, doc.hidden, Date.now());
+      E.setHidden(t, doc.hidden, Date.now()); listen();
       if (!doc.hidden) { back.textContent = 'Welcome back. The timer waited while you were away.'; clearTimeout(backTimer); backTimer = setTimeout(function () { back.textContent = ''; }, 5000); }
     }
     doc.addEventListener('visibilitychange', onVis);
     E.setHidden(t, doc.hidden, Date.now());
     var iv = setInterval(function () { E.advance(t, Date.now()); paint(); if (t.ended) done(); }, 250);
-    cleanup = function () { clearInterval(iv); clearTimeout(backTimer); doc.removeEventListener('visibilitychange', onVis); };
+    cleanup = function () { clearInterval(iv); clearTimeout(backTimer); doc.removeEventListener('visibilitychange', onVis); audio.pause(); audio.removeAttribute('src'); };
     paint();
     var over = false;
     function done() {

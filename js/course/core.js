@@ -14,7 +14,7 @@
   }
 
   /* ---------- course progression ---------- */
-  function fresh() { return { v: 1, started: null, weekReached: 0, weekBegan: {}, stopped: null, summaryOptIn: false, notes: {} }; }
+  function fresh() { return { v: 1, started: null, weekReached: 0, weekBegan: {}, stopped: null, summaryOptIn: false, notes: {}, voice: 'erin' }; }
   function clean(c) {
     var f = fresh();
     if (!c || typeof c !== 'object') return f;
@@ -23,6 +23,7 @@
     if (!out.weekBegan || typeof out.weekBegan !== 'object') out.weekBegan = {};
     if (!out.notes || typeof out.notes !== 'object') out.notes = {};
     out.summaryOptIn = out.summaryOptIn === true;
+    out.voice = out.voice === 'off' ? 'off' : 'erin';
     return out;
   }
   function start(c, today) {
@@ -82,6 +83,9 @@
     return i;
   }
 
+  /* Erin's voice is optional: a clip plays only for its exact caption, so a re-written cue never gets stale audio */
+  function clipFor(voice, text) { var c = voice && voice.clips && Object.prototype.hasOwnProperty.call(voice.clips, text) ? voice.clips[text] : null; return c && c.src ? c.src : null; }
+
   /* ---------- the saved observation ---------- */
   function record(id, opts, t, startIso, endIso) {
     var p = C.PRACTICES[id];
@@ -120,8 +124,8 @@
     WEEKS: WEEKS, GAP_DAYS: GAP_DAYS, MAX_STEP_MS: MAX_STEP_MS, addDays: addDays,
     fresh: fresh, clean: clean, start: start, active: active, isOpen: isOpen, nextOpensOn: nextOpensOn, canBeginNext: canBeginNext,
     beginNext: beginNext, stop: stop, weekState: weekState, openPractices: openPractices, cushionMode: cushionMode,
-    timer: timer, advance: advance, pause: pause, resume: resume, setHidden: setHidden, end: end, activeSec: activeSec,
-    finished: finished, leftSec: leftSec, cuesFor: cuesFor, cueAt: cueAt, record: record,
+    timer: timer, counting: counting, advance: advance, pause: pause, resume: resume, setHidden: setHidden, end: end, activeSec: activeSec,
+    finished: finished, leftSec: leftSec, cuesFor: cuesFor, cueAt: cueAt, clipFor: clipFor, record: record,
     minutesText: minutesText, practices: practices, monthSummary: monthSummary, summaryText: summaryText
   };
 })(typeof window !== 'undefined' ? window : globalThis);

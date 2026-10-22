@@ -9,6 +9,8 @@ nothing is offered for hot flushes.
   `index.html` needs no change (the integrator may add plain script tags for them instead; the loader skips duplicates).
 - `js/course/content.js`: weeks, practices, cue captions (times are fractions of the planned length), copy.
 - `js/course/core.js`: pure rules: week opening, timer, saved record, history and monthly summary.
+- `js/course/voice.js`: generated map from each exact caption to Erin's clip in `art/course/voice/` (51 MP3s).
+- `tools/voice_course.py`: voices the captions (guarded, no retry; `--dry` counts what is left).
 - `css/ext/course.css`; tests `tools/test-course.js` (node) and `tools/smoke_course.py` (Playwright, 390 px).
 
 ## Rules as built
@@ -24,6 +26,19 @@ nothing is offered for hot flushes.
   practice; a running course gives a picker of the open weeks' practices plus "Simple sitting".
 - History lists every mindfulness observation (cushion and course). The monthly summary is off until she ticks it:
   days practised, minutes, ran to the end vs ended early, in words. No score, no streak.
+
+## Erin's voice
+- Every cue is voiced in Erin's cloned voice (Volcengine TTS, voice `S_PLWb4DCd2`, cluster `volcano_icl`, speed 0.88),
+  made by `tools/voice_course.py` on 22 Oct 2026: 51 clips, 3.5 to 15.8 s, 7.5 MB. All 51 were transcribed offline with
+  faster-whisper and match their captions. Two lines Whisper misheard were reworded and re-voiced.
+- Optional: setup offers "Erin's voice" (default) or "Captions only", remembered in `state.course.voice`. Captions
+  always show. One audio element is reused (first played inside the Begin tap, so phones allow the later cues). It
+  pauses with Pause and while the page is hidden, and stops on End.
+- Clips are keyed by exact caption text. When the teacher review changes a line, that cue plays with captions only
+  until `python3 tools/voice_course.py` is run again (it voices only new lines). Delete clips no longer in the
+  manifest afterwards.
+- Before launch outside mainland China, check Volcengine's speech service terms: an earlier review found Volcengine's
+  Doubao and Ark terms limit use to mainland China.
 
 ## For staff
 - **Teacher check-in is a placeholder** (`CHECKIN.status = 'placeholder'`). No human contact is wired up. The user sees

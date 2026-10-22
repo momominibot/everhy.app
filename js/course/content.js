@@ -64,14 +64,14 @@
         [0.26, 'Slowly lower them. Pause, and notice what you feel.'],
         [0.4, 'Gently roll your shoulders a few times, back and then forward.'],
         [0.54, 'Shift your weight a little to one foot, then the other. Slow and easy.'],
-        [0.68, 'Stand still. Notice the body after moving. ' + WANDER.split('. ')[0] + '.'],
+        [0.68, 'Stand still. Notice the body after moving. If the mind has wandered, gently come back.'],
         [0.88, CLOSE]],
       seated: [[0, 'Sit with your feet flat on the floor and your back supported. Notice your feet.'],
         [0.12, 'Slowly lift your arms forwards, only as far as is comfortable. Notice the stretch.'],
         [0.26, 'Slowly lower them to your lap. Pause, and notice what you feel.'],
         [0.4, 'Gently roll your shoulders a few times, back and then forward.'],
         [0.54, 'Turn your head slowly to one side, then back to the middle, then the other side.'],
-        [0.68, 'Rest. Notice the body after moving. ' + WANDER.split('. ')[0] + '.'],
+        [0.68, 'Rest. Notice the body after moving. If the mind has wandered, gently come back.'],
         [0.88, CLOSE]]
     },
     tea: {
@@ -98,7 +98,7 @@
         [0.26, 'Silently offer yourself a simple wish, such as: may I be at ease. Use any words that feel true.'],
         [0.44, 'If the words feel flat or strange, that is common. Just the intention is enough.'],
         [0.6, 'Bring to mind someone you care about, and offer them a wish too.'],
-        [0.76, 'Widen the wish to anyone, everywhere.'], [0.9, CLOSE]]
+        [0.76, 'Now let the wish reach out to anyone, everywhere.'], [0.9, CLOSE]]
     },
     carry: {
       title: 'Your own practice', icon: ICON.lantern, minutes: 5, anchor: 'choice', anchors: ['breath', 'sound', 'touch'],
