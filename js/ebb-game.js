@@ -22,12 +22,13 @@
     st.scene = id;
     var s = scene();
     /* a room is one painted render until she rearranges it; then it is the empty shell plus her own pieces */
-    if (!s.fixed) s.fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors };
+    if (!s.fixed) s.fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors, aspect: s.aspect, depth: s.depth, zoom: s.zoom, start: s.start };
     var custom = Fu && s.shell && st.furniture && st.furniture[id];
     if (custom) {
       st.furniture[id] = Fu.clean(st.furniture[id], id);
       s.floor = s.shellFloor || s.fixed.floor; s.doors = W.shellDoors(Object.assign({}, s, { doors: s.fixed.doors })); s.baseSolids = []; s.baseSpots = []; Fu.apply(s, st.furniture[id]);
-    } else { s.floor = s.fixed.floor; s.doors = s.fixed.doors; s.solids = s.fixed.solids.slice(); s.spots = s.fixed.spots.slice(); s.layout = null; s.baseSolids = null; }
+      s.aspect = s.shellAspect || s.fixed.aspect; s.depth = s.shellDepth || s.fixed.depth; s.zoom = s.shellAspect ? undefined : s.fixed.zoom; s.start = s.shellStart || s.fixed.start; /* the empty shell may have another shape */
+    } else { s.floor = s.fixed.floor; s.doors = s.fixed.doors; s.solids = s.fixed.solids.slice(); s.spots = s.fixed.spots.slice(); s.layout = null; s.baseSolids = null; s.aspect = s.fixed.aspect; s.depth = s.fixed.depth; s.zoom = s.fixed.zoom; s.start = s.fixed.start; }
     S.save();
     els.plate.src = custom ? s.shell : s.plate; els.plate.alt = s.name;
     els.place.textContent = s.name;

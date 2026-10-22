@@ -40,8 +40,10 @@
   function glow(x, y, r) { return '<circle class="life-glow" cx="' + x + '" cy="' + y + '" r="' + r + '" fill="url(#lifeGlow)"/>'; }
 
   var AMBIENT = {
-    bedroom: function () { return glow(50, 22, 26) + ring(50, 22, 21, 14, 'life-twinkle') + glow(70, 54, 9) + glow(22, 84, 9) + motes(16, 70, 84, 150, 10); },
-    bathroom: function () { return steam(40, 56, 5) + glow(45, 18, 14) + motes(14, 70, 86, 150, 7); },
+    /* the isometric rooms (23 Oct): round window with its fairy lights, the lamps, motes over the floor */
+    bedroom: function () { return glow(37, 24, 12) + ring(37, 24, 8.5, 12, 'life-twinkle') + glow(38, 33, 4) + glow(76, 56, 6) + motes(20, 45, 90, 88, 10); },
+    bathroom: function () { return steam(36, 44, 4) + glow(36, 21, 10) + glow(8, 37, 2.5) + glow(26, 38, 2) + glow(46, 80, 2) + motes(10, 50, 90, 86, 7); },
+    living: function () { return glow(28, 25, 9) + ring(28, 25, 8, 10, 'life-twinkle') + glow(65, 25, 6) + glow(33, 22, 4) + glow(73, 64, 4) + motes(20, 48, 92, 90, 9); },
     farm: function () { return petals(44, 62, 8) + motes(5, 95, 95, 170, 8, 'life-pollen'); },
     waterfall: function () { return motes(40, 80, 62, 100, 12, 'life-mist') + petals(84, 40, 6) + petals(8, 60, 5); }
   };

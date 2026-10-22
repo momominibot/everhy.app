@@ -89,7 +89,8 @@
     layout.forEach(function (q) { if (q.uid === uid) p = q; });
     if (!p) return false;
     var c = CATALOG[p.item], probe = { item: p.item, x: x, y: y }, r = footRect(probe);
-    var onFloor = function (pt) { return W.inFloor(s, pt); };
+    var shell = s.shellFloor ? Object.assign({}, s, { floor: s.shellFloor }) : s; /* pieces live in the empty shell, whatever room is painted */
+    var onFloor = function (pt) { return W.inFloor(shell, pt); };
     if (!onFloor({ x: x, y: y - 0.5 })) return false;
     if (c.flat) return true;
     if (![[r[0], r[3] - 0.3], [r[2], r[3] - 0.3], [r[0], r[1]], [r[2], r[1]]].every(function (q) { return onFloor({ x: q[0], y: q[1] }); })) return false;

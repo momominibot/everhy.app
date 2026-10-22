@@ -4,57 +4,68 @@
   'use strict';
 
   var SCENES = {
-    bedroom: { /* one dreamy render (plate 4:7, so y runs 0..175) with the furniture painted in; `shell` is the empty room she can furnish herself */
-      name: 'Bedroom', plate: 'art/plates/bedroom-dream.webp', shell: 'art/plates/bedroom-tall.webp', aspect: [4, 7], indoor: true, depth: [95, 0.25, 175, 0.33],
-      floor: [[16, 97], [84, 97], [86, 175], [14, 175]],
-      solids: [[28, 50, 64, 97], [14, 80, 28, 119], [66, 80, 90, 123], [0, 138, 21, 175], [77, 160, 100, 175]],
+    /* The three rooms are one isometric cut-away render each (1024 square, 23 Oct): bigger than a phone, so the camera
+     * (zoom 2.2) pans around them as she walks. Floors are the wooden diamond minus every painted piece, each piece
+     * carrying a margin above it so she is never drawn in front of something she stands behind. y runs 0..100.
+     * `shell` and friends keep "Decorate this room" alive on the older tall empty rooms (aspect 4:7, y 0..175). */
+    bedroom: {
+      name: 'Bedroom', plate: 'art/plates/bedroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 93, 0.17],
+      shell: 'art/plates/bedroom-tall.webp', shellAspect: [4, 7], shellDepth: [95, 0.25, 175, 0.33], shellStart: { x: 47, y: 145 },
+      lamps: [{ x: 38, y: 33 }, { x: 76, y: 56 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
+      floor: [[50, 42], [97, 68], [50, 93], [2, 67]],
+      /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp and plant, dresser, laundry basket, pouf, little table */
+      solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [23, 46, 35, 85], [56, 42, 75, 61], [72, 42, 78, 60], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
       shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
       shellDoors: [{ id: 'toLiving', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
-        { id: 'toLiving', rect: [14, 118, 19, 150], to: 'living', arrive: { x: 9, y: 110 }, label: 'To the kitchen' },
-        { id: 'toBathroom', rect: [81, 128, 86, 160], to: 'bathroom', arrive: { x: 72, y: 128 }, label: 'Into the bathroom' }
+        { id: 'toLiving', rect: [35, 76, 41, 86], to: 'living', arrive: { x: 28, y: 70 }, label: 'To the kitchen' },
+        { id: 'toBathroom', rect: [75, 60, 79, 65], to: 'bathroom', arrive: { x: 60, y: 68 }, label: 'Into the bathroom' }
       ],
       spots: [
-        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 45, y: 72 }, stand: { x: 45, y: 101 }, label: 'How did you sleep?' },
-        { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 70, y: 62 }, stand: { x: 62, y: 101 }, label: 'Waking temperature' },
-        { id: 'desk', kind: 'log', topic: 'mood', at: { x: 80, y: 98 }, stand: { x: 62, y: 108 }, label: 'Write in the journal' },
-        { id: 'drawers', kind: 'wardrobe', at: { x: 76, y: 112 }, stand: { x: 62, y: 120 }, label: 'Change clothes' },
-        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 10, y: 55 }, stand: { x: 32, y: 101 }, label: 'Mindfulness course' },
-        { id: 'cushion', kind: 'cushion', at: { x: 47, y: 118 }, stand: { x: 47, y: 130 }, label: 'Sit for a practice' }
+        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 40, y: 52 }, stand: { x: 42, y: 70 }, label: 'How did you sleep?' },
+        { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 38, y: 34 }, stand: { x: 46, y: 68 }, label: 'Waking temperature' },
+        { id: 'desk', kind: 'log', topic: 'mood', at: { x: 66, y: 50 }, stand: { x: 68, y: 66 }, label: 'Write in the journal' },
+        { id: 'drawers', kind: 'wardrobe', at: { x: 88, y: 58 }, stand: { x: 74, y: 66 }, label: 'Change clothes' },
+        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 48, y: 30 }, stand: { x: 64, y: 64 }, label: 'Mindfulness course' },
+        { id: 'cushion', kind: 'cushion', at: { x: 56, y: 64 }, stand: { x: 56, y: 74 }, label: 'Sit for a practice' }
       ],
-      start: { x: 47, y: 145 }
+      start: { x: 50, y: 80 }
     },
     bathroom: {
-      name: 'Bathroom', plate: 'art/plates/bathroom-dream.webp', shell: 'art/plates/bathroom-tall.webp', aspect: [4, 7], indoor: true, depth: [88, 0.25, 175, 0.33],
-      floor: [[22, 88], [78, 88], [88, 120], [90, 175], [8, 175], [6, 120]],
-      solids: [[10, 55, 40, 94], [8, 70, 27, 119], [62, 78, 85, 101], [71, 100, 96, 126], [39, 133, 69, 151], [11, 125, 37, 151], [69, 140, 91, 161]],
+      name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [48, 0.125, 91, 0.17],
+      shell: 'art/plates/bathroom-tall.webp', shellAspect: [4, 7], shellDepth: [88, 0.25, 175, 0.33], shellStart: { x: 45, y: 125 },
+      lamps: [{ x: 8, y: 37 }, { x: 26, y: 38 }, { x: 46, y: 80 }], windows: [{ x: 36, y: 21, rx: 8, ry: 9 }],
+      floor: [[50, 47], [96, 69], [50, 91], [3, 69]],
+      /* tub, wall sink and cabinet, towel rail and basket and plant stool, toilet and brush, twin sinks, candle stool, big plant and cabinet and lilac stool */
+      solids: [[23, 34, 50, 57], [3, 44, 20, 60], [8, 52, 29, 73], [22, 58, 41, 82], [54, 34, 78, 59], [43, 76, 50, 87], [70, 60, 94, 81]],
       shellFloor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
       shellDoors: [{ id: 'toBedroom', rect: [66, 90, 86, 104] }],
-      doors: [{ id: 'toBedroom', rect: [84, 122, 90, 142], to: 'bedroom', arrive: { x: 78, y: 140 }, label: 'Back to the bedroom' }],
+      doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 72, y: 68 }, label: 'Back to the bedroom' }],
       spots: [
-        { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 25, y: 78 }, stand: { x: 32, y: 98 }, label: 'Log bleeding or mucus' },
-        { id: 'sink', kind: 'log', topic: 'body', at: { x: 65, y: 60 }, stand: { x: 58, y: 96 }, label: 'How does your body feel?' },
-        { id: 'cabinet', kind: 'log', topic: 'cycle', at: { x: 84, y: 108 }, stand: { x: 68, y: 128 }, label: 'Check your cycle' }
+        { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Log bleeding or mucus' },
+        { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' },
+        { id: 'cabinet', kind: 'log', topic: 'cycle', at: { x: 86, y: 64 }, stand: { x: 66, y: 74 }, label: 'Check your cycle' }
       ],
-      start: { x: 45, y: 125 }
+      start: { x: 52, y: 78 }
     },
-    living: { /* kitchen and living room in one dreamy render; left door to the bedroom, right door out to the farm */
-      name: 'Kitchen', plate: 'art/plates/living-dream.webp', aspect: [4, 7], indoor: true, depth: [64, 0.25, 175, 0.33],
-      floor: [[8, 64], [92, 64], [100, 76], [100, 175], [0, 175], [0, 76]],
-      solids: [[40, 50, 62, 72], [66, 56, 86, 70], [8, 58, 46, 87], [12, 80, 24, 101], [16, 84, 32, 102], [10, 102, 30, 122], [10, 120, 20, 129],
-        [64, 68, 92, 100], [66, 92, 82, 118], [83, 90, 94, 112], [82, 108, 100, 126]],
+    living: { /* L-shaped kitchen and living room: the kitchen nook top left behind the arch-door wall, the lounge along the back, a window alcove on the right, the dining table in front of it */
+      name: 'Kitchen', plate: 'art/plates/living-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 94, 0.17],
+      lamps: [{ x: 65, y: 25 }, { x: 33, y: 22 }, { x: 73, y: 64 }], windows: [{ x: 28, y: 25, rx: 7, ry: 8 }, { x: 85, y: 52, rx: 9, ry: 8 }],
+      floor: [[20, 47], [44, 46], [62, 47], [72, 50], [72, 58], [96, 69], [50, 94], [20, 77]],
+      /* island and stools, coffee table, plant pot, record cabinet, dining table and chairs */
+      solids: [[25, 44, 43, 61], [43, 38, 57, 47], [64, 42, 72, 50], [59, 44, 71, 58], [61, 56, 85, 81]],
       doors: [
-        { id: 'toBedroom', rect: [0, 78, 6, 104], to: 'bedroom', arrive: { x: 22, y: 128 }, label: 'To the bedroom' },
-        { id: 'toFarm', rect: [95, 76, 100, 104], to: 'farm', arrive: { x: 88, y: 84 }, label: 'Out to the farm' }
+        { id: 'toBedroom', rect: [20, 66, 26, 78], to: 'bedroom', arrive: { x: 44, y: 84 }, label: 'To the bedroom' },
+        { id: 'toFarm', rect: [40, 86, 60, 95], to: 'farm', arrive: { x: 88, y: 84 }, label: 'Out to the farm' } /* the open front edge of the cut-away */
       ],
       spots: [
-        { id: 'kettle', kind: 'tea', at: { x: 51, y: 60 }, stand: { x: 51, y: 75 }, label: 'Make a warm cup' },
-        { id: 'fridge', kind: 'log', topic: 'food', at: { x: 32, y: 54 }, stand: { x: 44, y: 89 }, label: 'What did you eat or drink?' },
-        { id: 'table', kind: 'log', topic: 'mood', at: { x: 78, y: 84 }, stand: { x: 56, y: 100 }, label: 'Sit at the table a moment' },
-        { id: 'sofa', kind: 'cushion', at: { x: 27, y: 74 }, stand: { x: 36, y: 90 }, label: 'Curl up on the sofa' },
-        { id: 'floorcushion', kind: 'cushion', at: { x: 91, y: 114 }, stand: { x: 78, y: 128 }, label: 'Sit on the cushion' }
+        { id: 'kettle', kind: 'tea', at: { x: 19, y: 36 }, stand: { x: 22, y: 56 }, label: 'Make a warm cup' },
+        { id: 'fridge', kind: 'log', topic: 'food', at: { x: 10, y: 37 }, stand: { x: 22, y: 51 }, label: 'What did you eat or drink?' },
+        { id: 'table', kind: 'log', topic: 'mood', at: { x: 72, y: 66 }, stand: { x: 58, y: 72 }, label: 'Sit at the table a moment' },
+        { id: 'sofa', kind: 'cushion', at: { x: 54, y: 37 }, stand: { x: 52, y: 52 }, label: 'Curl up on the sofa' },
+        { id: 'floorcushion', kind: 'cushion', at: { x: 44, y: 70 }, stand: { x: 44, y: 78 }, label: 'Sit on the rug' }
       ],
-      arriveFix: {}, start: { x: 50, y: 125 }
+      arriveFix: {}, start: { x: 46, y: 76 }
     },
     farm: { /* spacious painted farm (23 Oct render): shed and seed jars top left, fence across the back, four raised beds on wide sandy paths, a stone path down the right edge */
       name: 'Farm', plate: 'art/plates/farm-garden.webp', aspect: [4, 7], depth: [74, 0.22, 175, 0.33],
@@ -63,7 +74,7 @@
       solids: [[5, 55, 33, 76], [24, 80, 57, 101], [55, 91, 91, 116], [6, 97, 41, 124], [36, 110, 78, 143]],
       doorFix: { toBarn: { rect: [0, 163, 6, 175], arrive: { x: 10, y: 170 } } }, arriveFix: { barn: { x: 10, y: 170 }, waterfall: { x: 88, y: 150 } }, /* the world extension's barn door, moved onto this plate's free left edge */
       doors: [
-        { id: 'toHouse', rect: [78, 74, 98, 78], to: 'living', arrive: { x: 80, y: 121 }, label: 'Back inside' },
+        { id: 'toHouse', rect: [78, 74, 98, 78], to: 'living', arrive: { x: 56, y: 80 }, label: 'Back inside' },
         { id: 'toFalls', rect: [92, 140, 100, 160], to: 'waterfall', arrive: { x: 46, y: 166 }, label: 'Path to the waterfall' }
       ],
       spots: [{ id: 'shed', kind: 'shed', at: { x: 18, y: 66 }, stand: { x: 18, y: 86 }, label: 'Seeds from the jars' }],

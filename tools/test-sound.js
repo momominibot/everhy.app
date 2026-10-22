@@ -137,7 +137,7 @@ check('farm: birds never vanish', [[17, 108], [70, 172], [95, 172], [5, 172]].ev
 check('a meadow with no sources still has birds, more at the top', S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 52 }).birds > S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 98 }).birds);
 const painted = W.SCENES.bathroom, pm = p => S.mixFor('bath', 'bathroom', painted, p).drips, tubAt = S.SOURCES.bathroom.tub;
 check(`bathroom: the painted tub is above the floor, as drawn`, !W.walkable(painted, { x: tubAt[0], y: tubAt[1] }));
-check(`bathroom: drips at the floor's edge by the painted tub (${pm({ x: 44, y: 90 }).toFixed(2)})`, W.walkable(painted, { x: 44, y: 90 }) && pm({ x: 44, y: 90 }) > 0.8);
+check(`bathroom: drips on the floor beside the painted tub (${pm({ x: 44, y: 62 }).toFixed(2)})`, W.walkable(painted, { x: 44, y: 62 }) && pm({ x: 44, y: 62 }) > 0.8);
 check(`bathroom: quiet in the far corner (${pm({ x: 85, y: 170 }).toFixed(2)})`, pm({ x: 85, y: 170 }) < 0.1);
 const bath = Object.assign({}, W.SCENES.bathroom, { layout: [{ item: 'bathtub', x: 36, y: 104 }] }), dm = p => S.mixFor('bath', 'bathroom', bath, p).drips;
 check(`bathroom while redecorating: drips by the moved tub (${dm({ x: 36, y: 108 }).toFixed(2)})`, dm({ x: 36, y: 108 }) > 0.9);

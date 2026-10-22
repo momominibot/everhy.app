@@ -49,7 +49,7 @@
   /* ---------- where she stands: how near each sound source is, 0..1 ---------- */
   /* bird trees and quiet spots as [x, y, radius], and the painted tub as [x, y], in scene units; a scene can carry its
    * own soundSources */
-  var SOURCES = { farm: { birds: [[45, 80, 55], [85, 90, 45]], hush: [[17, 100, 26]] }, bathroom: { tub: [37, 60] } };
+  var SOURCES = { farm: { birds: [[45, 80, 55], [85, 90, 45]], hush: [[17, 100, 26]] }, bathroom: { tub: [36, 46] } };
   var LOUDEST = { water: 1, birds: 1, drips: 1, pan: 0 };
   function nearness(d, full, none) { return d <= full ? 1 : d >= none ? 0 : 1 - (d - full) / (none - full); }
   function sceneUnits(scene) { var a = scene && scene.aspect; return a ? 100 * a[1] / a[0] : 100; }
