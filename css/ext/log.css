@@ -1,0 +1,63 @@
+/* Ebb Log panel: chat thread, confirm cards, cycle ring and month calendar. Uses the engine's colour tokens. */
+.ebb-log { position: fixed; inset: 0; z-index: 30; background: var(--scrim); display: flex; justify-content: center; align-items: stretch; }
+.lg-sheet { width: min(560px, 100%); background: var(--card); display: flex; flex-direction: column; min-height: 0; height: 100%; }
+.lg-top { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 16px 8px; border-bottom: 1px solid var(--line); }
+.lg-top h2 { margin: 0; font-size: 19px; margin-right: auto; }
+.lg-tabs { display: flex; background: var(--bg); border-radius: 999px; padding: 3px; }
+.lg-tabs button { border: 0; background: none; color: var(--soft); font: 700 13px var(--font); padding: 7px 12px; border-radius: 999px; cursor: pointer; min-height: 34px; }
+.lg-tabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 4px rgba(40, 30, 30, 0.12); }
+.lg-ring { display: flex; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.lg-dial { width: 76px; height: 76px; flex: none; }
+.lg-track { fill: none; stroke: var(--line); stroke-width: 8; }
+.lg-range { fill: none; stroke: #f3c7bf; stroke-width: 8; }
+.lg-arc { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round; }
+.lg-day { font: 800 15px var(--font); fill: var(--ink); text-anchor: middle; }
+.lg-sub { font: 600 9px var(--font); fill: var(--soft); text-anchor: middle; }
+.lg-ringtext { min-width: 0; font-size: 13px; color: var(--soft); }
+.lg-ringtext p { margin: 2px 0; }
+.lg-phase { color: var(--ink); font-weight: 700; }
+.lg-body { flex: 1; min-height: 0; overflow: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.lg-thread { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lg-msg { max-width: 85%; padding: 9px 13px; border-radius: 16px; overflow-wrap: anywhere; }
+.lg-msg.ebb { background: var(--bg); align-self: flex-start; border-bottom-left-radius: 6px; }
+.lg-msg.mine { background: var(--teal); color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; }
+.lg-card { border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: var(--card); box-shadow: 0 3px 10px rgba(40, 30, 30, 0.08); display: flex; flex-direction: column; gap: 8px; }
+.lg-note { margin: 0; font-weight: 700; }
+.lg-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lg-items li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px 10px; background: var(--bg); border-radius: 12px; }
+.lg-what { font-weight: 700; }
+.lg-when { color: var(--soft); font-size: 13px; margin-right: auto; }
+.lg-x { border: 0; background: none; color: var(--soft); font-size: 20px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+.lg-x:hover { background: var(--card); }
+.lg-editor { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; order: 3; }
+.lg-editor select, .lg-editor input[type=number], .lg-editor input[type=date] { font: 600 14px var(--font); padding: 7px 9px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); min-height: 38px; }
+.lg-editor input[type=number] { width: 80px; }
+.lg-had { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.lg-actions, .lg-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.lg-foot { border-top: 1px solid var(--line); padding: 8px 12px max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; }
+.lg-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.lg-chip { flex: none; display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 5px 11px 5px 7px; font: 700 13px var(--font); cursor: pointer; min-height: 38px; }
+.lg-chip img { width: 22px; height: 22px; }
+.lg-form { display: flex; gap: 8px; }
+.lg-form input { flex: 1; min-width: 0; font: 15px var(--font); padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); min-height: 44px; }
+.lg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.lg-cal { display: flex; flex-direction: column; gap: 10px; }
+.lg-calhead { display: flex; align-items: center; justify-content: space-between; }
+.lg-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.lg-dow { text-align: center; font-size: 12px; color: var(--soft); font-weight: 700; }
+.lg-grid .lg-day { aspect-ratio: 1; border: 1px solid transparent; border-radius: 12px; background: var(--bg); color: var(--ink); font: 700 14px var(--font); cursor: pointer; position: relative; padding: 0; }
+.lg-grid .lg-day.predicted { background: #fbe3de; }
+.lg-grid .lg-day.flow-light, .lg-grid .lg-day.flow-period { background: #f3b2a6; }
+.lg-grid .lg-day.flow-medium { background: #e8836f; color: #fff; }
+.lg-grid .lg-day.flow-heavy { background: #c75a48; color: #fff; }
+.lg-grid .lg-day.spot::after { content: ""; position: absolute; left: 50%; bottom: 5px; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; border: 2px solid #c75a48; }
+.lg-grid .lg-day.today { border-color: var(--teal); border-width: 2px; }
+.lg-grid .lg-day.picked { outline: 3px solid var(--teal); outline-offset: 1px; }
+.lg-grid .lg-day.future { opacity: 0.55; cursor: default; }
+.lg-legend { margin: 0; font-size: 12px; color: var(--soft); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lg-legend .k { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.lg-legend .k.flow { background: #e8836f; } .lg-legend .k.spot { border: 2px solid #c75a48; border-radius: 50%; } .lg-legend .k.pred { background: #fbe3de; }
+.lg-tabs button:focus-visible, .lg-chip:focus-visible, .lg-x:focus-visible, .lg-day:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  .lg-range { stroke: #6b3a33; } .lg-grid .lg-day.predicted { background: #4a2e2b; } .lg-legend .k.pred { background: #4a2e2b; }
+}
