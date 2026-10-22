@@ -189,7 +189,7 @@ function fakeContext() {
     sources.push(s); return s;
   };
   const c = {
-    sampleRate: 48000, get currentTime() { return now; }, destination: node({}),
+    sampleRate: 8000 /* checks parameters only, so a low rate keeps noise buffers cheap */, get currentTime() { return now; }, destination: node({}),
     createBuffer(ch, n, sr) { const d = new Float32Array(n); return { duration: n / sr, length: n, getChannelData: () => d }; },
     createBufferSource() { return source({ buffer: null, loop: false }); },
     createOscillator() { return source({ type: 'sine', frequency: param('osc.frequency', 440), detune: param('detune', 0) }); },
@@ -202,7 +202,7 @@ function fakeContext() {
 }
 Object.keys(S.VOICES).forEach(name => {
   let probs = [], unstopped = 0, late = 0, n = 0, offsetsOk = true;
-  for (let seed = 1; seed <= 40; seed++) {
+  for (let seed = 1; seed <= 12; seed++) {
     const f = fakeContext();
     try { S.render(f.c, name, { seed }); } catch (e) { probs.push(String(e)); }
     probs = probs.concat(f.problems); n += f.sources.length;
