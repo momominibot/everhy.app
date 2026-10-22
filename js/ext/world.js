@@ -8,26 +8,27 @@
   if (!W) return;
 
   /* ---------- places ---------- */
-  W.register('barn', {
-    name: 'Barn', plate: 'art/world/barn.webp',
-    floor: [[2, 71], [18, 70], [72, 70], [74, 79], [98, 79], [98, 98], [2, 98]],
-    doors: [{ id: 'toFarm', rect: [2, 70, 8, 80], to: 'farm', arrive: { x: 84, y: 73 }, label: 'Out to the farm' }],
+  W.register('barn', { /* bird's-eye room like the bedroom: floor is the plank diamond, furniture footprints are solids */
+    name: 'Barn', plate: 'art/world/barn-birdseye.webp', depth: [45, 0.19, 95, 0.23],
+    floor: [[10, 53], [17, 46], [27, 44], [78, 45], [92, 65], [90, 84], [60, 96], [8, 77]],
+    solids: [[33, 50, 70, 70], [8, 60, 18, 71], [64, 78, 75, 89], [82, 54, 91, 66], [66, 43, 78, 50], [78, 45, 90, 56], [22, 79, 41, 86]],
+    doors: [{ id: 'toFarm', rect: [16, 45, 24, 50], to: 'farm', arrive: { x: 12, y: 85 }, label: 'Out to the farm' }],
     spots: [
-      { id: 'hen1', kind: 'hen', at: { x: 22, y: 75 }, stand: { x: 22, y: 84 }, label: 'Say hello to Pip' },
-      { id: 'hen2', kind: 'hen', at: { x: 37, y: 77 }, stand: { x: 37, y: 86 }, label: 'Say hello to Clover' },
-      { id: 'cow', kind: 'cow', at: { x: 62, y: 78 }, stand: { x: 62, y: 89 }, label: 'Say hello to Mochi' }
+      { id: 'hen1', kind: 'hen', at: { x: 39, y: 47 }, stand: { x: 29, y: 51 }, label: 'Say hello to Pip', flip: true },
+      { id: 'hen2', kind: 'hen', at: { x: 55, y: 78 }, stand: { x: 57, y: 86 }, label: 'Say hello to Clover' },
+      { id: 'cow', kind: 'cow', at: { x: 32, y: 84 }, stand: { x: 46, y: 85 }, label: 'Say hello to Mochi', flip: true }
     ],
-    start: { x: 14, y: 82 }
+    start: { x: 22, y: 58 }
   });
   W.register('spring', {
-    name: 'Hot spring', plate: 'art/world/spring.webp',
+    name: 'Hot spring', plate: 'art/world/spring.webp', depth: [56, 0.125, 98, 0.19],
     floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]],
     doors: [{ id: 'toFalls', rect: [2, 56, 9, 66], to: 'waterfall', arrive: { x: 90, y: 77 }, label: 'Back to the waterfall' }],
     spots: [{ id: 'soak', kind: 'soak', at: { x: 52, y: 62 }, stand: { x: 52, y: 80 }, label: 'Slip into the warm water' }],
     start: { x: 12, y: 82 }
   });
-  W.addDoor('farm', { id: 'toBarn', rect: [79, 66, 89, 69], to: 'barn', arrive: { x: 14, y: 82 }, label: 'Path to the barn' });
-  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 71, 98, 84], to: 'spring', arrive: { x: 12, y: 82 }, label: 'Steam past the trees' });
+  W.addDoor('farm', { id: 'toBarn', rect: [3, 76.5, 6, 85.5], to: 'barn', arrive: { x: 22, y: 58 }, label: 'Path to the barn' });
+  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 70, 98, 84], to: 'spring', arrive: { x: 12, y: 82 }, label: 'Steam past the trees' });
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
   if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
     W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 36, y: 65 }, stand: { x: 36, y: 74 }, label: 'Fish at the pond edge' });
@@ -81,6 +82,7 @@
       '<image href="' + s.src + '" width="' + (s.w * s.frames) + '" height="' + s.h + '"/></svg>';
     return '<g' + (cls ? ' class="' + cls + '"' : '') + (flip ? ' transform="translate(' + (2 * x).toFixed(2) + ' 0) scale(-1 1)"' : '') + '>' + inner + '</g>';
   }
+  function her(y, scene) { return 104 * W.scaleAt(y, scene); } /* her standing height in scene units at depth y */
   function shadow(x, y, rx) { return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + (rx * 0.28).toFixed(2) + '" fill="rgba(60,40,20,0.18)"/>'; }
   function heartsRow(x, y, n) {
     var out = '', show = Math.max(1, Math.min(5, n));
@@ -95,7 +97,7 @@
     var w = text.length * 1.35 + 4;
     return '<g class="world-sign"><rect x="' + (x - 0.4) + '" y="' + (y - 1) + '" width="0.8" height="7" fill="#9a7552"/>' +
       '<rect x="' + (x - w / 2) + '" y="' + (y - 3.6) + '" width="' + w + '" height="3.6" rx="0.9" fill="#d9b37a" stroke="#9a7552" stroke-width="0.3"/>' +
-      '<text x="' + x + '" y="' + (y - 1.15) + '" font-size="2.2" font-weight="700" text-anchor="middle" fill="#5a3f2a">' + text + (flip ? ' ‹' : ' ›') + '</text></g>';
+      '<text x="' + x + '" y="' + (y - 1.15) + '" font-size="2.2" font-weight="700" text-anchor="middle" fill="#5a3f2a">' + (flip ? '‹ ' + text : text + ' ›') + '</text></g>';
   }
 
   /* ---------- a small sheet (same look as the engine's) ---------- */
@@ -174,28 +176,29 @@
     s.spots.forEach(function (sp) {
       var a = w.barn.animals[sp.id], x = sp.at.x, y = sp.at.y, isNear = near && near.spot === sp, flash = Date.now() < (flashUntil[sp.id] || 0);
       if (a.kind === 'hen') {
-        var hf = flash ? 3 : a.nest > 0 ? 2 : R().fedOn(a, day) ? 1 : 0;
-        out += shadow(x, y + 0.3, 3.4) + sprite('hen', hf, x, y + 0.6, 10, sp.id === 'hen2', 'world-animal');
-        if (a.nest > 0) out += sprite('items', ITEM_FRAME.egg, x + 4.6, y + 0.8, 2.6);
-        if (isNear) out += ring(x, y + 0.4, 5.5) + heartsRow(x, y - 12, R().hearts(a));
+        var hf = flash ? 3 : a.nest > 0 ? 2 : R().fedOn(a, day) ? 1 : 0, hh = her(y, 'barn') * 0.38;
+        out += shadow(x, y + 0.3, hh * 0.38) + sprite('hen', hf, x, y + 0.6, hh, !!sp.flip, 'world-animal');
+        if (a.nest > 0) out += sprite('items', ITEM_FRAME.egg, x + hh * 0.55, y + 0.8, hh * 0.3);
+        if (isNear) out += ring(x, y + 0.4, hh * 0.6) + heartsRow(x, y - hh - 2, R().hearts(a));
       } else {
-        var cared = R().caredOn(a, day), cf = a.milkDay === day ? 2 : cared && a.lastAct === 'feed' ? 1 : 0;
-        out += shadow(x, y + 0.4, 10.5) + sprite('cow', cf, x, y + 0.8, 19, false, 'world-animal');
-        if (R().canMilk(w.barn, sp.id, day)) out += sprite('items', ITEM_FRAME.milk, x + 13.5, y + 0.6, 3.8);
-        if (isNear) out += ring(x, y + 0.6, 12.5) + heartsRow(x, y - 21, R().hearts(a));
+        var cared = R().caredOn(a, day), cf = a.milkDay === day ? 2 : cared && a.lastAct === 'feed' ? 1 : 0, ch = her(y, 'barn') * 0.75;
+        out += shadow(x, y + 0.4, ch * 0.55) + sprite('cow', cf, x, y + 0.8, ch, !!sp.flip, 'world-animal');
+        if (R().canMilk(w.barn, sp.id, day)) out += sprite('items', ITEM_FRAME.milk, x - ch * 0.7, y + 0.6, ch * 0.2);
+        if (isNear) out += ring(x, y + 0.6, ch * 0.65) + heartsRow(x, y - ch - 2, R().hearts(a));
       }
     });
     return out;
   });
-  root.EbbGame.registerProps('farm', function () { return sign(84, 63, 'Barn'); });
+  root.EbbGame.registerProps('farm', function () { return sign(10, 92, 'Barn', true); });
 
   /* ---------- hot spring ---------- */
   var soaking = false;
-  function waterOver() { /* the pool surface drawn over her so she sits in the water */
-    var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y;
-    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + (y - 0.4) + '" rx="8.5" ry="3.4" fill="#bfe6dc" opacity="0.92"/>' +
-      '<ellipse cx="' + x + '" cy="' + (y - 3.2) + '" rx="7.6" ry="1.1" fill="none" stroke="#f4fffb" stroke-width="0.35" opacity="0.9"/>' +
-      '<path class="world-steam" d="M' + (x - 4) + ' ' + (y - 6) + ' q-1.4 -2.4 0 -4.8 q1.4 -2.4 0 -4.8 M' + (x + 4.5) + ' ' + (y - 5) + ' q1.4 -2.4 0 -4.8 q-1.4 -2.4 0 -4.8" stroke="#ffffff" stroke-width="0.6" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
+  function waterOver() { /* the pool surface drawn over her lower half so she sits in the water */
+    var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y, sc = W.scaleAt(y, 'spring'), h = 247 * 104 / 300 * sc, w = 169 * 104 / 300 * sc;
+    var f = function (v) { return v.toFixed(2); };
+    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.3) + '" fill="#bfe6dc" opacity="0.93"/>' +
+      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.35" opacity="0.9"/>' +
+      '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
     var me = api.me();

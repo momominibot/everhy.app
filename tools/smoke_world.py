@@ -66,17 +66,17 @@ def main():
             return page.evaluate('() => Object.assign({}, EbbGame.state().farm.basket)')
 
         place('Farm'); shot('01-farm')
-        tap(84, 63); place('Barn'); page.wait_for_timeout(500); shot('02-barn')
+        tap(4, 81); place('Barn'); page.wait_for_timeout(500); shot('02-barn')
         check('farm -> barn', True)
 
-        tap(22, 75); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(39, 47); page.wait_for_selector('.world-sheet', timeout=15000)
         check('hen sheet opens', page.locator('.world-sheet h2').inner_text() == 'Pip')
         page.click('#collectEgg'); check('egg from yesterday collected', basket().get('egg') == 1)
         page.click('#care-feed'); check('feeding counts once today', page.evaluate('() => EbbGame.state().world.barn.animals.hen1.careDates.length') == 2)
         shot('03-hen-sheet')
         page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_selector('.world-sheet', state='detached')
 
-        tap(62, 78); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(32, 84); page.wait_for_selector('.world-sheet', timeout=15000)
         check('cow sheet opens', page.locator('.world-sheet h2').inner_text() == 'Mochi')
         check('no milk before care', page.locator('#milkCow').count() == 0)
         page.click('#care-brush'); page.click('#milkCow')
@@ -84,8 +84,8 @@ def main():
         check('milk once a day', page.locator('#milkCow').count() == 0)
         page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_timeout(300); shot('04-barn-after')
 
-        tap(4, 75); place('Farm'); check('barn -> farm', True)
-        tap(96, 73); place('Waterfall'); check('farm -> waterfall', True)
+        tap(20, 47); place('Farm'); check('barn -> farm', True)
+        tap(96, 76); place('Waterfall'); check('farm -> waterfall', True)
 
         tap(36, 65); page.wait_for_selector('.world-sheet', timeout=15000)
         check('fishing sheet opens', page.locator('.world-sheet h2').inner_text() == 'Fishing')
@@ -114,7 +114,7 @@ def main():
         tap(5, 61); place('Waterfall'); check('hot spring -> waterfall', True)
 
         page.evaluate('() => { const f = EbbGame.state().farm; f.basket = { milk: 2 }; }')
-        tap(60, 62); page.wait_for_function('() => /Goddess/.test(document.getElementById("toast").textContent)', timeout=15000)
+        tap(52, 58); page.wait_for_function('() => /Goddess/.test(document.getElementById("toast").textContent)', timeout=15000)
         toast = page.locator('#toast').inner_text()
         check('the pond names a barn item: ' + toast, 'milk' in toast and 'undefined' not in toast)
         shot('08-pond')
