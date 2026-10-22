@@ -53,6 +53,9 @@ def main():
         page.goto(f'http://127.0.0.1:{port}/index.html')
         page.wait_for_function('window.EbbGame && EbbGame._ready && window.EbbCourse')
         cushion = "EbbWorld.SCENES.bedroom.spots.find(s => s.kind === 'cushion')"
+        page.wait_for_timeout(300)
+        if page.locator('.sf-onboard').count():  # the safety workstream's first-run welcome: skip it
+            page.locator('.sf-onboard').get_by_role('button', name='Skip all').click()
 
         # the cushion before the course: the simple practice, as before
         page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
@@ -66,7 +69,7 @@ def main():
         check('course panel opens', page.locator('.course-wrap h2', has_text='Course').count() == 1)
         check('called MBSR-informed', 'MBSR-informed' in page.inner_text('.course-wrap'))
         if (ROOT / 'art/course/icons_1.webp').exists():
-            page.wait_for_timeout(400); page.click('#moreBtn'); page.click('#panel-course')
+            page.wait_for_selector('.course-cover.art', timeout=4000)  # the open panel repaints once the art loads
             check('clay cover shows', page.locator('.course-cover.art').count() == 1)
         shot(page, '01-course-start')
         btn(page, 'start')
@@ -86,8 +89,13 @@ def main():
         check('Erin voice chosen by default', page.locator('.course-wrap audio.course-voice').count() == 1)
         clip = page.evaluate("EbbCourse.clipFor(EbbCourseVoice, document.querySelector('.course-cue').textContent)")
         check('the clip for this exact caption is loaded', bool(clip) and page.get_attribute('audio.course-voice', 'src') == clip)
-        page.wait_for_timeout(900)
-        check('the voice plays', page.evaluate("(a => !a.paused && a.currentTime > 0)(document.querySelector('audio.course-voice'))"))
+        try:  # give the clip up to 4 s to start: under load the first decode can be slow
+            page.wait_for_function("(a => a && !a.paused && a.currentTime > 0)(document.querySelector('audio.course-voice'))", timeout=4000)
+            playing = True
+        except Exception:
+            playing = False
+            print('voice state:', page.evaluate("(a => ({ paused: a.paused, t: a.currentTime, ready: a.readyState, net: a.networkState, err: a.error && a.error.code, src: a.getAttribute('src') }))(document.querySelector('audio.course-voice'))"))
+        check('the voice plays', playing)
         check('a caption shows', len(cue) > 10)
         check('pause and end visible', page.locator('[data-act="pause"]').is_visible() and page.locator('[data-act="end"]').is_visible())
         page.wait_for_timeout(2300)
