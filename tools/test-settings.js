@@ -13,7 +13,7 @@ function storageOf(mem) {
     key: i => Object.keys(mem)[i] || null, get length() { return Object.keys(mem).length; } };
 }
 const mem = {};
-const ctx = { console, Math, JSON, Date, Object, Array, String, Number, parseInt, isNaN, isFinite, encodeURIComponent, Promise, localStorage: storageOf(mem) };
+const ctx = { console, Math, JSON, Date, Object, Array, String, Number, parseInt, isNaN, isFinite, encodeURIComponent, Promise, setTimeout, clearTimeout, localStorage: storageOf(mem) };
 ctx.globalThis = ctx;
 vm.createContext(ctx);
 ['ebb-farm.js', 'ebb-store.js', 'settings/core.js'].forEach(f =>
@@ -59,6 +59,8 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
   check('newline quoted', C.csvCell('line1\nline2') === '"line1\nline2"');
   check('formula neutralised', C.csvCell('=HYPERLINK("x")') === '"\'=HYPERLINK(""x"")"' && C.csvCell('+1') === "'+1" && C.csvCell('@sum') === "'@sum");
   check('negative number left alone', C.csvCell(-5) === '-5');
+  check('formula after a newline neutralised', C.csvCell('\n=1+2') === '"\'\n=1+2"');
+  check('header names escaped', C.observationsCsv([{ id: 'a', 'sleep,hours': 7 }]).split('\r\n')[0] === 'id,"sleep,hours"');
   check('empty for null', C.csvCell(null) === '' && C.csvCell(undefined) === '');
   check('object as json', C.csvCell({ a: 1 }) === '"{""a"":1}"');
   check('booleans', C.csvCell(true) === 'true');
@@ -108,7 +110,10 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
   check('fullUrls are uuids', b.entry.every(e => /^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(e.fullUrl)));
   check('fullUrls are unique', new Set(b.entry.map(e => e.fullUrl)).size === 4);
   check('fullUrls stable across exports', plain(C.observationsFhir(obs)).entry[0].fullUrl === b.entry[0].fullUrl);
-  check('empty bundle', plain(C.observationsFhir([])).entry.length === 0);
+  check('empty bundle has no empty array', !('entry' in plain(C.observationsFhir([]))));
+  const sparse = plain(C.observationsFhir([{ id: 's1', type: 'note', date: '2026-10-20', activeSec: null }])).entry;
+  check('missing confirmation is not invented', sparse[0].resource.status === 'unknown' && sparse[1].resource.agent[0].who.display === 'Confirmation not recorded');
+  check('missing duration is not zero', !('valueQuantity' in sparse[0].resource) && !(sparse[0].resource.component || []).some(c => c.code.text === 'activeSec'));
 })();
 
 /* ---------- export everything ---------- */
@@ -134,16 +139,23 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
   const env = {
     store: S, storage: ctx.localStorage,
     caches: { keys: () => Promise.resolve(cacheNames.slice()), delete: k => { deleted.push(k); return Promise.resolve(true); } },
-    serviceWorker: { getRegistrations: () => Promise.resolve([{ unregister: () => { unregistered.push(1); return Promise.resolve(true); } }]) },
-    indexedDB: { databases: () => Promise.resolve([{ name: 'ebb-media' }, { name: 'other' }]), deleteDatabase: n => dbs.push(n) }
+    scope: 'http://localhost/ebb/',
+    serviceWorker: { getRegistrations: () => Promise.resolve([
+      { scope: 'http://localhost/ebb/', unregister: () => { unregistered.push('ebb'); return Promise.resolve(true); } },
+      { scope: 'http://localhost/other-app/', unregister: () => { unregistered.push('other'); return Promise.resolve(true); } }]) },
+    indexedDB: { databases: () => Promise.resolve([{ name: 'ebb-media' }, { name: 'other' }]),
+      deleteDatabase: n => { dbs.push(n); const req = {}; setTimeout(() => req.onsuccess && req.onsuccess(), 5); return req; } }
   };
   later('delete everything clears save, keys, caches, worker and databases', C.deleteEverything(env).then(done => {
     const s = S.load();
     return !('ebb_save_v1' in mem) && !('ebb_log' in mem) && mem.other_app === 'keep me' &&
       s.observations.length === 0 && !s.prefs && s.pond.offerings === 0 &&
-      deleted.join() === 'ebb-shell-old,ebb-shell-new' && unregistered.length === 1 && dbs.join() === 'ebb-media' &&
+      deleted.join() === 'ebb-shell-old,ebb-shell-new' && unregistered.join() === 'ebb' && dbs.join() === 'ebb-media' &&
       ['save', 'storage', 'caches', 'worker', 'databases'].every(x => done.includes(x));
   }));
+  const stuck = { store: S, storage: ctx.localStorage, idbWaitMs: 30,
+    indexedDB: { databases: () => Promise.resolve([{ name: 'ebb-media' }]), deleteDatabase: () => { const req = {}; setTimeout(() => req.onblocked && req.onblocked(), 5); return req; } } };
+  later('a blocked database is reported, not claimed deleted', C.deleteEverything(stuck).then(done => done.includes('databases-incomplete') && !done.includes('databases') && done.includes('blocked:ebb-media')));
   later('delete everything works with no caches or worker', C.deleteEverything({ store: S, storage: ctx.localStorage }).then(done => done.includes('save')));
 })();
 
@@ -166,7 +178,7 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
     };
     const self = { addEventListener: (t, fn) => { handlers[t] = fn; }, skipWaiting: () => Promise.resolve(), clients: { claim: () => Promise.resolve() }, location: { origin: 'http://localhost' } };
     const wctx = { self, caches, URL, Promise, setTimeout, clearTimeout,
-      fetch: req => online ? Promise.resolve(res(req.url)) : Promise.reject(new TypeError('offline')) };
+      fetch: req => online === 'hang' ? new Promise(() => { }) : online ? Promise.resolve(res(req.url)) : Promise.reject(new TypeError('offline')) };
     vm.createContext(wctx); vm.runInContext(src, wctx, { filename: 'sw.js' });
     ev.run = (type, extra) => { let p = Promise.resolve(); const e = Object.assign({ waitUntil: x => { p = x; }, respondWith: x => { p = x; } }, extra); handlers[type](e); return p; };
     return ev;
@@ -179,6 +191,9 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
     w.run('fetch', { request: { method: 'GET', url: 'http://localhost/js/ebb-game.js', mode: 'no-cors' } })).then(r => !!r && r.url === 'js/ebb-game.js'));
   later('worker falls back to the page for an offline navigation', w.run('install').then(() =>
     w.run('fetch', { request: { method: 'GET', url: 'http://localhost/somewhere', mode: 'navigate' } })).then(r => !!r && r.url === 'index.html'));
+  const w3 = makeWorker({}, 'hang', []);
+  later('a hanging network still gets the cached page after the timeout', w3.run('install').then(() =>
+    w3.run('fetch', { request: { method: 'GET', url: 'http://localhost/not-cached', mode: 'navigate' } })).then(r => !!r && r.url === 'index.html'));
   const w2 = makeWorker({}, true, []);
   later('worker leaves other origins alone', (() => { let called = false; w2.run('fetch', { request: { method: 'GET', url: 'https://example.com/x' }, respondWith: () => { called = true; } }); return Promise.resolve(!called); })());
   check('worker version names a build', /^ebb-shell-\d{4}-\d{2}-\d{2}[a-z]?$/.test(version));
@@ -191,4 +206,4 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
 })();
 
 const timer = setInterval(() => { if (!pending) { clearInterval(timer); console.log(`${pass} passed, ${fail} failed`); process.exitCode = fail ? 1 : 0; } }, 20);
-setTimeout(() => { if (pending) { console.log('FAIL', pending, 'async checks never settled'); process.exit(1); } }, 8000);
+setTimeout(() => { if (pending) { console.log('FAIL', pending, 'async checks never settled'); process.exit(1); } }, 12000);

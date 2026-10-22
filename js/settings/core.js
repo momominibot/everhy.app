@@ -50,7 +50,7 @@
     if (typeof v === 'object') v = JSON.stringify(v);
     var s = String(v);
     /* a typed value starting with = + - @ would run as a formula in a spreadsheet; numbers are left alone */
-    if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    if (typeof v === 'string' && /^[=+\-@\t\r\n]/.test(s)) s = "'" + s;
     return /[",\r\n]|^\s|\s$/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   }
   function observationsCsv(obs) {
@@ -59,7 +59,7 @@
     obs.forEach(function (o) { Object.keys(o || {}).forEach(function (k) { if (cols.indexOf(k) < 0) cols.push(k); }); });
     var used = cols.filter(function (c) { return obs.some(function (o) { return o && o[c] !== undefined; }); });
     if (!used.length) used = FIRST.slice();
-    var lines = [used.join(',')];
+    var lines = [used.map(csvCell).join(',')];
     obs.forEach(function (o) { lines.push(used.map(function (c) { return csvCell(o ? o[c] : ''); }).join(',')); });
     return lines.join('\r\n') + '\r\n';
   }
@@ -89,13 +89,13 @@
       resourceType: 'Observation', id: id.replace(/[^A-Za-z0-9\-.]/g, '-').slice(0, 64) || undefined,
       meta: { source: EBB + 'source/' + encodeURIComponent(String(o.source || 'unknown')) },
       identifier: [{ system: EBB + 'observation-id', value: id }],
-      status: o.confirmed === false ? 'preliminary' : 'final',
+      status: o.confirmed === true ? 'final' : o.confirmed === false ? 'preliminary' : 'unknown',
       category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
       code: { coding: [{ system: EBB + 'CodeSystem/observation-type', code: type }], text: type === 'mindfulness' ? 'Mindfulness practice' : type }
     };
     if (o.start && o.end) r.effectivePeriod = { start: o.start, end: o.end };
     else if (o.start || o.date) r.effectiveDateTime = o.start || o.date;
-    if (o.activeSec !== undefined) r.valueQuantity = sec(o.activeSec);
+    if (typeof o.activeSec === 'number' && isFinite(o.activeSec)) r.valueQuantity = sec(o.activeSec);
     var parts = Object.keys(o).filter(function (k) { return CORE.indexOf(k) < 0 && o[k] !== null && o[k] !== undefined; });
     if (parts.length) r.component = parts.map(function (k) { return component(k, o[k]); });
     return r;
@@ -111,12 +111,14 @@
         activity: { text: 'Recorded in Ebb (' + String(o.source || 'unknown') + ')' },
         agent: [
           { type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/provenance-participant-type', code: 'author' }] },
-            who: { display: o.confirmed === false ? 'Not confirmed by the person' : 'The person, confirmed in the app' } },
+            who: { display: o.confirmed === true ? 'The person, confirmed in the app' : o.confirmed === false ? 'Not confirmed by the person' : 'Confirmation not recorded' } },
           { type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/provenance-participant-type', code: 'assembler' }] },
             who: { display: 'Ebb app, script ' + String(o.scriptVersion || 'n/a') } }]
       } });
     });
-    return { resourceType: 'Bundle', type: 'collection', timestamp: stamp, meta: { tag: [{ code: 'ebb-export', display: 'Exported by the person from Ebb' }] }, entry: entry };
+    var b = { resourceType: 'Bundle', type: 'collection', timestamp: stamp, meta: { tag: [{ code: 'ebb-export', display: 'Exported by the person from Ebb' }] } };
+    if (entry.length) b.entry = entry; /* FHIR JSON allows no empty arrays */
+    return b;
   }
 
   /* everything: the save as stored, plus any other keys this app keeps on the device */
@@ -145,12 +147,21 @@
     if (env.caches) waits.push(env.caches.keys().then(function (ks) {
       return Promise.all(ks.filter(function (k) { return /^ebb/i.test(k); }).map(function (k) { return env.caches.delete(k); }));
     }).then(function () { done.push('caches'); }, function () { }));
+    /* only Ebb's own worker: other apps can share this origin (one GitHub Pages host, many paths) */
     if (env.serviceWorker && env.serviceWorker.getRegistrations) waits.push(env.serviceWorker.getRegistrations().then(function (rs) {
-      return Promise.all(rs.map(function (r) { return r.unregister(); }));
+      return Promise.all(rs.filter(function (r) { return !env.scope || r.scope === env.scope; }).map(function (r) { return r.unregister(); }));
     }).then(function () { done.push('worker'); }, function () { }));
+    /* a delete counts only when it succeeds; an open connection elsewhere blocks it, and that is reported */
     if (env.indexedDB && env.indexedDB.databases) waits.push(env.indexedDB.databases().then(function (dbs) {
-      dbs.forEach(function (d) { if (d && /^ebb/i.test(d.name || '')) env.indexedDB.deleteDatabase(d.name); });
-    }).then(function () { done.push('databases'); }, function () { }));
+      return Promise.all(dbs.filter(function (d) { return d && /^ebb/i.test(d.name || ''); }).map(function (d) {
+        return new Promise(function (resolve) {
+          var req = env.indexedDB.deleteDatabase(d.name), t = setTimeout(function () { resolve('blocked'); }, env.idbWaitMs || 3000);
+          req.onsuccess = function () { clearTimeout(t); resolve('ok'); };
+          req.onerror = function () { clearTimeout(t); resolve('error'); };
+          req.onblocked = function () { done.push('blocked:' + d.name); };
+        });
+      }));
+    }).then(function (rs) { if (rs.every(function (r) { return r === 'ok'; })) done.push('databases'); else done.push('databases-incomplete'); }, function () { done.push('databases-incomplete'); }));
     return Promise.all(waits).then(function () { return done; });
   }
 

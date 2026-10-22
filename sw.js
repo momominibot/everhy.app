@@ -2,7 +2,7 @@
  * device's cache when offline; art is served from the cache first. Each build has its own cache name, and an
  * upgrade deletes every older Ebb cache once the new one is complete. The cache holds app files only, never her data. */
 'use strict';
-var VERSION = 'ebb-shell-2026-10-22a';
+var VERSION = 'ebb-shell-2026-10-22b';
 var SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/ebb.css',
   'js/ebb-puppet.js', 'js/ebb-world.js', 'js/ebb-farm.js', 'js/ebb-store.js', 'js/ebb-props.js', 'js/ebb-ui.js', 'js/ebb-game.js',
@@ -32,32 +32,44 @@ self.addEventListener('message', function (e) {
   if (e.data && e.data.type === 'version' && e.ports && e.ports[0]) e.ports[0].postMessage({ version: VERSION });
 });
 
+/* store a good same-origin response; the returned promise ends when the cache write does */
 function keep(req, res) {
-  if (res && res.ok && res.type === 'basic') { var copy = res.clone(); caches.open(VERSION).then(function (c) { c.put(req, copy); }); }
-  return res;
+  if (!(res && res.ok && res.type === 'basic')) return Promise.resolve();
+  var copy = res.clone();
+  return caches.open(VERSION).then(function (c) { return c.put(req, copy); }).catch(function () { });
 }
-function networkFirst(req) {
+function fallback(req) {
+  return caches.match(req, { ignoreSearch: true }).then(function (hit) {
+    return hit || (req.mode === 'navigate' ? caches.match('index.html') : undefined);
+  });
+}
+/* the network refresh is handed to waitUntil so the worker lives until the new copy is cached, even after a slow
+   network has lost the race to the cache */
+function networkFirst(e) {
+  var req = e.request, net = fetch(req);
+  e.waitUntil(net.then(function (res) { return keep(req, res); }, function () { }));
   return new Promise(function (resolve, reject) {
     var settled = false;
-    var timer = setTimeout(function () { caches.match(req, { ignoreSearch: true }).then(function (hit) { if (hit && !settled) { settled = true; resolve(hit); } }); }, NETWORK_TIMEOUT);
-    fetch(req).then(function (res) { clearTimeout(timer); keep(req, res); if (!settled) { settled = true; resolve(res); } }, function (err) {
+    function give(res) { if (!settled && res) { settled = true; resolve(res); } return !!res; }
+    var timer = setTimeout(function () { fallback(req).then(give); }, NETWORK_TIMEOUT);
+    net.then(function (res) { clearTimeout(timer); give(res); }, function (err) {
       clearTimeout(timer);
-      caches.match(req, { ignoreSearch: true }).then(function (hit) {
-        if (settled) return;
-        settled = true;
-        if (hit) resolve(hit);
-        else if (req.mode === 'navigate') caches.match('index.html').then(function (h) { h ? resolve(h) : reject(err); });
-        else reject(err);
-      });
+      fallback(req).then(function (hit) { if (!give(hit) && !settled) { settled = true; reject(err); } });
     });
   });
 }
-function cacheFirst(req) {
-  return caches.match(req, { ignoreSearch: true }).then(function (hit) { return hit || fetch(req).then(function (res) { return keep(req, res); }); });
+function cacheFirst(e) {
+  var req = e.request;
+  return caches.match(req, { ignoreSearch: true }).then(function (hit) {
+    if (hit) return hit;
+    var net = fetch(req);
+    e.waitUntil(net.then(function (res) { return keep(req, res); }, function () { }));
+    return net;
+  });
 }
 
 self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
-  e.respondWith(/\.(png|webp|jpe?g|svg|gif|mp3|m4a|ogg|woff2?)$/i.test(url.pathname) ? cacheFirst(req) : networkFirst(req));
+  e.respondWith(/\.(png|webp|jpe?g|svg|gif|mp3|m4a|ogg|woff2?)$/i.test(url.pathname) ? cacheFirst(e) : networkFirst(e));
 });

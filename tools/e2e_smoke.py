@@ -205,6 +205,15 @@ def check_offline_play(page, ctx):
 
 
 def check_delete_everything(page, ctx):
+    # sentinels in every store Ebb may use, and a second tab that would save its old copy back
+    js(page, """async () => {
+        localStorage.setItem('ebb_sentinel', 'x');
+        await (await caches.open('ebb-sentinel')).put('sentinel', new Response('x'));
+        await new Promise(r => { const q = indexedDB.open('ebb-sentinel'); q.onsuccess = () => { q.result.close(); r(); }; });
+    }""")
+    other = page.context.new_page()
+    other.goto(ctx['base'], wait_until='load')
+    wait(other, '() => window.EbbGame && EbbGame._ready === true && EbbGame.state().observations.length === 1')
     open_panel(page, 'settings')
     page.click('[data-x="delete"]')
     assert page.locator('.confirm').is_visible()
@@ -220,6 +229,15 @@ def check_delete_everything(page, ctx):
     assert js(page, "() => document.documentElement.dataset.text") == 'normal'
     saved = js(page, '() => localStorage.getItem(EbbStore.KEY)')
     assert saved is None or json.loads(saved)['observations'] == [], 'old save survived'
+    left = js(page, """async () => ({ key: localStorage.getItem('ebb_sentinel'), cache: (await caches.keys()).includes('ebb-sentinel'),
+        db: (await indexedDB.databases()).some(d => d.name === 'ebb-sentinel') })""")
+    assert left == {'key': None, 'cache': False, 'db': False}, left
+    # the other tab drops its copy and reloads; a save it makes afterwards must not bring the record back
+    wait(other, '() => window.EbbGame && EbbGame._ready === true && EbbGame.state().observations.length === 0', 10000)
+    js(other, '() => { EbbGame.state().outfit.top = "#9cc7c0"; EbbGame.api.save(); }')
+    saved = json.loads(js(page, '() => localStorage.getItem(EbbStore.KEY)'))
+    assert saved['observations'] == [], 'the second tab wrote the deleted record back'
+    other.close()
 
 
 CHECKS = [check_first_load, check_tap_to_walk, check_bedroom_door_to_farm, check_shed_seed, check_bed_hoe_plant_water,
@@ -247,7 +265,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--shots'); ap.add_argument('--only'); ap.add_argument('--headed', action='store_true')
     args = ap.parse_args()
-    checks = [c for c in CHECKS if not args.only or c.__name__.replace('check_', '') in args.only.split(',')]
+    names = [c.__name__.replace('check_', '') for c in CHECKS]
+    wanted = [n for n in (args.only or '').split(',') if n]
+    unknown = [n for n in wanted if n not in names]
+    if unknown:
+        sys.exit('unknown check(s): ' + ', '.join(unknown) + '\navailable: ' + ', '.join(names))
+    checks = [c for c in CHECKS if not wanted or c.__name__.replace('check_', '') in wanted]
     httpd, port = serve()
     base = f'http://127.0.0.1:{port}/'
     errors, missing_optional, blocked = [], set(), []
@@ -271,9 +294,9 @@ def main():
         page.on('console', lambda m: m.type == 'error' and errors.append(f'console: {m.text} @ {m.location.get("url", "")}'))
         page.on('response', lambda r: r.status == 404 and any(o in r.url for o in OPTIONAL) and missing_optional.add(urlparse(r.url).path))
         page.goto(base, wait_until='load')
+        seen = 0  # errors raised while the page first loads belong to the first check
         for c in checks:
             name = c.__name__.replace('check_', '')
-            seen = len(errors)
             t0 = time.time()
             try:
                 c(page, ctx)
@@ -290,6 +313,7 @@ def main():
                     traceback.print_exc(limit=2)
                 if args.shots:
                     page.screenshot(path=str(Path(args.shots) / f'fail-{name}.png'))
+            seen = len(errors)
         browser.close()
     httpd.shutdown()
     if missing_optional:

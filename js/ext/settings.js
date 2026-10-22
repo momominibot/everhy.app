@@ -43,6 +43,15 @@
   }
   doc.addEventListener('ebb:ready', function (e) { api = e.detail; coreReady.then(apply); });
 
+  /* delete everything in one tab must reach the others before they save their old copy back: drop this tab's copy
+     from memory and reload. A save that lands in the instant before the message arrives is the store's to refuse
+     (integrator: a generation check in ebb-store.js would close that gap). */
+  var channel = null;
+  try { channel = new root.BroadcastChannel('ebb-settings'); } catch (e) { channel = null; }
+  function deletedElsewhere() { try { S.reset(); } catch (e) { } root.location.reload(); }
+  if (channel) channel.onmessage = function (e) { if (e.data && e.data.type === 'deleted') deletedElsewhere(); };
+  root.addEventListener('storage', function (e) { if (e.key === S.KEY && e.oldValue && e.newValue === null) deletedElsewhere(); });
+
   root.EbbSettings = {
     prefs: function () { return prefs(); },
     mayNudge: function (now) { var C = root.EbbSettingsCore; return !!C && C.mayNudge(prefs(), now || new Date()); },
@@ -129,8 +138,13 @@
       else if (x === 'keep') { confirmBox.hidden = true; delBtn.hidden = false; delBtn.focus(); }
       else if (x === 'really') {
         b.disabled = true; b.textContent = 'Deleting…';
-        C.deleteEverything({ store: S, storage: storage(), caches: root.caches, serviceWorker: root.navigator.serviceWorker, indexedDB: root.indexedDB })
-          .then(function () { root.location.reload(); });
+        C.deleteEverything({ store: S, storage: storage(), caches: root.caches, serviceWorker: root.navigator.serviceWorker, indexedDB: root.indexedDB,
+          scope: new URL('./', root.location.href).href })
+          .then(function (done) {
+            if (channel) channel.postMessage({ type: 'deleted' });
+            if (done.indexOf('databases-incomplete') >= 0) { try { root.sessionStorage.setItem('ebbDeleteIncomplete', '1'); } catch (e) { } }
+            root.location.reload();
+          });
       }
       else if (x === 'close') close();
     });
@@ -138,6 +152,12 @@
     doc.body.appendChild(wrap);
     sheet.querySelector('button').focus();
   }
+
+  doc.addEventListener('ebb:ready', function (e) {
+    var left = false;
+    try { left = root.sessionStorage.getItem('ebbDeleteIncomplete') === '1'; root.sessionStorage.removeItem('ebbDeleteIncomplete'); } catch (x) { }
+    if (left) e.detail.toast('Some Ebb data is still open in another tab. Close other Ebb tabs, then delete again.', 6000);
+  });
 
   G.registerPanel({ id: 'settings', label: 'Settings', open: open });
 })(window);

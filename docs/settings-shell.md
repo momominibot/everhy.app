@@ -36,3 +36,8 @@
 - `css/ebb.css` gives `.menu` `display:flex`, which overrides the `hidden` attribute, so the More menu always showed
   once a panel existed. `css/ext/settings.css` carries `.menu[hidden] { display: none; }`; move it into `css/ebb.css`.
 - Delete everything reloads the page because `ebb-game.js` keeps its own reference to the old save object.
+- Other open tabs: delete everything tells them through BroadcastChannel `ebb-settings` and the `storage` event; they
+  drop their copy and reload. A save in the instant before the message lands could still write back; a generation
+  check inside `ebb-store.js` (refuse a save whose generation is older than the stored one) would close that.
+- Only the worker registered at Ebb's own scope is removed, so another app on the same origin keeps its worker.
+- A database held open in another tab blocks its deletion; the app then says so after reload instead of claiming success.
