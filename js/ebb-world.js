@@ -4,39 +4,45 @@
   'use strict';
 
   var SCENES = {
-    bedroom: { /* bird's-eye room: floor is the wooden diamond, furniture footprints are solids */
-      name: 'Bedroom', plate: 'art/plates/bedroom-birdseye.webp', depth: [42, 0.19, 95, 0.23],
-      floor: [[32, 42], [80, 55], [93, 72], [57, 95], [5, 69]],
-      solids: [[16, 38, 52, 57], [28, 57, 46, 63], [5, 56, 21, 70], [61, 44, 79, 56], [72, 56, 82, 67]],
-      doors: [{ id: 'toFarm', rect: [83, 66, 92, 74], to: 'farm', arrive: { x: 19, y: 77 }, label: 'Out to the farm' }],
-      spots: [
-        { id: 'cushion', kind: 'cushion', at: { x: 54, y: 71 }, stand: { x: 54, y: 74 }, label: 'Sit for a practice' },
-        { id: 'wardrobe', kind: 'wardrobe', at: { x: 69, y: 46 }, stand: { x: 67, y: 60 }, label: 'Change clothes' },
-        { id: 'bed', kind: 'bed', at: { x: 35, y: 50 }, stand: { x: 42, y: 66 }, label: 'Rest on the bed' }
-      ],
-      start: { x: 55, y: 84 }
-    },
-    farm: {
-      name: 'Farm', plate: 'art/plates/farm-clay.webp', depth: [63, 0.115, 98, 0.17],
-      floor: [[15, 75], [15, 71], [24, 70], [29, 66], [31, 64], [72, 64], [73, 70], [93, 70], [98, 71], [98, 90], [88, 92], [86, 98],
-        [27, 98], [24, 90], [14, 86], [3, 86], [3, 76]],
+    bedroom: { /* tall bird's-eye room (plate 4:7, so y runs 0..175): the floor is the lit boards; furniture adds its own solids and spots */
+      name: 'Bedroom', plate: 'art/plates/bedroom-tall.webp', aspect: [4, 7], indoor: true, depth: [75, 0.27, 175, 0.34],
+      floor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
       solids: [],
       doors: [
-        { id: 'toHouse', rect: [15, 70.5, 23, 73], to: 'bedroom', arrive: { x: 79, y: 76 }, label: 'Back inside' },
-        { id: 'toFalls', rect: [94, 71, 98, 82], to: 'waterfall', arrive: { x: 8, y: 78 }, label: 'Path to the waterfall' }
+        { id: 'toFarm', rect: [4, 90, 13, 104], to: 'farm', arrive: { x: 21, y: 114 }, label: 'Out to the farm' },
+        { id: 'toBathroom', rect: [87, 88, 96, 102], to: 'bathroom', arrive: { x: 72, y: 110 }, label: 'Into the bathroom' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 26, y: 63 }, stand: { x: 27, y: 70 }, label: 'Seeds from the jars' }],
-      beds: [{ x: 32, y: 74 }, { x: 45, y: 74 }, { x: 58, y: 74 }, { x: 32, y: 85 }, { x: 45, y: 85 }, { x: 58, y: 85 }],
-      start: { x: 40, y: 70 }
+      spots: [],
+      start: { x: 50, y: 128 }
     },
-    waterfall: {
-      name: 'Waterfall', plate: 'art/plates/waterfall-clay.webp', depth: [60, 0.12, 98, 0.185],
-      floor: [[2, 64], [16, 63], [22, 66], [32, 69], [50, 69.5], [68, 68.5], [78, 66], [86, 61], [98, 60], [98, 98], [2, 98]],
+    bathroom: {
+      name: 'Bathroom', plate: 'art/plates/bathroom-tall.webp', aspect: [4, 7], indoor: true, depth: [79, 0.27, 175, 0.34],
+      floor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
       solids: [],
-      doors: [{ id: 'toFarm', rect: [2, 69, 6, 88], to: 'farm', arrive: { x: 91, y: 76 }, label: 'Back to the farm' }],
-      spots: [{ id: 'pond', kind: 'pond', at: { x: 52, y: 58 }, stand: { x: 52, y: 72 }, label: 'Offer to the pond' }],
-      fall: { x: 51, y0: 30, x1: 60, y1: 49 },
-      start: { x: 10, y: 78 }
+      doors: [{ id: 'toBedroom', rect: [66, 90, 86, 104], to: 'bedroom', arrive: { x: 80, y: 110 }, label: 'Back to the bedroom' }],
+      spots: [],
+      start: { x: 50, y: 135 }
+    },
+    farm: { /* tall plate (4:7): shed and jars top left, fence across, the yard below, a stone path leaving bottom right */
+      name: 'Farm', plate: 'art/plates/farm-tall.webp', aspect: [4, 7], depth: [104, 0.22, 175, 0.33],
+      floor: [[2, 109], [34, 104], [100, 104], [100, 175], [2, 175]],
+      solids: [[60, 150, 100, 175]],
+      doors: [
+        { id: 'toHouse', rect: [15, 104, 28, 111], to: 'bedroom', arrive: { x: 12, y: 110 }, label: 'Back inside' },
+        { id: 'toFalls', rect: [88, 140, 100, 150], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
+      ],
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 46, y: 104 }, stand: { x: 46, y: 112 }, label: 'Seeds from the jars' }],
+      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 14, y: 170 }],
+      start: { x: 40, y: 120 }
+    },
+    waterfall: { /* tall plate: the falls and pond across the top, the meadow below, a sandy path from the bottom left */
+      name: 'Waterfall', plate: 'art/plates/waterfall-tall.webp', aspect: [4, 7], depth: [106, 0.22, 175, 0.33],
+      floor: [[2, 108], [98, 108], [98, 175], [2, 175]],
+      solids: [[38, 140, 56, 150]],
+      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 94, y: 136 }, label: 'Back to the farm' }],
+      spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 94 }, stand: { x: 50, y: 110 }, label: 'Offer to the pond' }],
+      fall: { x: 44, y0: 42, x1: 54, y1: 86 },
+      start: { x: 14, y: 165 }
     }
   };
 

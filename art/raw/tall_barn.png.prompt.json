@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. An empty cosy wooden barn interior seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing New Horizons room camera: back wall across the top, both side walls running down the sides, no front wall, no ceiling, the floor filling the whole lower two thirds of the frame. Warm plank walls, a hay loft ladder on the back wall, a round hay bale in a corner, a wide open door in the right wall, clear plank floor with a little straw. No animals, no people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 56.6,
+ "bytes": 1886538
+}

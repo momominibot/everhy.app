@@ -6,9 +6,9 @@ ctx.globalThis = ctx;
 const mem = {};
 ctx.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
 vm.createContext(ctx);
-['ebb-puppet.js', 'ebb-clay-sets.js', 'ebb-clay.js', 'ebb-world.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
+['ebb-puppet.js', 'ebb-clay-sets.js', 'ebb-clay.js', 'ebb-world.js', 'ebb-furniture.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f }));
-const { EbbPuppet: P, EbbClay: C, EbbClaySets: CS, EbbWorld: W, EbbFarm: F, EbbStore: S } = ctx;
+const { EbbPuppet: P, EbbClay: C, EbbClaySets: CS, EbbWorld: W, EbbFurniture: Fu, EbbFarm: F, EbbStore: S } = ctx;
 
 let pass = 0, fail = 0;
 function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', name); } }
@@ -44,8 +44,32 @@ check('clay tools', ['can', 'hoe', 'seed', 'pick'].map(t => C.pick({ action: 'wo
 check('clay offering is the idle back view', C.pick({ action: 'work', tool: 'none', view: 'back' }).strip === 'idle');
 check('clay sit', C.pick({ action: 'sit', view: 'front' }).strip === 'sit');
 check('every floor fits its plate', Object.keys(W.SCENES).every(id => W.SCENES[id].floor.every(p => p[0] >= 0 && p[0] <= 100 && p[1] >= 0 && p[1] <= W.units(id))));
-check('square scenes are 100 units tall', W.units('farm') === 100);
-check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => W.scaleAt(70, id) < W.scaleAt(95, id)));
+check('plate units follow the aspect', W.units({}) === 100 && W.units({ aspect: [4, 7] }) === 175);
+check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => { const d = W.SCENES[id].depth || [60, 0.17, 98, 0.28]; return W.scaleAt(d[0], id) < W.scaleAt(d[2], id); }));
+
+/* furniture: every room's default arrangement fits, every piece has art, and a moved piece obeys the floor and the others */
+Object.keys(Fu.DEFAULTS).forEach(id => {
+  const lay = Fu.fresh(id); Fu.apply(W.SCENES[id], lay); /* the world checks below then run with furniture in place */
+  check(`${id} furniture ids unique`, new Set(lay.map(p => p.uid)).size === lay.length);
+  lay.forEach(p => check(`${id}/${p.item} fits where it starts`, Fu.canPlace(W, id, lay, p.uid, p.x, p.y)));
+});
+Object.keys(Fu.CATALOG).forEach(k => {
+  const c = Fu.CATALOG[k], m = ctx.EbbPropSprites[c.sheet];
+  check(`furniture ${k} has a strip and frame`, !!m && c.frame < m.frames && (!c.dir || m.dir === c.dir));
+});
+(() => {
+  const lay = Fu.fresh('bedroom'), bed = lay.filter(p => p.item === 'bed')[0], lamp = lay.filter(p => p.item === 'lamp')[0];
+  check('cannot drop a piece off the floor', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, 50, 20));
+  check('cannot drop a piece onto another', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, bed.x, bed.y));
+  check('cannot block a door', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, 8, 98));
+  check('can move to a clear spot', Fu.canPlace(W, 'bedroom', lay, lamp.uid, 60, 165));
+  const rug = lay.filter(p => p.item === 'rug')[0];
+  check('a rug may lie under other things', Fu.canPlace(W, 'bedroom', lay, rug.uid, bed.x, bed.y));
+  check('stored junk is dropped, known pieces kept', Fu.clean([{ uid: 'a', item: 'bed', x: 30, y: 95 }, { uid: 'b', item: 'spaceship', x: 1, y: 1 }, { uid: 'a', item: 'lamp', x: 2, y: 2 }], 'bedroom').length === 1);
+  check('a corrupt layout falls back to the default room', Fu.clean('nope', 'bedroom').length === Fu.DEFAULTS.bedroom.length);
+  const spots = Fu.spotsFor(lay);
+  check('furniture spots carry topics', spots.filter(s => s.kind === 'log').every(s => s.topic) && spots.some(s => s.topic === 'sleep'));
+})();
 
 /* world: every start, door arrival and stand point is walkable and reachable from the start */
 Object.keys(W.SCENES).forEach(id => {
@@ -65,7 +89,7 @@ Object.keys(W.SCENES).forEach(id => {
     check(`${id}/${d.id} door reachable`, !!p && W.doorAt(id, p[p.length - 1]) !== null || W.walkable(id, mid));
   });
 });
-check('plan avoids leaving the floor', (() => { const p = W.plan('waterfall', { x: 10, y: 77 }, { x: 60, y: 60 }); return p && p.every(q => W.walkable('waterfall', q)); })());
+check('plan avoids leaving the floor', (() => { const s = W.SCENES.waterfall, p = W.plan('waterfall', s.start, { x: 50, y: 90 }); return p && p.every(q => W.walkable('waterfall', q)); })());
 
 /* farm: growth by watered days, overnight; nothing decays; three free seeds a day */
 (() => {

@@ -2,7 +2,7 @@
  * Movement, planning and rules live in the pure modules; this file wires them to the page. */
 (function (root) {
   'use strict';
-  var doc = root.document, W = root.EbbWorld, P = root.EbbPuppet, C = root.EbbClay, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
+  var doc = root.document, W = root.EbbWorld, Fu = root.EbbFurniture, P = root.EbbPuppet, C = root.EbbClay, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
   var NEAR = 7, SPEED = 20;
   var els = {}, st, me = { x: 50, y: 85, view: 'front', flip: false, action: 'idle', phase: 0, tool: 'none' };
   var path = [], pending = null, busyUntil = 0, last = 0, fxHtml = '', fxUntil = 0, toastTimer = 0, sitting = false;
@@ -19,8 +19,13 @@
 
   /* ---------- scene ---------- */
   function enter(id, at) {
-    st.scene = id; S.save();
+    st.scene = id;
     var s = scene();
+    if (Fu && (Fu.DEFAULTS[id] || (st.furniture && st.furniture[id]))) { /* her arrangement of this room */
+      st.furniture = st.furniture || {};
+      st.furniture[id] = Fu.clean(st.furniture[id], id); Fu.apply(s, st.furniture[id]);
+    }
+    S.save();
     els.plate.src = s.plate; els.plate.alt = s.name;
     els.place.textContent = s.name;
     if (cam.W) layout(); /* the stage takes the new plate's shape */
@@ -35,26 +40,36 @@
   function layout() {
     var r = els.scene.getBoundingClientRect();
     var ratio = W.units(st.scene) / 100; /* plate height over width */
-    cam.W = r.width; cam.H = r.height; cam.S = Math.max(r.width, r.height / ratio); cam.Sh = cam.S * ratio; cam.snap = true;
+    /* the plate always shows its full width; a tall plate on a taller screen leaves room above and below, which the
+     * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
+    cam.W = r.width; cam.H = r.height; cam.S = r.width; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
+    if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + scene().plate + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
   }
   function follow(dt) {
     if (!cam.S) layout();
     var tx = cam.W / 2 - me.x / 100 * cam.S, ty = cam.H * 0.56 - me.y / 100 * cam.S;
-    tx = Math.min(0, Math.max(cam.W - cam.S, tx)); ty = Math.min(0, Math.max(cam.H - cam.Sh, ty));
+    tx = Math.min(0, Math.max(cam.W - cam.S, tx));
+    ty = cam.Sh <= cam.H ? (cam.H - cam.Sh) / 2 : Math.min(0, Math.max(cam.H - cam.Sh, ty)); /* a short plate sits centred */
     if (cam.snap || still) { cam.x = tx; cam.y = ty; cam.snap = false; }
     else { var k = 1 - Math.exp(-dt / 0.2); cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; }
     els.stage.style.transform = 'translate3d(' + cam.x.toFixed(1) + 'px,' + cam.y.toFixed(1) + 'px,0)';
   }
 
   function drawProps() {
-    var s = scene(), near = nearest(), out = '';
+    var s = scene(), near = nearest(), out = '', front = '';
     if (st.scene === 'farm') s.beds.forEach(function (b, i) { out += PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
-    if (st.scene === 'bedroom') { var c = s.spots[0]; out += PR.cushion(c.at.x, c.at.y, near && near.spot === c); }
     if (st.scene === 'waterfall') out += PR.shimmer(s.fall);
+    if (s.layout) { /* furniture: pieces whose front edge is above her feet go behind her, the rest in front */
+      s.layout.slice().sort(function (a, b) { return (Fu.CATALOG[a.item].flat ? -1 : 0) - (Fu.CATALOG[b.item].flat ? -1 : 0) || a.y - b.y; }).forEach(function (p) {
+        var cat = Fu.CATALOG[p.item], d = deco.drag && deco.drag.uid === p.uid ? deco.drag : null, q = d ? { uid: p.uid, item: p.item, x: d.x, y: d.y, flip: p.flip } : p;
+        var html = PR.furniture(q, cat, { near: near && near.spot && near.spot.furniture === p.uid, ghost: !!d, bad: d && !d.ok });
+        if (cat.flat || q.y <= me.y + 0.5 || sitting) out += html; else front += html;
+      });
+    }
     (propDrawers[st.scene] || []).forEach(function (fn) { try { out += fn(api, near) || ''; } catch (e) { console.error(e); } });
-    els.props.innerHTML = out;
+    els.props.innerHTML = out; els.front.innerHTML = front;
   }
 
   /* ---------- what she is next to ---------- */
@@ -71,7 +86,7 @@
     return { hoe: 'Hoe the soil', plant: 'Plant a seed', needSeeds: 'Seeds are in the shed', water: 'Water', harvest: 'Harvest', done: 'Watered today' }[a];
   }
   function refreshPrompt() {
-    var n = nearest(), label = !path.length && !sitting ? promptFor(n) : null;
+    var n = nearest(), label = !path.length && !sitting && !deco.on ? promptFor(n) : null;
     els.prompt.hidden = !label; if (label) els.prompt.textContent = label;
     els.prompt.dataset.near = n ? (n.spot ? 'spot:' + n.spot.id : 'bed:' + n.bed) : '';
   }
@@ -83,7 +98,7 @@
   }
   function onTap(ev) {
     if (Date.now() < busyUntil || root.EbbUi && root.EbbUi.modalOpen()) return;
-    if (sitting) return;
+    if (sitting || deco.on) return;
     var pt = scenePoint(ev), s = scene(), target = null;
     s.spots.forEach(function (sp) { if (Math.hypot(sp.at.x - pt.x, sp.at.y - pt.y) < 8) target = { pt: sp.stand, then: { spot: sp } }; });
     (s.beds || []).forEach(function (b, i) { if (Math.abs(b.x - pt.x) < 7 && Math.abs(b.y - pt.y) < 4.5) target = { pt: { x: b.x, y: b.y + 4.5 }, then: { bed: i } }; });
@@ -118,19 +133,67 @@
     }
     var sp = t.spot;
     if (kinds[sp.kind]) { try { kinds[sp.kind](sp, api); } catch (e) { console.error(e); } return; }
+    if (sp.kind === 'panel') { var pn = panels.filter(function (p) { return p.id === sp.panel; })[0]; if (pn) pn.open(api); else toast('Nothing here yet'); return; }
     if (sp.kind === 'shed') {
       var got = F.takeSeeds(st.farm, today()); S.save(); updateHud();
       toast(got ? 'A ' + F.CROPS[got].name.toLowerCase() + ' seed. ' + st.farm.seedsLeft + ' more today.' : 'That’s today’s seeds. More tomorrow.');
     } else if (sp.kind === 'pond') offer();
-    else if (sp.kind === 'cushion') { sit(); root.EbbUi.openPractice(function () { stand(); }); }
+    else if (sp.kind === 'cushion') { sit(sp); root.EbbUi.openPractice(function () { stand(); }); }
     else if (sp.kind === 'wardrobe') root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } });
-    else if (sp.kind === 'bed') toast('A soft place to rest. Sleep tracking comes later.');
+    else if (sp.kind === 'bed') toast('A soft place to rest.');
   }
-  function sit() {
-    var c = scene().spots[0];
-    sitting = true; me.x = c.at.x; me.y = c.at.y + 0.2; me.action = 'sit'; me.view = 'front'; path = [];
+  var standBack = null;
+  function sit(sp) {
+    standBack = { x: sp.stand.x, y: sp.stand.y };
+    sitting = true; me.x = sp.at.x; me.y = sp.at.y + 0.2; me.action = 'sit'; me.view = 'front'; path = [];
   }
-  function stand() { sitting = false; me.action = 'idle'; me.y = scene().spots[0].stand.y; }
+  function stand() { sitting = false; me.action = 'idle'; if (standBack) { me.x = standBack.x; me.y = standBack.y; } }
+
+  /* ---------- decorating: every piece of furniture can be picked up and put somewhere else ---------- */
+  var deco = { on: false, drag: null, bar: null, picked: null };
+  function pieceAt(pt) {
+    var s = scene(); if (!s.layout) return null;
+    return Fu.hit(s.layout, pt, function (p) { return PR.furnitureBox(p, Fu.CATALOG[p.item]); });
+  }
+  function decorate(on) {
+    deco.on = on; deco.drag = null; deco.picked = null; path = []; pending = null;
+    els.scene.classList.toggle('decorating', on); els.prompt.hidden = true;
+    if (deco.bar) { deco.bar.remove(); deco.bar = null; }
+    if (on) {
+      deco.bar = doc.createElement('div'); deco.bar.className = 'decobar';
+      deco.bar.innerHTML = '<button type="button" class="btn" id="decoFlip">Flip</button><button type="button" class="btn primary" id="decoDone">Done</button>';
+      els.scene.parentNode.appendChild(deco.bar);
+      deco.bar.querySelector('#decoDone').addEventListener('click', function () { decorate(false); toast('Looks lovely'); });
+      deco.bar.querySelector('#decoFlip').addEventListener('click', function () {
+        var p = deco.picked; if (!p) { toast('Tap a piece first'); return; }
+        p.flip = !p.flip; commitLayout();
+      });
+      toast('Drag anything to move it. Tap a piece, then Flip to turn it.', 3600);
+    }
+    drawProps();
+  }
+  function commitLayout() { var s = scene(); Fu.apply(s, s.layout); st.furniture[st.scene] = s.layout; S.save(); drawProps(); }
+  function onPointerDown(ev) {
+    if (!deco.on || root.EbbUi && root.EbbUi.modalOpen()) return;
+    var pt = scenePoint(ev), p = pieceAt(pt); if (!p) return;
+    ev.preventDefault(); els.scene.setPointerCapture && els.scene.setPointerCapture(ev.pointerId);
+    deco.picked = p; deco.drag = { uid: p.uid, dx: p.x - pt.x, dy: p.y - pt.y, x: p.x, y: p.y, ok: true, moved: false };
+    drawProps();
+  }
+  function onPointerMove(ev) {
+    var d = deco.drag; if (!d) return;
+    var pt = scenePoint(ev), s = scene();
+    d.x = Math.max(0, Math.min(100, pt.x + d.dx)); d.y = Math.max(0, Math.min(W.units(st.scene), pt.y + d.dy)); d.moved = true;
+    var cat = Fu.CATALOG[deco.picked.item], r = [d.x - cat.foot[0] / 2, d.y - cat.foot[1], d.x + cat.foot[0] / 2, d.y];
+    d.ok = Fu.canPlace(W, st.scene, s.layout, d.uid, d.x, d.y) && (cat.flat || !W.inRect(me, [r[0] - 2, r[1] - 2, r[2] + 2, r[3] + 1]));
+    drawProps();
+  }
+  function onPointerUp() {
+    var d = deco.drag; if (!d) return;
+    deco.drag = null;
+    if (d.moved && d.ok) { deco.picked.x = Math.round(d.x * 2) / 2; deco.picked.y = Math.round(d.y * 2) / 2; commitLayout(); }
+    else { if (d.moved) toast('It does not fit there'); drawProps(); }
+  }
 
   function offer() {
     var item = F.takeFromBasket(st.farm);
@@ -178,7 +241,9 @@
       els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
     }
     els.fx.innerHTML = Date.now() < fxUntil ? fxHtml : '';
-    var key = st.scene + (nearest() ? JSON.stringify(nearest().bed !== undefined ? nearest().bed : nearest().spot.id) : '');
+    var n = nearest(), lay = scene().layout, behind = 0;
+    if (lay) for (var i = 0; i < lay.length; i++) if (lay[i].y <= me.y + 0.5) behind++;
+    var key = st.scene + (n ? JSON.stringify(n.bed !== undefined ? n.bed : n.spot.id) : '') + ':' + behind + (sitting ? 's' : '');
     if (key !== lastProps) { lastProps = key; drawProps(); }
     refreshPrompt();
   }
@@ -191,25 +256,31 @@
   }
 
   function keys(ev) {
-    if (sitting || root.EbbUi.modalOpen()) return;
+    if (sitting || deco.on || root.EbbUi.modalOpen()) return;
     var d = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, -4], ArrowDown: [0, 4] }[ev.key];
     if (d) { ev.preventDefault(); walkTo({ x: me.x + d[0], y: me.y + d[1] }, null); }
     if (ev.key === 'Enter' || ev.key === ' ') { if (!els.prompt.hidden) { ev.preventDefault(); useNear(); } }
   }
 
   function boot() {
-    ['scene', 'stage', 'layer', 'plate', 'props', 'me', 'fx', 'prompt', 'toast', 'place', 'hudSeeds', 'hudBasket', 'hudPond'].forEach(function (id) { els[id] = $(id); });
+    ['scene', 'backdrop', 'stage', 'layer', 'plate', 'props', 'me', 'front', 'fx', 'prompt', 'toast', 'place', 'hudSeeds', 'hudBasket', 'hudPond'].forEach(function (id) { els[id] = $(id); });
     els.app = doc.querySelector('.app');
     root.addEventListener('resize', layout);
     st = S.load();
     if (!st.outfit) st.outfit = P.clean(null);
     els.scene.addEventListener('click', onTap);
+    els.scene.addEventListener('pointerdown', onPointerDown); els.scene.addEventListener('pointermove', onPointerMove);
+    els.scene.addEventListener('pointerup', onPointerUp); els.scene.addEventListener('pointercancel', onPointerUp);
     els.prompt.addEventListener('click', function (e) { e.stopPropagation(); useNear(); });
     doc.addEventListener('keydown', keys);
     if ($('wardrobeBtn')) $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
     $('moreBtn').addEventListener('click', function () { var m = $('moreMenu'); m.hidden = !m.hidden; });
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();
+    if (Fu) registerPanel({ id: 'decorate', label: 'Decorate this room', open: function () {
+      if (!scene().layout) { toast('Only rooms can be rearranged'); return; }
+      if (sitting) stand(); decorate(true);
+    } });
     root.requestAnimationFrame(step);
     root.EbbGame._ready = true;
     doc.dispatchEvent(new CustomEvent('ebb:ready', { detail: api }));
@@ -219,8 +290,9 @@
   var api = {
     state: function () { return st; }, save: function () { S.save(); }, today: today, toast: toast, me: function () { return me; },
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
+    decorate: function (on) { decorate(on !== false); }, furniture: function () { return scene().layout || null; },
     work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.view = 'front'; path = []; },
-    stand: function (y) { sitting = false; me.action = 'idle'; if (y) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
+    stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
   };
   function registerKind(kind, fn) { kinds[kind] = fn; }
   function registerProps(sceneId, fn) { (propDrawers[sceneId] = propDrawers[sceneId] || []).push(fn); }

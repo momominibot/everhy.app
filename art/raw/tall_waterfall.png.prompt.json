@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. A peaceful forest clearing seen from the front and above: a waterfall falling into a round stone-edged pond in the upper middle, trees behind, a wide flat grass meadow filling the lower half so a character can walk, a sandy path leaving at the lower left. No people, no animals, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 49.3,
+ "bytes": 1742219
+}

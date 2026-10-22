@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. An empty cosy bedroom seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing New Horizons room camera: back wall across the top, both side walls running down the sides, no front wall, no ceiling, the floor filling the whole lower two thirds of the frame. Pink walls, a round window and two wall lamps on the back wall, an arched door in the left wall, a door in the right wall, clear honey wooden floorboards, no furniture, no rug. No people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 65.8,
+ "bytes": 1643748
+}

@@ -9,8 +9,23 @@
     var m = SP[name]; if (!m) return '';
     var h = width * m.h / m.w;
     return '<svg' + (cls ? ' class="' + cls + '"' : '') + ' x="' + (cx - width / 2).toFixed(2) + '" y="' + (bottom - h).toFixed(2) + '" width="' + width.toFixed(2) +
-      '" height="' + h.toFixed(2) + '" viewBox="' + (frame * m.w) + ' 0 ' + m.w + ' ' + m.h + '" preserveAspectRatio="none"><image href="art/props/' + name +
+      '" height="' + h.toFixed(2) + '" viewBox="' + (frame * m.w) + ' 0 ' + m.w + ' ' + m.h + '" preserveAspectRatio="none"><image href="art/' + (m.dir || 'props') + '/' + name +
       '.webp" width="' + (m.w * m.frames) + '" height="' + m.h + '"/></svg>';
+  }
+  /* the box a piece of furniture is drawn in: [x0, y0, x1, y1] in scene units, from its catalogue size and its frame's own pixel box */
+  function furnitureBox(p, cat) {
+    var m = SP[cat.sheet]; if (!m) return null;
+    var bw = m.boxes && m.boxes[cat.frame] ? m.boxes[cat.frame][0] : m.w, cell = cat.size * m.w / bw, h = cell * m.h / m.w;
+    return [p.x - cell / 2, p.y + 1 - h, p.x + cell / 2, p.y + 1];
+  }
+  function furniture(p, cat, opts) { /* opts: near, ghost, bad */
+    var b = furnitureBox(p, cat); if (!b) return '';
+    var w = b[2] - b[0], cls = 'furn' + (opts && opts.ghost ? ' ghost' : '') + (opts && opts.bad ? ' bad' : '');
+    var inner = sprite(cat.sheet, cat.frame, p.x, b[3], w, cls);
+    if (p.flip) inner = '<g transform="translate(' + (2 * p.x).toFixed(2) + ' 0) scale(-1 1)">' + inner + '</g>';
+    if (opts && opts.near) inner += '<ellipse cx="' + p.x + '" cy="' + (p.y + 0.6) + '" rx="' + (Math.max(cat.foot[0], 6) / 2 + 1).toFixed(2) + '" ry="2.2" fill="none" stroke="#fff6e8" stroke-width="0.5" stroke-dasharray="1.2 0.9"/>';
+    if (opts && opts.ghost) inner += '<rect x="' + (p.x - cat.foot[0] / 2) + '" y="' + (p.y - cat.foot[1]) + '" width="' + cat.foot[0] + '" height="' + Math.max(cat.foot[1], 1.5) + '" rx="1" fill="' + (opts.bad ? 'rgba(220,80,80,0.35)' : 'rgba(120,200,160,0.35)') + '"/>';
+    return '<g class="piece" data-uid="' + p.uid + '">' + inner + '</g>';
   }
   var STAGE_FRAME = { 0: 0, 1: 1, 2: 2, 3: 3, ripe: 4 };
 
@@ -87,5 +102,5 @@
     return out;
   }
 
-  root.EbbProps = { bed: bed, crop: crop, cushion: cushion, shimmer: shimmer, goddess: goddess, sparkles: sparkles };
+  root.EbbProps = { bed: bed, crop: crop, cushion: cushion, shimmer: shimmer, goddess: goddess, sparkles: sparkles, sprite: sprite, furniture: furniture, furnitureBox: furnitureBox };
 })(typeof window !== 'undefined' ? window : globalThis);
