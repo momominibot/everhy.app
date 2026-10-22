@@ -1,0 +1,45 @@
+/* Ebb course: weeks, practice cards, the runner and history. Icons and the cover use Seedream clay art when it exists
+ * (art/course/), and a soft plain fallback until then. */
+.course-wrap { --course-tint: #f3dfcf; --course-tint2: #e4ecdf; }
+@media (prefers-color-scheme: dark) { .course-wrap { --course-tint: #4a3a36; --course-tint2: #34403a; } }
+.course-body { display: flex; flex-direction: column; gap: 12px; }
+.course-body p { margin: 0; }
+.course-body .small { font-size: 13px; }
+.course-cover { border-radius: 18px; min-height: 120px; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px;
+  background: linear-gradient(160deg, var(--course-tint), var(--course-tint2)); color: var(--ink); }
+.course-cover strong { font-size: 18px; }
+.course-cover span { color: var(--soft); font-weight: 600; font-size: 13px; }
+.course-cover.art { min-height: 168px; background: url(../../art/course/cover.webp) center 60% / cover no-repeat; color: #2f2a2d; }
+.course-cover.art strong, .course-cover.art span { background: rgba(255, 250, 243, 0.86); align-self: flex-start; padding: 2px 10px; border-radius: 999px; color: #2f2a2d; }
+.cicon { flex: none; width: 44px; height: 44px; border-radius: 50%; display: inline-grid; place-items: center; font-weight: 800; font-size: 16px;
+  background: var(--course-tint); color: var(--ink); }
+.cicon.art { color: transparent; background-color: transparent; background-repeat: no-repeat; background-size: 300% 100%; background-position: calc(var(--f) * 50%) 0; }
+.cicon.art.s1 { background-image: url(../../art/course/icons_1.webp); }
+.cicon.art.s2 { background-image: url(../../art/course/icons_2.webp); }
+.cicon.art.s3 { background-image: url(../../art/course/icons_3.webp); }
+.course-weeks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.course-week, .course-card { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 12px; min-height: 60px;
+  border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+.course-week.current { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal) inset; }
+.course-week.ready small { color: var(--teal); font-weight: 700; }
+.course-week:disabled { cursor: default; opacity: 0.6; }
+.course-week:focus-visible, .course-card:focus-visible, .linkish:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.cw-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cw-text small { color: var(--soft); font-size: 13px; }
+.course-cards { display: flex; flex-direction: column; gap: 8px; }
+.course-head { display: flex; align-items: center; gap: 12px; font-size: 17px; }
+.course-box { border-radius: 16px; padding: 12px 14px; background: var(--bg); display: flex; flex-direction: column; gap: 6px; }
+.course-box.checkin .btn { align-self: flex-start; }
+.course-box .btn:disabled { opacity: 0.6; cursor: default; }
+.linkish { align-self: flex-start; border: 0; background: none; padding: 6px 0; color: var(--soft); font: 600 14px var(--font); text-decoration: underline; cursor: pointer; }
+.course-cue { font-size: 20px; font-weight: 600; line-height: 1.4; min-height: 5.6em; }
+.course-clock { color: var(--soft); font-variant-numeric: tabular-nums; }
+.course-back { min-height: 1.2em; }
+.course-note { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 10px; font: 15px var(--font); background: var(--bg); color: var(--ink); resize: vertical; }
+.course-optin { display: flex; align-items: center; gap: 10px; font-weight: 700; min-height: 44px; }
+.course-optin input { width: 22px; height: 22px; accent-color: var(--teal); }
+.course-summary { padding: 10px 12px; border-radius: 12px; background: var(--bg); }
+.course-history { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.course-history li { display: flex; flex-direction: column; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.course-history li span { color: var(--soft); font-size: 13px; }
+.course-sheet .sheet-actions .btn { flex: 1 1 auto; }

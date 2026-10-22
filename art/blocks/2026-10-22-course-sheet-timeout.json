@@ -1,0 +1,7 @@
+{
+ "item": "course_sheet",
+ "rc": 5,
+ "stdout": "",
+ "stderr": "connection error (RemoteDisconnected): Remote end closed connection without response; attempt 1/1 after 61.3s\n",
+ "at": "Thu Oct 22 22:23:07 2026"
+}
