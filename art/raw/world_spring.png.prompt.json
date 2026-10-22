@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A secret hot spring in a rocky forest nook, game background: a wide round steaming pool of milky turquoise water across the middle, smooth rounded stones around it, a little bamboo spout trickling in at the back, pink blossom trees, soft steam, a stone path leaving at the far left edge. Seen from the front and slightly above like a side-on game stage, a wide flat stone floor across the lower third in front of the pool. No people, no animals, no text. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 68.2,
+ "bytes": 1945069
+}

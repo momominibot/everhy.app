@@ -1,0 +1,13 @@
+/* world extension: barn, hot spring and fishing */
+.world-pond { width: 100%; height: auto; border-radius: 14px; display: block; }
+.world-pond .world-float { animation: world-bob 2.4s ease-in-out infinite; transition: transform 0.25s ease; }
+.world-pond.bite .world-float { animation: none; transform: translateY(2.6px); }
+.world-pond .world-ripple { opacity: 0.6; transform-origin: 50px 22px; }
+.world-pond.bite .world-ripple { animation: world-ripple 0.9s ease-out infinite; }
+@keyframes world-ripple { from { transform: scale(0.6); opacity: 0.9; } to { transform: scale(1.8); opacity: 0; } }
+@keyframes world-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.8px); } }
+.world-status { min-height: 2.9em; margin: 8px 0 0; font-weight: 600; }
+.world-steam { animation: world-steam 3.2s ease-in-out infinite; }
+@keyframes world-steam { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 0.65; transform: translateY(-1.2px); } }
+.world-sheet .sheet-actions { justify-content: flex-start; }
+@media (prefers-reduced-motion: reduce) { .world-pond .world-float, .world-pond.bite .world-ripple, .world-steam { animation: none; } }
