@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "An empty cosy bathroom as a small isometric dollhouse diorama on a plain cream background, high bird's-eye view: back wall and left wall only, no ceiling, a clear pastel tiled floor, a small round window, an arched door on the back wall. No furniture, no fixtures, no plants, no people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 48.9,
+ "bytes": 1423391
+}

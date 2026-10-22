@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A calm cosy reading nook by a round window in soft morning light: a floor cushion, a tray with a cup of tea, a trailing plant, a folded blanket. Uncluttered, high three-quarter view. No people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 56.1,
+ "bytes": 1971458
+}

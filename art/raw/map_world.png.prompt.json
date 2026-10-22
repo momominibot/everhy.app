@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A simple cosy island map seen from straight above: a cottage, a fenced farm field, a waterfall with a pond, a barn, a hot spring, a fishing pier, sandy paths between them, a few trees, calm sea around. No text, no labels, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 148.2,
+ "bytes": 2053647
+}
