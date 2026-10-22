@@ -1,0 +1,57 @@
+/* Ebb safety screens: alerts, crisis card, first-run chat, Safety and privacy panel. Uses the tokens in css/ebb.css. */
+.sf-wrap { z-index: 40; }
+.sf-sheet { gap: 10px; }
+.sf-sheet .small, .sf-sheet.small { font-size: 13px; }
+.sf-sheet h3 { margin: 0 0 4px; font-size: 16px; }
+.sf-sheet p { margin: 0; }
+.pill.quiet { background: transparent; color: var(--soft); }
+.btn.small { min-height: 36px; padding: 6px 14px; }
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+
+/* alerts */
+.sf-alert { border-top: 6px solid var(--line); }
+.sf-alert.sf-urgent { border-top-color: #c2412d; }
+.sf-alert.sf-high { border-top-color: var(--accent); }
+.sf-alert.sf-medium { border-top-color: var(--teal); }
+.sf-reason { font-size: 16px; }
+.sf-action { font-weight: 700; font-size: 16px; padding: 10px 12px; border-radius: 12px; background: var(--bg); }
+.sf-why summary { cursor: pointer; color: var(--soft); font-weight: 600; font-size: 13px; padding: 4px 0; }
+.sf-why p { margin-top: 6px; }
+
+/* crisis card: help numbers and nothing else */
+.sf-crisis-wrap { background: rgba(30, 22, 26, 0.72); align-items: center; z-index: 60; }
+.sf-crisis { border-radius: 22px; margin: 12px; width: min(520px, calc(100% - 24px)); }
+.sf-help { display: flex; flex-direction: column; gap: 8px; }
+.sf-help-link { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); text-decoration: none; min-height: 52px; }
+.sf-help-link b { font-size: 16px; }
+.sf-help-link span { font-size: 13px; color: var(--soft); }
+.sf-help-link.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+.sf-help-link.primary span { color: rgba(255, 255, 255, 0.88); }
+.sf-help-link.urgent { border-color: #c2412d; }
+.sf-help-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* first-run chat */
+.sf-onboard { max-height: 92vh; }
+.sf-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sf-chat { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 52vh; padding: 2px; }
+.sf-msg { max-width: 88%; padding: 10px 13px; border-radius: 16px; line-height: 1.4; }
+.sf-msg p { margin: 0; }
+.sf-msg.ebb { align-self: flex-start; background: var(--bg); border-bottom-left-radius: 6px; }
+.sf-msg.me { align-self: flex-end; background: var(--teal); color: #fff; border-bottom-right-radius: 6px; font-weight: 600; }
+.sf-hero { display: block; width: 100%; max-width: 260px; aspect-ratio: 1; object-fit: cover; border-radius: 14px; margin-bottom: 8px; }
+.sf-reply { display: flex; flex-direction: column; gap: 8px; }
+.sf-chips { gap: 6px; }
+.sf-date { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sf-date input { font: 600 15px var(--font); padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); min-height: 40px; }
+
+/* panel */
+.sf-card { border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.sf-consent { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.sf-consent > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sf-consent .sf-why { grid-column: 1 / -1; }
+.sf-rules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--soft); }
+.sf-rules b { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .sf-msg { scroll-behavior: auto; } }
+/* Guard for the engine menu: `.menu { display: flex }` in css/ebb.css overrides [hidden], so the More menu showed over
+ * the scene once a panel was registered. Belongs in css/ebb.css; the integrator can move it there. */
+.menu[hidden] { display: none; }
