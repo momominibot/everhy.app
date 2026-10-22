@@ -95,6 +95,22 @@ function fakeApi(scene, log) {
   check('map art is unset or on disk', art === null || fs.existsSync(path.join(__dirname, '..', art)));
 })();
 
+/* with the real world workstream loaded (when merged), its barn, spring and fishing spot open the same pins */
+(() => {
+  const f = path.join(__dirname, '..', 'js/ext/world.js');
+  if (!fs.existsSync(f)) { console.log('note: js/ext/world.js not here, real-world check skipped'); return; }
+  const ctx = world();
+  vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: 'world.js' });
+  const { EbbMap: M, EbbWorld: W } = ctx;
+  M.PINS.forEach(p => {
+    check(`${p.id} opens with the real world`, M.status(p, W.SCENES, 'nowhere') === 'open');
+    const lg = [];
+    M.travel(p, fakeApi('nowhere', lg), () => lg.push(['close']));
+    const arrive = lg[1] && lg[1][2] || W.SCENES[p.scene].start;
+    check(`${p.id} arrives on the real floor`, W.walkable(p.scene, arrive));
+  });
+})();
+
 /* the page part leaves the engine's own files alone: the map adds exactly one script and one stylesheet line */
 (() => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');

@@ -31,7 +31,12 @@ with sync_playwright() as p:
     pg.evaluate('localStorage.clear()')
     pg.reload()
     pg.wait_for_function('window.EbbGame && EbbGame._ready')
+    # a fresh save opens the safety workstream's first-run chat over the scene; mark it skipped, as she can, and reload
+    pg.evaluate("() => { const s = EbbGame.state(); s.safety = s.safety || {}; s.safety.seen = s.safety.seen || {}; s.safety.onboardSkippedAt = new Date().toISOString(); EbbGame.api.save(); }")
+    pg.reload()
+    pg.wait_for_function('window.EbbGame && EbbGame._ready')
     pg.wait_for_timeout(400)
+    check('nothing covers the scene', pg.locator('.sheet-wrap').count() == 0)
 
     btn = pg.locator('#mapBtn')
     check('map button shows', btn.is_visible())
@@ -104,6 +109,22 @@ with sync_playwright() as p:
     pg.click('.map-place[data-pin=waterfall]')
     pg.wait_for_timeout(200)
     check('her own place just closes the map', pg.locator('.map-wrap').count() == 0 and pg.evaluate('EbbGame.api.scene()') == 'waterfall')
+
+    # every open pin that is not her place takes her there; the pier puts her at the fishing spot
+    for pid in ['barn', 'spring', 'pier', 'waterfall', 'farm']:
+        btn.click()
+        pg.wait_for_timeout(150)
+        cls = pg.get_attribute(f'.map-pin[data-pin={pid}]', 'class')
+        if 'is-open' not in cls:
+            pg.keyboard.press('Escape')
+            continue
+        want = pg.evaluate(f"EbbMap.pin('{pid}').scene")
+        pg.click(f'.map-pin[data-pin={pid}]')
+        pg.wait_for_timeout(700)
+        check(f'travel to {pid}', pg.evaluate('EbbGame.api.scene()') == want and pg.locator('.map-wrap').count() == 0)
+        if pid == 'pier':
+            pg.wait_for_timeout(200)
+            check('pier lands at the fishing spot', pg.evaluate("document.getElementById('prompt').dataset.near") == 'spot:fishing')
 
     # reduced motion: no fade, she moves at once
     pg.evaluate("document.documentElement.setAttribute('data-motion', 'reduce')")

@@ -7,17 +7,17 @@
   var W = root.EbbWorld;
   if (!W) return;
 
-  var ART = null; /* set to the map picture once it ships; until then the drawn placeholder island shows */
+  var ART = 'art/map/world.webp'; /* Seedream clay island (art/raw/map_world.png); the drawn island shows if it fails to load */
 
   /* scene: where travel goes; spot: arrive at that spot's stand point instead of the scene start;
    * here: scenes that count as being at this place (home holds the bedroom and the bathroom) */
   var PINS = [
-    { id: 'home', label: 'Home', note: 'Bedroom and bathroom', scene: 'bedroom', here: ['bedroom', 'bathroom'], icon: 'home', x: 30, y: 36 },
-    { id: 'farm', label: 'Farm', note: 'Beds and the seed shed', scene: 'farm', icon: 'farm', x: 50, y: 46 },
-    { id: 'waterfall', label: 'Waterfall', note: 'The pond and the Goddess', scene: 'waterfall', icon: 'falls', x: 70, y: 26 },
-    { id: 'barn', label: 'Barn', note: 'Pip, Clover and Mochi', scene: 'barn', icon: 'barn', x: 24, y: 64 },
-    { id: 'spring', label: 'Hot spring', note: 'Warm water past the trees', scene: 'spring', icon: 'spring', x: 84, y: 46 },
-    { id: 'pier', label: 'Fishing pier', note: 'A quiet line at the pond edge', scene: 'waterfall', spot: 'fishing', icon: 'fish', x: 62, y: 74 }
+    { id: 'home', label: 'Home', note: 'Bedroom and bathroom', scene: 'bedroom', here: ['bedroom', 'bathroom'], icon: 'home', x: 32, y: 27 },
+    { id: 'farm', label: 'Farm', note: 'Beds and the seed shed', scene: 'farm', icon: 'farm', x: 53, y: 52 },
+    { id: 'waterfall', label: 'Waterfall', note: 'The pond and the Goddess', scene: 'waterfall', icon: 'falls', x: 80, y: 27 },
+    { id: 'barn', label: 'Barn', note: 'Pip, Clover and Mochi', scene: 'barn', icon: 'barn', x: 23, y: 62 },
+    { id: 'spring', label: 'Hot spring', note: 'Warm water past the trees', scene: 'spring', icon: 'spring', x: 84, y: 51 },
+    { id: 'pier', label: 'Fishing pier', note: 'Cast a quiet line', scene: 'waterfall', spot: 'fishing', icon: 'fish', x: 72, y: 82 }
   ];
 
   function spotIn(scene, id) {
