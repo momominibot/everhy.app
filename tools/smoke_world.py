@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless browser walk through the world extension at 390 px: farm -> barn (hens, cow) -> farm -> waterfall (fishing)
+"""Headless browser walk through the world extension at 390x844, full screen with the follow camera: farm -> barn (hens, cow) -> farm -> waterfall (fishing)
 -> hot spring (soak, spa egg) -> waterfall (offer a barn item at the pond). Serves the repo on a spare port, seeds one
 save, fails on any console error. Run: python3 tools/smoke_world.py [shots_dir]"""
 import datetime, functools, http.server, json, socket, sys, threading
@@ -50,9 +50,24 @@ def main():
         page.goto(f'http://127.0.0.1:{port}/index.html')
         page.wait_for_function('window.EbbGame && window.EbbGame._ready && window.EbbWorldRules')
 
-        def tap(x, y):
-            r = page.locator('#scene').bounding_box()
-            page.mouse.click(r['x'] + r['width'] * x / 100, r['y'] + r['height'] * y / 100)
+        def tap(x, y, tries=8):
+            # the camera shows part of the square stage: tap toward an off-screen target like a player exploring,
+            # let her walk and the camera follow, then tap it once it is in view (clear of the top bar and button)
+            W, H, top, bottom, side = 390, 844, 120, 112, 16
+            start = page.locator('#place').inner_text()
+            for _ in range(tries):
+                if page.locator('#place').inner_text() != start:
+                    return  # a step toward an edge door already walked her through it
+                r = page.locator('#stage').bounding_box()
+                sx, sy = r['x'] + r['width'] * x / 100, r['y'] + r['height'] * y / 100
+                if side <= sx <= W - side and top <= sy <= H - bottom:
+                    page.mouse.click(sx, sy); return
+                page.mouse.click(min(max(sx, side + 12), W - side - 12), min(max(sy, top + 12), H - bottom - 12))
+                page.wait_for_timeout(1400)
+            if SHOTS:
+                page.screenshot(path=str(SHOTS / 'stuck.png'))
+            raise AssertionError(f'could not bring ({x}, {y}) into view; me=' + json.dumps(page.evaluate('() => EbbGame.me()')) +
+                                 ' busy=' + str(page.evaluate('() => !!document.querySelector(".sheet-wrap")')))
 
         def place(name, t=15000):
             page.wait_for_function('n => document.getElementById("place").textContent === n', arg=name, timeout=t)
@@ -90,7 +105,7 @@ def main():
         tap(36, 65); page.wait_for_selector('.world-sheet', timeout=15000)
         check('fishing sheet opens', page.locator('.world-sheet h2').inner_text() == 'Fishing')
         page.wait_for_function('() => /nibble!/.test(document.getElementById("fishStatus").textContent)', timeout=8000)
-        page.wait_for_timeout(500); page.click('#reelIn')
+        shot('05a-nibble'); page.wait_for_timeout(400); page.click('#reelIn')
         status = page.locator('#fishStatus').inner_text()
         check('a fish is caught in the window: ' + status, 'caught' in status)
         fish = sum(v for k, v in basket().items() if k.startswith('fish'))
@@ -119,6 +134,7 @@ def main():
         check('the pond names a barn item: ' + toast, 'milk' in toast and 'undefined' not in toast)
         shot('08-pond')
         check('no sideways scroll at 390 px', page.evaluate('() => document.documentElement.scrollWidth') <= 390)
+        check('the scene fills the phone screen', page.evaluate('() => { const r = document.getElementById("scene").getBoundingClientRect(); return r.width >= 390 && r.height >= 844; }'))
         page.reload(); page.wait_for_function('window.EbbGame && window.EbbGame._ready')
         check('barn state survives a reload', page.evaluate('() => EbbGame.state().world.barn.animals.cow.milkDay') == today.isoformat())
         b.close()
