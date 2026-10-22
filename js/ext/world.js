@@ -102,9 +102,9 @@
 
   /* ---------- a small sheet (same look as the engine's) ---------- */
   var openSheet = null;
-  function sheet(title, build, onClose) {
+  function sheet(title, build, onClose, extra) {
     if (openSheet) openSheet();
-    var wrap = doc.createElement('div'); wrap.className = 'sheet-wrap world-sheet';
+    var wrap = doc.createElement('div'); wrap.className = 'sheet-wrap world-sheet' + (extra ? ' ' + extra : '');
     wrap.innerHTML = '<section class="sheet" role="dialog" aria-modal="true" aria-label="' + title + '"><h2>' + title + '</h2><div class="sheet-body"></div><div class="sheet-actions"></div></section>';
     var body = wrap.querySelector('.sheet-body'), acts = wrap.querySelector('.sheet-actions');
     function close() { if (!wrap.parentNode) return; wrap.remove(); openSheet = null; if (onClose) onClose(); }
@@ -196,8 +196,8 @@
   function waterOver() { /* the pool surface drawn over her lower half so she sits in the water */
     var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y, sc = W.scaleAt(y, 'spring'), h = 247 * 104 / 300 * sc, w = 169 * 104 / 300 * sc;
     var f = function (v) { return v.toFixed(2); };
-    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.3) + '" fill="#bfe6dc" opacity="0.93"/>' +
-      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.35" opacity="0.9"/>' +
+    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.3) + '" fill="#b2e0d4" opacity="0.88"/>' +
+      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.25" opacity="0.55"/>' +
       '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
@@ -237,27 +237,32 @@
   });
 
   /* ---------- fishing: a calm timing game, nothing lost when one gets away ---------- */
+  function floatFx(x, y, bite) { /* a red and white float on the pond itself, in scene percent */
+    var r = function (v) { return v.toFixed(2); }, fy = y + (bite ? 0.55 : 0);
+    return '<g class="world-float' + (bite ? ' bite' : '') + '">' +
+      '<ellipse class="world-ripple" cx="' + r(x) + '" cy="' + r(y + 0.55) + '" rx="' + (bite ? 2.6 : 1.5) + '" ry="' + (bite ? 0.85 : 0.5) + '" fill="none" stroke="#effcf8" stroke-width="0.22" opacity="0.85"/>' +
+      '<circle cx="' + r(x) + '" cy="' + r(fy - 0.35) + '" r="0.8" fill="#e8836f"/><rect x="' + r(x - 0.8) + '" y="' + r(fy - 0.35) + '" width="1.6" height="0.65" rx="0.2" fill="#fffaf3"/></g>';
+  }
   root.EbbGame.registerKind('fish', function (spot, api) {
-    var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle';
+    var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.at.x + 9, fy = spot.at.y - 5.5;
     api.work('none', 36e5, 'back');
     function clear() { timers.forEach(clearTimeout); timers = []; }
     sheet('Fishing', function (body, buttons) {
-      body.innerHTML = '<svg class="world-pond" viewBox="0 0 100 40" aria-hidden="true"><rect width="100" height="40" rx="6" fill="#8fc9c0"/>' +
-        '<ellipse class="world-ripple" cx="50" cy="22" rx="6" ry="2" fill="none" stroke="#e9fbf6" stroke-width="0.6"/>' +
-        '<g class="world-float"><circle cx="50" cy="20" r="2.4" fill="#e8836f"/><rect x="47.6" y="20" width="4.8" height="2.4" fill="#fffaf3"/></g></svg>' +
-        '<p class="world-status" id="fishStatus" role="status"></p>';
-      var svg = body.querySelector('svg'), status = body.querySelector('#fishStatus');
+      body.innerHTML = '<p class="world-status" id="fishStatus" role="status"></p>';
+      var status = body.querySelector('#fishStatus');
       function say(t) { status.textContent = t; }
+      function bite(on) { api.fx(floatFx(fx, fy, on), 36e5); }
       function castLine() {
         clear(); c = R0.cast(Math.random(), Math.random()); t0 = Date.now(); state = 'waiting';
-        svg.classList.remove('bite'); say('The float bobs on the water. Wait for a nibble.');
+        bite(false); say('The float bobs on the water. Wait for a nibble.');
         buttons([{ id: 'reelIn', label: 'Reel in', primary: true, fn: reelIn }, { label: 'Done', fn: function () { state = 'done'; clear(); if (openSheet) openSheet(); } }]);
-        timers.push(setTimeout(function () { if (state === 'waiting') { svg.classList.add('bite'); say('A nibble! Reel in now.'); } }, c.waitMs));
-        timers.push(setTimeout(function () { if (state === 'waiting') { svg.classList.remove('bite'); finish({ result: 'away' }); } }, c.waitMs + c.windowMs));
+        timers.push(setTimeout(function () { if (state === 'waiting') { bite(true); say('A nibble! Reel in now.'); } }, c.waitMs));
+        timers.push(setTimeout(function () { if (state === 'waiting') finish({ result: 'away' }); }, c.waitMs + c.windowMs));
       }
       function reelIn() { if (state === 'waiting') finish(R0.reel(c, Date.now() - t0, Math.random())); }
       function finish(res) {
-        clear(); state = 'result'; svg.classList.remove('bite');
+        clear(); state = 'result';
+        api.fx(res.result === 'caught' && root.EbbProps ? root.EbbProps.sparkles(fx, fy, 7) : '', 1600);
         if (res.result === 'caught') {
           R0.addToBasket(api.state().farm, res.size, 1);
           var w = data(api); w.fish = (w.fish || 0) + 1; api.save(); api.refresh();
@@ -266,7 +271,7 @@
         buttons([{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }]);
       }
       castLine();
-    }, function () { clear(); state = 'done'; api.work('none', 0, 'front'); });
+    }, function () { clear(); state = 'done'; api.fx('', 1); api.work('none', 0, 'front'); }, 'world-mini');
   });
 
 })(typeof window !== 'undefined' ? window : globalThis);
