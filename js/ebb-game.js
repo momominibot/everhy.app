@@ -21,15 +21,19 @@
   function enter(id, at) {
     st.scene = id;
     var s = scene();
-    if (Fu && (Fu.DEFAULTS[id] || (st.furniture && st.furniture[id]))) { /* her arrangement of this room */
-      st.furniture = st.furniture || {};
-      st.furniture[id] = Fu.clean(st.furniture[id], id); Fu.apply(s, st.furniture[id]);
-    }
+    /* a room is one painted render until she rearranges it; then it is the empty shell plus her own pieces */
+    if (!s.fixed) s.fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors };
+    var custom = Fu && s.shell && st.furniture && st.furniture[id];
+    if (custom) {
+      st.furniture[id] = Fu.clean(st.furniture[id], id);
+      s.floor = s.shellFloor || s.fixed.floor; s.doors = W.shellDoors(Object.assign({}, s, { doors: s.fixed.doors })); s.baseSolids = []; s.baseSpots = []; Fu.apply(s, st.furniture[id]);
+    } else { s.floor = s.fixed.floor; s.doors = s.fixed.doors; s.solids = s.fixed.solids.slice(); s.spots = s.fixed.spots.slice(); s.layout = null; s.baseSolids = null; }
     S.save();
-    els.plate.src = s.plate; els.plate.alt = s.name;
+    els.plate.src = custom ? s.shell : s.plate; els.plate.alt = s.name;
     els.place.textContent = s.name;
     if (cam.W) layout(); /* the stage takes the new plate's shape */
-    me.x = at ? at.x : s.start.x; me.y = at ? at.y : s.start.y;
+    var p0 = at || s.start, q = W.walkable(id, p0) ? p0 : W.nearestWalkable(id, p0) || s.start; /* her own furniture may stand where a door lets out */
+    me.x = q.x; me.y = q.y;
     path = []; pending = null; sitting = false; me.action = 'idle'; cam.snap = true;
     drawProps();
   }
@@ -44,7 +48,7 @@
      * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
     cam.W = r.width; cam.H = r.height; cam.S = r.width; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
-    if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + scene().plate + '")';
+    if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
   }
   function follow(dt) {
@@ -161,7 +165,8 @@
     if (deco.bar) { deco.bar.remove(); deco.bar = null; }
     if (on) {
       deco.bar = doc.createElement('div'); deco.bar.className = 'decobar';
-      deco.bar.innerHTML = '<button type="button" class="btn" id="decoFlip">Flip</button><button type="button" class="btn primary" id="decoDone">Done</button>';
+      deco.bar.innerHTML = '<button type="button" class="btn" id="decoReset">Original room</button><button type="button" class="btn" id="decoFlip">Flip</button><button type="button" class="btn primary" id="decoDone">Done</button>';
+      deco.bar.querySelector('#decoReset').addEventListener('click', function () { delete st.furniture[st.scene]; decorate(false); enter(st.scene, { x: me.x, y: me.y }); toast('Back to how it was'); });
       els.scene.parentNode.appendChild(deco.bar);
       deco.bar.querySelector('#decoDone').addEventListener('click', function () { decorate(false); toast('Looks lovely'); });
       deco.bar.querySelector('#decoFlip').addEventListener('click', function () {
@@ -278,8 +283,10 @@
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();
     if (Fu) registerPanel({ id: 'decorate', label: 'Decorate this room', open: function () {
-      if (!scene().layout) { toast('Only rooms can be rearranged'); return; }
-      if (sitting) stand(); decorate(true);
+      var s = scene(); if (!s.shell || !Fu.DEFAULTS[st.scene]) { toast('Only rooms can be rearranged'); return; }
+      if (sitting) stand();
+      if (!s.layout) { st.furniture = st.furniture || {}; st.furniture[st.scene] = Fu.fresh(st.scene); enter(st.scene, s.start); }
+      decorate(true);
     } });
     root.requestAnimationFrame(step);
     root.EbbGame._ready = true;

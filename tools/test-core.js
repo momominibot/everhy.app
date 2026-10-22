@@ -48,10 +48,15 @@ check('plate units follow the aspect', W.units({}) === 100 && W.units({ aspect: 
 check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => { const d = W.SCENES[id].depth || [60, 0.17, 98, 0.28]; return W.scaleAt(d[0], id) < W.scaleAt(d[2], id); }));
 
 /* furniture: every room's default arrangement fits, every piece has art, and a moved piece obeys the floor and the others */
-Object.keys(Fu.DEFAULTS).forEach(id => {
-  const lay = Fu.fresh(id); Fu.apply(W.SCENES[id], lay); /* the world checks below then run with furniture in place */
+Object.keys(Fu.DEFAULTS).forEach(id => { /* the redecorated room: the empty shell's floor plus her pieces, as the game switches it */
+  const s = W.SCENES[id], fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors };
+  s.floor = s.shellFloor || s.floor; s.doors = W.shellDoors(s); s.baseSolids = []; s.baseSpots = [];
+  const lay = Fu.fresh(id); Fu.apply(s, lay);
   check(`${id} furniture ids unique`, new Set(lay.map(p => p.uid)).size === lay.length);
   lay.forEach(p => check(`${id}/${p.item} fits where it starts`, Fu.canPlace(W, id, lay, p.uid, p.x, p.y)));
+  s.spots.forEach(sp => check(`${id}/${sp.id} (redecorated) stand reachable`, W.walkable(id, sp.stand) && !!W.plan(id, s.start, sp.stand)));
+  s.doors.forEach(d => check(`${id}/${d.id} (redecorated) door reachable`, !!W.plan(id, s.start, { x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 })));
+  s.floor = fixed.floor; s.doors = fixed.doors; s.solids = fixed.solids; s.spots = fixed.spots; s.layout = null; s.baseSolids = null; /* back to the painted room */
 });
 Object.keys(Fu.CATALOG).forEach(k => {
   const c = Fu.CATALOG[k], m = ctx.EbbPropSprites[c.sheet];

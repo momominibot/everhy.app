@@ -4,31 +4,46 @@
   'use strict';
 
   var SCENES = {
-    bedroom: { /* tall bird's-eye room (plate 4:7, so y runs 0..175): the floor is the lit boards; furniture adds its own solids and spots */
-      name: 'Bedroom', plate: 'art/plates/bedroom-tall.webp', aspect: [4, 7], indoor: true, depth: [75, 0.27, 175, 0.34],
-      floor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
-      solids: [],
+    bedroom: { /* one dreamy render (plate 4:7, so y runs 0..175) with the furniture painted in; `shell` is the empty room she can furnish herself */
+      name: 'Bedroom', plate: 'art/plates/bedroom-dream.webp', shell: 'art/plates/bedroom-tall.webp', aspect: [4, 7], indoor: true, depth: [95, 0.25, 175, 0.33],
+      floor: [[16, 95], [84, 95], [86, 175], [14, 175]],
+      solids: [[14, 80, 27, 118], [66, 80, 90, 122], [0, 138, 20, 175], [78, 160, 100, 175]],
+      shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
+      shellDoors: [{ id: 'toFarm', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
-        { id: 'toFarm', rect: [4, 90, 13, 104], to: 'farm', arrive: { x: 21, y: 114 }, label: 'Out to the farm' },
-        { id: 'toBathroom', rect: [87, 88, 96, 102], to: 'bathroom', arrive: { x: 72, y: 110 }, label: 'Into the bathroom' }
+        { id: 'toFarm', rect: [14, 118, 19, 150], to: 'farm', arrive: { x: 21, y: 114 }, label: 'Out to the farm' },
+        { id: 'toBathroom', rect: [81, 128, 86, 160], to: 'bathroom', arrive: { x: 72, y: 128 }, label: 'Into the bathroom' }
       ],
-      spots: [],
-      start: { x: 50, y: 128 }
+      spots: [
+        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 45, y: 72 }, stand: { x: 45, y: 100 }, label: 'How did you sleep?' },
+        { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 70, y: 62 }, stand: { x: 60, y: 100 }, label: 'Waking temperature' },
+        { id: 'desk', kind: 'log', topic: 'mood', at: { x: 80, y: 98 }, stand: { x: 62, y: 108 }, label: 'Write in the journal' },
+        { id: 'drawers', kind: 'wardrobe', at: { x: 76, y: 112 }, stand: { x: 62, y: 120 }, label: 'Change clothes' },
+        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 10, y: 55 }, stand: { x: 30, y: 100 }, label: 'Mindfulness course' },
+        { id: 'cushion', kind: 'cushion', at: { x: 47, y: 118 }, stand: { x: 47, y: 130 }, label: 'Sit for a practice' }
+      ],
+      start: { x: 47, y: 145 }
     },
     bathroom: {
-      name: 'Bathroom', plate: 'art/plates/bathroom-tall.webp', aspect: [4, 7], indoor: true, depth: [79, 0.27, 175, 0.34],
-      floor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
-      solids: [],
-      doors: [{ id: 'toBedroom', rect: [66, 90, 86, 104], to: 'bedroom', arrive: { x: 80, y: 110 }, label: 'Back to the bedroom' }],
-      spots: [],
-      start: { x: 50, y: 135 }
+      name: 'Bathroom', plate: 'art/plates/bathroom-dream.webp', shell: 'art/plates/bathroom-tall.webp', aspect: [4, 7], indoor: true, depth: [88, 0.25, 175, 0.33],
+      floor: [[22, 88], [78, 88], [88, 120], [90, 175], [8, 175], [6, 120]],
+      solids: [[8, 70, 26, 118], [63, 78, 84, 100], [72, 100, 96, 125], [40, 133, 68, 150], [12, 125, 36, 150], [70, 140, 90, 160]],
+      shellFloor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
+      shellDoors: [{ id: 'toBedroom', rect: [66, 90, 86, 104] }],
+      doors: [{ id: 'toBedroom', rect: [84, 122, 90, 142], to: 'bedroom', arrive: { x: 78, y: 140 }, label: 'Back to the bedroom' }],
+      spots: [
+        { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 25, y: 78 }, stand: { x: 32, y: 98 }, label: 'Log bleeding or mucus' },
+        { id: 'sink', kind: 'log', topic: 'body', at: { x: 65, y: 60 }, stand: { x: 58, y: 96 }, label: 'How does your body feel?' },
+        { id: 'cabinet', kind: 'log', topic: 'cycle', at: { x: 84, y: 108 }, stand: { x: 68, y: 128 }, label: 'Check your cycle' }
+      ],
+      start: { x: 45, y: 125 }
     },
     farm: { /* tall plate (4:7): shed and jars top left, fence across, the yard below, a stone path leaving bottom right */
       name: 'Farm', plate: 'art/plates/farm-tall.webp', aspect: [4, 7], depth: [104, 0.22, 175, 0.33],
       floor: [[2, 109], [34, 104], [100, 104], [100, 175], [2, 175]],
       solids: [[60, 150, 100, 175]],
       doors: [
-        { id: 'toHouse', rect: [15, 104, 28, 111], to: 'bedroom', arrive: { x: 12, y: 110 }, label: 'Back inside' },
+        { id: 'toHouse', rect: [15, 104, 28, 111], to: 'bedroom', arrive: { x: 22, y: 128 }, label: 'Back inside' },
         { id: 'toFalls', rect: [88, 140, 100, 150], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
       ],
       spots: [{ id: 'shed', kind: 'shed', at: { x: 46, y: 104 }, stand: { x: 46, y: 112 }, label: 'Seeds from the jars' }],
@@ -139,7 +154,12 @@
     SCENES[id] = scene; return true;
   }
   function addDoor(sceneId, door) { var s = SCENES[sceneId]; if (!s) return false; s.doors.push(door); return true; }
+  /* the shell (empty room) has its doors on the walls where the painted room has them by its furniture; same targets */
+  function shellDoors(s) {
+    if (!s.shellDoors) return s.doors;
+    return s.doors.map(function (d) { var sd = s.shellDoors.filter(function (x) { return x.id === d.id; })[0]; return sd ? Object.assign({}, d, { rect: sd.rect }) : d; });
+  }
 
-  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
+  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, shellDoors: shellDoors, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
     doorAt: doorAt, inRect: inRect, scaleAt: scaleAt };
 })(typeof window !== 'undefined' ? window : globalThis);
