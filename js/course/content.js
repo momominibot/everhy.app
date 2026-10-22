@@ -6,7 +6,7 @@
   'use strict';
   var VERSION = 'draft-1';
 
-  /* icon = frame index in art/course/icons.webp (a 3x3 clay sheet, reading order) */
+  /* icon = index in reading order over art/course/icons_1..3.webp (three strips of three clay medallions) */
   var ICON = { cushion: 0, feather: 1, cloud: 2, mat: 3, tea: 4, pebbles: 5, heart: 6, lantern: 7, bell: 8 };
 
   var SETTLE = 'Let your body settle where it is. Eyes open or closed, whatever feels right today.';

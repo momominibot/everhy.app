@@ -15,22 +15,23 @@
   function K() { return root.EbbCourse; }
   function T() { return root.EbbCourseContent; }
 
-  var ART = { icons: 'art/course/icons.webp', cover: 'art/course/cover.webp' }, has = {};
+  /* icons come as three strips of three (icons_1..3, reading order of ICON in content.js); each shows once it loads */
+  var ART = { s1: 'art/course/icons_1.webp', s2: 'art/course/icons_2.webp', s3: 'art/course/icons_3.webp', cover: 'art/course/cover.webp' }, has = {};
   function probe(key) {
     if (has[key] !== undefined) return;
     has[key] = false;
     var im = new Image(); im.onload = function () { has[key] = true; doc.querySelectorAll('.course-wrap').forEach(paintArt); }; im.src = ART[key];
   }
   function paintArt(scope) {
-    if (has.icons) scope.querySelectorAll('.cicon').forEach(function (e) { e.classList.add('art'); });
+    ['s1', 's2', 's3'].forEach(function (s) { if (has[s]) scope.querySelectorAll('.cicon.' + s).forEach(function (e) { e.classList.add('art'); }); });
     if (has.cover) scope.querySelectorAll('.course-cover').forEach(function (e) { e.classList.add('art'); });
   }
 
   function course(api) { var st = api.state(); st.course = K().clean(st.course); return st.course; }
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function icon(i, label) {
-    var e = el('span', 'cicon', label === undefined ? '' : String(label));
-    e.style.setProperty('--i', String(i)); e.setAttribute('aria-hidden', 'true');
+    var e = el('span', 'cicon s' + (Math.floor(i / 3) + 1), label === undefined ? '' : String(label));
+    e.style.setProperty('--f', String(i % 3)); e.setAttribute('aria-hidden', 'true');
     return e;
   }
   function fmtDate(day) {
@@ -77,7 +78,7 @@
 
   /* ---------- the course home ---------- */
   function home(api) {
-    probe('icons'); probe('cover');
+    probe('s1'); probe('s2'); probe('s3'); probe('cover');
     var c = course(api), today = api.today(), copy = T().COPY, nodes = [];
     var cover = el('div', 'course-cover'); cover.appendChild(el('strong', '', copy.name)); cover.appendChild(el('span', '', copy.kind)); nodes.push(cover);
     if (!c.started) {

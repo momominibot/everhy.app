@@ -117,7 +117,7 @@
     if (!s.days) return 'No practices saved in ' + name + ' yet. That is fine.';
     var plural = function (n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); };
     return 'In ' + name + ' you practised on ' + plural(s.days, 'day') + ', ' + (s.minutes ? 'about ' + plural(s.minutes, 'minute') : 'under a minute') + ' in all. ' +
-      plural(s.finished, 'practice') + ' ran to the end and ' + s.partial + ' ended early. Ending early is part of practice too.';
+      (s.finished ? plural(s.finished, 'practice') : 'None') + ' ran to the end and ' + s.partial + ' ended early. Ending early is part of practice too.';
   }
 
   root.EbbCourse = {

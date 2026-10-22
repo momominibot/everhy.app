@@ -65,9 +65,14 @@ def main():
         page.click('#moreBtn'); page.click('#panel-course')
         check('course panel opens', page.locator('.course-wrap h2', has_text='Course').count() == 1)
         check('called MBSR-informed', 'MBSR-informed' in page.inner_text('.course-wrap'))
+        if (ROOT / 'art/course/icons_1.webp').exists():
+            page.wait_for_timeout(400); page.click('#moreBtn'); page.click('#panel-course')
+            check('clay cover shows', page.locator('.course-cover.art').count() == 1)
         shot(page, '01-course-start')
         btn(page, 'start')
         check('eight weeks listed', page.locator('.course-week').count() == 8)
+        if (ROOT / 'art/course/icons_3.webp').exists():
+            check('clay icons on every week', page.locator('.course-week .cicon.art').count() == 8)
         check('week 1 is this week', 'current' in page.get_attribute('[data-week="1"]', 'class'))
         check('week 2 waits for its date', page.locator('[data-week="2"]').is_disabled() and 'Opens' in page.inner_text('[data-week="2"]'))
         shot(page, '02-weeks')

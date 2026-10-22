@@ -13,7 +13,10 @@
 .course-cover.art strong, .course-cover.art span { background: rgba(255, 250, 243, 0.86); align-self: flex-start; padding: 2px 10px; border-radius: 999px; color: #2f2a2d; }
 .cicon { flex: none; width: 44px; height: 44px; border-radius: 50%; display: inline-grid; place-items: center; font-weight: 800; font-size: 16px;
   background: var(--course-tint); color: var(--ink); }
-.cicon.art { color: transparent; background: url(../../art/course/icons.webp) calc(var(--i) / 8 * 100%) 0 / 900% 100% no-repeat; }
+.cicon.art { color: transparent; background-color: transparent; background-repeat: no-repeat; background-size: 300% 100%; background-position: calc(var(--f) * 50%) 0; }
+.cicon.art.s1 { background-image: url(../../art/course/icons_1.webp); }
+.cicon.art.s2 { background-image: url(../../art/course/icons_2.webp); }
+.cicon.art.s3 { background-image: url(../../art/course/icons_3.webp); }
 .course-weeks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .course-week, .course-card { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 12px; min-height: 60px;
   border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
