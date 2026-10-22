@@ -47,14 +47,14 @@
         { id: 'toFalls', rect: [88, 140, 100, 150], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
       ],
       spots: [{ id: 'shed', kind: 'shed', at: { x: 46, y: 104 }, stand: { x: 46, y: 112 }, label: 'Seeds from the jars' }],
-      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 14, y: 170 }],
+      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 36, y: 170 }],
       start: { x: 40, y: 120 }
     },
     waterfall: { /* tall plate: the falls and pond across the top, the meadow below, a sandy path from the bottom left */
       name: 'Waterfall', plate: 'art/plates/waterfall-tall.webp', aspect: [4, 7], depth: [106, 0.22, 175, 0.33],
       floor: [[2, 108], [98, 108], [98, 175], [2, 175]],
       solids: [[38, 140, 56, 150]],
-      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 94, y: 136 }, label: 'Back to the farm' }],
+      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 80, y: 134 }, label: 'Back to the farm' }],
       spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 94 }, stand: { x: 50, y: 110 }, label: 'Offer to the pond' }],
       fall: { x: 44, y0: 42, x1: 54, y1: 86 },
       start: { x: 14, y: 165 }

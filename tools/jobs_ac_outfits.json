@@ -1,0 +1,104 @@
+[
+ {
+  "id": "char_ac_lilac",
+  "size": "1024x1024",
+  "ref": "art/raw/char_ac.png",
+  "prompt": "Character turnaround of the same Animal Crossing style girl as the reference (huge round head, tiny body, big oval eyes, same face and skin), now wearing a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body standing, arms relaxed. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_front_ac_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_front_ac.png",
+   "art/raw/char_ac_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_back_ac_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_back_ac.png",
+   "art/raw/char_ac_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_side_ac_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_side_ac.png",
+   "art/raw/char_ac_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "pose_sit_ac_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_sit_ac.png",
+   "art/raw/char_ac_lilac.png"
+  ],
+  "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "pose_work_ac_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_work_ac.png",
+   "art/raw/char_ac_lilac.png"
+  ],
+  "prompt": "Redraw the first reference farm work poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "char_ac_tudung",
+  "size": "1024x1024",
+  "ref": "art/raw/char_ac.png",
+  "prompt": "Character turnaround of the same Animal Crossing style girl as the reference (huge round head, tiny body, big oval eyes, same face and skin), now wearing a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body standing, arms relaxed. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_front_ac_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_front_ac.png",
+   "art/raw/char_ac_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_back_ac_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_back_ac.png",
+   "art/raw/char_ac_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "walk_side_ac_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_side_ac.png",
+   "art/raw/char_ac_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "pose_sit_ac_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_sit_ac.png",
+   "art/raw/char_ac_tudung.png"
+  ],
+  "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ },
+ {
+  "id": "pose_work_ac_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_work_ac.png",
+   "art/raw/char_ac_tudung.png"
+  ],
+  "prompt": "Redraw the first reference farm work poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair visible at all. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow."
+ }
+]
