@@ -1,11 +1,29 @@
-/* Ebb props: flat shapes drawn over the painted plates, in scene percent. Pure string builders. */
+/* Ebb props: things drawn over the painted plates, in scene percent. Pure string builders. Clay Seedream strips
+ * (art/props/<name>.webp, metadata in EbbPropSprites) are used when shipped; the flat shapes are the fallback. */
 (function (root) {
   'use strict';
-  var F = root.EbbFarm;
+  var F = root.EbbFarm, SP = root.EbbPropSprites || {};
+
+  /* one frame of a prop strip, centred on cx with its bottom at `bottom`, cell drawn `width` units wide */
+  function sprite(name, frame, cx, bottom, width, cls) {
+    var m = SP[name]; if (!m) return '';
+    var h = width * m.h / m.w;
+    return '<svg' + (cls ? ' class="' + cls + '"' : '') + ' x="' + (cx - width / 2).toFixed(2) + '" y="' + (bottom - h).toFixed(2) + '" width="' + width.toFixed(2) +
+      '" height="' + h.toFixed(2) + '" viewBox="' + (frame * m.w) + ' 0 ' + m.w + ' ' + m.h + '" preserveAspectRatio="none"><image href="art/props/' + name +
+      '.webp" width="' + (m.w * m.frames) + '" height="' + m.h + '"/></svg>';
+  }
+  var STAGE_FRAME = { 0: 0, 1: 1, 2: 2, 3: 3, ripe: 4 };
 
   function bed(b, x, y, today, near) {
     var w = 12, h = 6.4, x0 = x - w / 2, y0 = y - h / 2, out = '';
     var wet = b.state === 'planted' && F.wateredToday(b, today);
+    if (SP.soil) {
+      var sw = 12.5, sh = sw * SP.soil.h / SP.soil.w;
+      out += sprite('soil', b.state === 'grass' ? 0 : wet ? 2 : 1, x, y + sh / 2, sw);
+      if (b.state === 'planted' && SP[b.crop]) { var m = SP[b.crop], ch = 10.5; out += sprite(b.crop, STAGE_FRAME[F.stage(b, today)] || 0, x, y + 2.2, ch * m.w / m.h); }
+      if (near) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (sw / 2 + 0.6) + '" ry="' + (sh / 2) + '" fill="none" stroke="#fff6e8" stroke-width="0.5" stroke-dasharray="1.2 0.9"/>';
+      return '<g class="bed">' + out + '</g>';
+    }
     var soil = b.state === 'grass' ? '#9fb87f' : wet ? '#8a5a3c' : '#b98258';
     out += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="1.6" fill="' + soil + '"/>';
     if (b.state === 'grass') {
@@ -35,6 +53,8 @@
   }
 
   function cushion(x, y, near) {
+    if (SP.misc) return '<ellipse cx="' + x + '" cy="' + (y + 0.4) + '" rx="5.6" ry="1.5" fill="rgba(60,40,30,0.16)"/>' + sprite('misc', 0, x, y + 1.6, 10.5) +
+      (near ? '<ellipse cx="' + x + '" cy="' + y + '" rx="6.6" ry="2.9" fill="none" stroke="#fff6e8" stroke-width="0.45" stroke-dasharray="1.1 0.9"/>' : '');
     return '<ellipse cx="' + x + '" cy="' + (y + 0.6) + '" rx="5.4" ry="1.6" fill="rgba(60,40,30,0.14)"/>' +
       '<ellipse cx="' + x + '" cy="' + y + '" rx="5" ry="1.9" fill="#e9806f"/><ellipse cx="' + x + '" cy="' + (y - 0.5) + '" rx="4" ry="1.1" fill="#f29c8c"/>' +
       (near ? '<ellipse cx="' + x + '" cy="' + y + '" rx="6.4" ry="2.8" fill="none" stroke="#fff6e8" stroke-width="0.45" stroke-dasharray="1.1 0.9"/>' : '');
@@ -51,6 +71,7 @@
   }
 
   function goddess(x, y) { /* a soft figure of light above the pond */
+    if (SP.misc) return '<g class="goddess"><circle cx="' + x + '" cy="' + (y - 9) + '" r="13" fill="url(#halo)"/>' + sprite('misc', 1, x, y + 2, 14) + '</g>';
     return '<g class="goddess"><circle cx="' + x + '" cy="' + (y - 6) + '" r="11" fill="url(#halo)"/>' +
       '<path d="M' + (x - 5) + ' ' + y + ' Q' + x + ' ' + (y - 16) + ' ' + (x + 5) + ' ' + y + ' Z" fill="#f6f1e4" opacity="0.92"/>' +
       '<circle cx="' + x + '" cy="' + (y - 13) + '" r="2.4" fill="#f6f1e4"/>' +

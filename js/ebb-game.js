@@ -24,8 +24,25 @@
     els.plate.src = s.plate; els.plate.alt = s.name;
     els.place.textContent = s.name;
     me.x = at ? at.x : s.start.x; me.y = at ? at.y : s.start.y;
-    path = []; pending = null; sitting = false; me.action = 'idle';
+    path = []; pending = null; sitting = false; me.action = 'idle'; cam.snap = true;
     drawProps();
+  }
+
+  /* ---------- camera: the stage is a square as big as the longer screen side; it follows her and never shows an edge ---------- */
+  var cam = { x: 0, y: 0, W: 0, H: 0, S: 0, snap: true };
+  var still = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function layout() {
+    var r = els.scene.getBoundingClientRect();
+    cam.W = r.width; cam.H = r.height; cam.S = Math.max(r.width, r.height); cam.snap = true;
+    els.stage.style.width = els.stage.style.height = cam.S + 'px';
+  }
+  function follow(dt) {
+    if (!cam.S) layout();
+    var tx = cam.W / 2 - me.x / 100 * cam.S, ty = cam.H * 0.56 - me.y / 100 * cam.S;
+    tx = Math.min(0, Math.max(cam.W - cam.S, tx)); ty = Math.min(0, Math.max(cam.H - cam.S, ty));
+    if (cam.snap || still) { cam.x = tx; cam.y = ty; cam.snap = false; }
+    else { var k = 1 - Math.exp(-dt / 0.2); cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; }
+    els.stage.style.transform = 'translate3d(' + cam.x.toFixed(1) + 'px,' + cam.y.toFixed(1) + 'px,0)';
   }
 
   function drawProps() {
@@ -58,7 +75,7 @@
 
   /* ---------- input ---------- */
   function scenePoint(ev) {
-    var r = els.scene.getBoundingClientRect();
+    var r = els.stage.getBoundingClientRect(); /* the moved square, so taps land in scene percent wherever the camera is */
     return { x: (ev.clientX - r.left) / r.width * 100, y: (ev.clientY - r.top) / r.height * 100 };
   }
   function onTap(ev) {
@@ -69,6 +86,7 @@
     (s.beds || []).forEach(function (b, i) { if (Math.abs(b.x - pt.x) < 7 && Math.abs(b.y - pt.y) < 4.5) target = { pt: { x: b.x, y: b.y + 4.5 }, then: { bed: i } }; });
     s.doors.forEach(function (dr) { if (W.inRect(pt, [dr.rect[0] - 2, dr.rect[1] - 6, dr.rect[2] + 2, dr.rect[3] + 2])) target = { pt: { x: (dr.rect[0] + dr.rect[2]) / 2, y: (dr.rect[1] + dr.rect[3]) / 2 }, then: null }; });
     walkTo(target ? target.pt : pt, target ? target.then : null);
+    if (els.app) els.app.classList.add('moved');
   }
   function walkTo(pt, then) {
     var p = W.plan(st.scene, { x: me.x, y: me.y }, pt);
@@ -140,7 +158,7 @@
     } else if (Date.now() >= busyUntil && me.action === 'work') { me.action = 'idle'; me.tool = 'none'; me.view = 'front'; }
     else if (me.action === 'work') me.phase = (me.phase + dt * 1.6) % 1;
     else me.phase = (me.phase + dt * 0.35) % 1;
-    render();
+    follow(dt); render();
     root.requestAnimationFrame(step);
   }
   function fadeTo(door) {
@@ -177,13 +195,15 @@
   }
 
   function boot() {
-    ['scene', 'plate', 'props', 'me', 'fx', 'prompt', 'toast', 'place', 'hudSeeds', 'hudBasket', 'hudPond'].forEach(function (id) { els[id] = $(id); });
+    ['scene', 'stage', 'plate', 'props', 'me', 'fx', 'prompt', 'toast', 'place', 'hudSeeds', 'hudBasket', 'hudPond'].forEach(function (id) { els[id] = $(id); });
+    els.app = doc.querySelector('.app');
+    root.addEventListener('resize', layout);
     st = S.load();
     if (!st.outfit) st.outfit = P.clean(null);
     els.scene.addEventListener('click', onTap);
     els.prompt.addEventListener('click', function (e) { e.stopPropagation(); useNear(); });
     doc.addEventListener('keydown', keys);
-    $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
+    if ($('wardrobeBtn')) $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
     $('moreBtn').addEventListener('click', function () { var m = $('moreMenu'); m.hidden = !m.hidden; });
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();

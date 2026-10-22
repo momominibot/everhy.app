@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Two objects side by side, nothing touching: left, a round pink meditation floor cushion seen from a high three-quarter view; right, a gentle glowing harvest goddess spirit floating, a kind young woman with long flowing pale teal hair, white and soft gold robes, hands together, warm smile, full body. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 55.3,
+ "bytes": 1653776
+}

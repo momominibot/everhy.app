@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cosy small bathroom seen from a high bird's-eye view looking down at about 55 degrees, like the Animal Crossing New Horizons room camera: back wall and side walls visible, front wall removed, a wide open floor filling the middle and front of the frame. A clawfoot bathtub at the back left, a toilet, a pedestal sink with a round mirror on the back wall, a towel rail, a small wooden cabinet with a wall calendar above it, a plant, a fluffy bath mat, a door in the right wall. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 49.9,
+ "bytes": 1723595
+}

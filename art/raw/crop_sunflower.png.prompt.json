@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Five growth stages of a sunflower in one row left to right, seen from a high three-quarter view, evenly spaced, same scale, nothing touching, each on a tiny mound of soil: a tiny sprout, a two-leaf seedling, a short leafy stem, a tall stem with a closed green bud, a tall blooming yellow sunflower. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 46.3,
+ "bytes": 1061217
+}

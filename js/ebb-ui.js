@@ -26,7 +26,26 @@
     return function close() { wrap.remove(); open = false; };
   }
 
+  /* clay outfits: each shipped sprite set is one complete outfit, shown as a card with its standing front view */
+  var OUTFIT_NAMES = { default: 'Everyday', lilac: 'Lilac sundress', tudung: 'Tudung and baju kurung' };
+  function openClayWardrobe(current, done) {
+    var C = root.EbbClay, CS = root.EbbClaySets, chosen = C.setFor(current), body = doc.createElement('div');
+    body.className = 'outfits';
+    C.sets().forEach(function (name) {
+      var m = CS[name].idle, b = doc.createElement('button');
+      b.type = 'button'; b.className = 'outfit'; b.setAttribute('aria-pressed', String(name === chosen));
+      b.innerHTML = '<svg viewBox="0 0 ' + m.w + ' ' + m.h + '" aria-hidden="true"><image href="' + C.url(name, 'idle') + '" width="' + (m.w * m.frames) + '" height="' + m.h + '"/></svg><span></span>';
+      b.querySelector('span').textContent = OUTFIT_NAMES[name] || name;
+      b.addEventListener('click', function () { chosen = name; body.querySelectorAll('.outfit').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); });
+      body.appendChild(b);
+    });
+    var close = sheet('What to wear', body, [
+      { label: 'Cancel', fn: function () { close(); done(null); } },
+      { label: 'Wear this', primary: true, fn: function () { var o = P.clean(current); o.set = chosen; close(); done(o); } }]);
+  }
+
   function openWardrobe(current, done) {
+    if (root.EbbClay && root.EbbClay.sets().length) return openClayWardrobe(current, done);
     var o = P.clean(current), body = doc.createElement('div');
     body.className = 'wardrobe';
     body.innerHTML = '<svg class="preview" viewBox="-40 -118 80 126" aria-hidden="true"></svg><div class="choices"></div>';
