@@ -23,15 +23,17 @@ def key(img):
     a = np.asarray(img.convert('RGB')).astype(np.float32) / 255
     border = np.concatenate([a[0], a[-1], a[:, 0], a[:, -1]])
     k = np.median(border, axis=0)
-    ch = int(np.argmax(k))  # the key's strongest channel (green, or blue/magenta keys)
-    others = [i for i in range(3) if i != ch]
-    excess = a[..., ch] - np.maximum(a[..., others[0]], a[..., others[1]])
-    kex = k[ch] - max(k[others[0]], k[others[1]])
+    hot = [i for i in range(3) if k[i] > 0.5] or [int(np.argmax(k))]  # green, blue, or magenta (red + blue)
+    cold = [i for i in range(3) if i not in hot]
+    lo_of = lambda x: np.max(x[..., cold], axis=-1) if cold else 0
+    excess = np.min(a[..., hot], axis=-1) - lo_of(a)
+    kex = float(np.min(k[hot]) - (max(k[cold]) if cold else 0))
     hi, lo = kex * 0.75, kex * 0.35
     alpha = np.clip((hi - excess) / max(1e-6, hi - lo), 0, 1)
     spill = np.clip(excess, 0, 1) * (1 - alpha * 0.6)
-    a[..., ch] -= spill
-    return np.dstack([a, alpha])
+    for ch in hot:
+        a[..., ch] -= spill
+    return np.dstack([np.clip(a, 0, 1), alpha])
 
 
 def frames(rgba, count):

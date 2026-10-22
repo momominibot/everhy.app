@@ -70,7 +70,9 @@ def main():
         jobs = []
         if len(sys.argv) > 1:  # a jobs file: [{id, size, prompt, ref?}]
             for j in json.loads(Path(sys.argv[1]).read_text()):
-                jobs.append((j["id"], j["size"], j["prompt"], ROOT / j["ref"] if j.get("ref") else None))
+                refs = j.get("ref") or []
+                refs = [refs] if isinstance(refs, str) else refs
+                jobs.append((j["id"], j["size"], j["prompt"], [ROOT / r for r in refs] or None))
         else:
             for item in json.loads((ROOT / "tools/cosy/items.json").read_text()):
                 jobs.append((item["id"], item["size"], prompt_for(item), ref_for(item)))
@@ -81,8 +83,10 @@ def main():
                 log(f"skip {jid}"); continue
             cmd = [sys.executable, str(GEN), "--out", str(out), "--size", size,
                    "--retries", "0", "--url", "--seed", "77"]
-            if ref:
-                cmd += ["--ref", str(ref)]
+            for r in (ref if isinstance(ref, list) else [ref] if ref else []):
+                if not Path(r).exists():
+                    log(f"missing reference {r} for {jid}"); sys.exit(f"stopped at {jid}: missing reference")
+                cmd += ["--ref", str(r)]
             t0 = time.time()
             p = subprocess.run(cmd + [prompt], capture_output=True, text=True,
                                timeout=150)

@@ -1,0 +1,104 @@
+[
+ {
+  "id": "char_lilac",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png",
+  "prompt": "Character turnaround of the same chibi clay girl as the reference, same face and skin, now wearing a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body, standing, arms relaxed. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_front_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_front.png",
+   "art/raw/char_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_back_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_back.png",
+   "art/raw/char_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_side_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_side.png",
+   "art/raw/char_lilac.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_sit_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_sit.png",
+   "art/raw/char_lilac.png"
+  ],
+  "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_work_lilac",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_work.png",
+   "art/raw/char_lilac.png"
+  ],
+  "prompt": "Redraw the first reference farm work poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress, a cream cardigan tied at the waist and cream sandals. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "char_tudung",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png",
+  "prompt": "Character turnaround of the same chibi clay girl as the reference, same face and skin, now wearing a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body, standing, arms relaxed. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_front_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_front.png",
+   "art/raw/char_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_back_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_back.png",
+   "art/raw/char_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "walk_side_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/walk_side.png",
+   "art/raw/char_tudung.png"
+  ],
+  "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_sit_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_sit.png",
+   "art/raw/char_tudung.png"
+  ],
+  "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ },
+ {
+  "id": "pose_work_tudung",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/pose_work.png",
+   "art/raw/char_tudung.png"
+  ],
+  "prompt": "Redraw the first reference farm work poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting."
+ }
+]
