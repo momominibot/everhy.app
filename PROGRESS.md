@@ -4,33 +4,40 @@ Ebb is the separate gameplay wellness app for Dr Patrick's Ebb spec (plan: https
 Written from scratch: no Rhythme code is copied (Jamie, 22 Oct 2026). Rhythme is only a behavioural reference.
 Design rules: docs/AC-STUDY.md. Blueprint mapping: docs/BLUEPRINT-MAP.md. Hooks for workstreams: docs/EXTENDING.md.
 
-## Look (settled 22 Oct 2026, late evening)
+## Look (settled 22 Oct; rooms widened 23 Oct)
 - Dreamy Animal Crossing inspired clay, every image from Seedream 5.0 pro via tools/run_batch.py (guarded queue).
-- Tall 4:7 plates (768x1344), full phone width, blurred fill above and below; scenes declare `aspect: [4, 7]`,
-  x 0..100 and y 0..175 in one unit. Square scenes still work.
-- Rooms are ONE whole render each (bedroom-dream, bathroom-dream) with fixed spots on the painted objects. The empty
-  shells plus movable pieces exist only behind "Decorate this room" (More menu).
-- The player is the Animal Crossing proportioned girl (art/chars/ac); lilac and tudung outfits are rendering as
-  ac_lilac and ac_tudung. The older chibi sets stay on disk, hidden from the wardrobe.
-- Life layer (js/ebb-life.js): twinkling lights, motes, petals, steam, mist, reaction bubbles.
+- Rooms (bedroom, bathroom, kitchen-living) are ONE isometric cut-away render each, 1024 square, shown at zoom 2.2 so
+  the camera pans around them (Jamie 23 Oct: bigger rooms, not rectangles, including the room and bathroom). Floors
+  are the wooden diamond minus every painted piece; y runs 0..100. The older tall empty shells survive only behind
+  "Decorate this room" (the game swaps plate shape, depth and start with the shell).
+- Outdoors are tall 4:7 plates (y 0..175): spacious four-bed farm, cherry-tree waterfall with a bridge, stone hot
+  spring (23 Oct renders from the Doubao continuation), barn.
+- The player is the original girl redrawn smooth in clay, hoodie and jeans (art/chars/genz); outfits default, lilac,
+  tudung. The big-headed ac sets stay on disk, unused.
+- Life layer (js/ebb-life.js): twinkling window lights, lamp glows, motes, petals, steam, mist, reaction bubbles;
+  atmosphere extension adds the waterfall streams and pond ripples. Six times of day in js/ext/sky.js.
 
-## Merged into main (22 Oct 2026)
+## Merged into main
 settings/offline/export, safety/consent/onboarding, chat logging and cycle chart (pop-ups from room objects), course
-with Erin's voice (Jamie approved), barn/hot spring/fishing on tall plates, world map, day and night with weather,
-ambient and action sound. Node suites: core 346, settings 75, safety 187, log 145, course 134, world 254, map 77,
-sky 63, sound 171.
+with Erin's voice (Jamie approved; three short practices on the cushion before the course starts), barn/hot spring/
+fishing, world map, day and night with weather, ambient and action sound, bag, today (three invitations a day, hearts).
+Node suites (23 Oct): core 399, world 246, map 77, sky 64, sound 273, bag 65, log 145, safety 187, settings 75,
+course 134, today 189. Browser: tools/smoke_doors.py walks every door, spot and bed (37/37); tools/smoke_today.py 27/27.
 
-## In flight (sessions)
-- ebb-integrate: make every browser smoke pass together, tools/run_all_tests.sh.
-- ebb-sound: proximity ambience (waterfall swells near the pond, birds by the trees) and cute UI sounds.
-- ebb-bag (Phase 2): EbbItems registry, state.bag, Bag sheet.
-- ebb-trees (Phase 3): peach trees and daily dig nodes. Art: art/raw/tree_stages.png, dig_items.png (queued).
-- ebb-npc was cancelled by Jamie (no wandering cat).
+## Not on main (branch doubao/2026-10-23-overnight, the Doubao continuation's snapshot)
+Villagers extension (Jamie: no NPC villagers), a second day/night overlay (sky.js already has six phases), the bells
+seed-garden panel (a parallel economy beside the farm), a full-scene video plate (it moved everything).
+
+## Side branches still open
+- claude/ebb-integrate-ebfaf5: WIP smokes together + tools/run_all_tests.sh; conflicts in tools/smoke_sound.py.
+- claude/ebb-occluders-c23e4a: WIP cut-outs for the OLD tall rooms; obsolete now the rooms are isometric renders.
+- ebb-trees, ebb-title, ebb-seats: no commits beyond main (their sessions hit the limit); art/raw/seats.png,
+  tree_stages.png, dig_items.png are rendered and unsliced.
 
 ## Next
-1. Slice ac_lilac and ac_tudung when the batch ends; `python3 tools/build_clay_sets.py`.
-2. Merge integrate, sound, bag, trees when they report; run tools/run_all_tests.sh; Codex review of main.
-3. Painted-room occlusion cutouts (so she can pass behind the floor lamp and plants) if Jamie wants it.
-4. Update the Ebb plan doc to the full world.
+1. Jamie's verdict on the isometric rooms (screenshots sent 23 Oct, about 03:50).
+2. Occlusion in the isometric rooms if wanted (she walks behind the arch-door walls today via solids, not cut-outs).
+3. Trees (Phase 3), title screen, outdoor seats: slice the rendered sheets, build on main.
+4. Codex review of main; update the Ebb plan doc to the full world.
 
 Preview: launch entry "ebb" (port 8096) in ovumind/.claude/launch.json. Phone screenshots: python3 tools/shot.py <prefix> [scenes].
