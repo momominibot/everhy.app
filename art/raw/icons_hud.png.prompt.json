@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Nine small cosy game icons in a 3x3 grid, evenly spaced, same size, not touching: a cloth seed bag tied with string, a woven basket, a glowing white moon pearl, a journal with a ribbon, an open book, a rolled paper map, a music note, a wooden cog, a paint brush with a pink tip. Solid flat pure bright green #00FF00 background. No text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 59.7,
+ "bytes": 1788187
+}
