@@ -66,14 +66,14 @@
     if (!lens.length) { res.status = 'few'; res.label = 'not enough data yet'; }
     else if (lens.length < 3) {
       lo = Math.min.apply(null, lens) - 5; hi = Math.max.apply(null, lens) + 5;
-      res.status = 'early'; res.label = 'early guess, wide range (fewer than 3 cycles)';
+      res.status = 'early'; res.label = 'early guess, wide range, fewer than 3 cycles';
     } else {
       var s = lens.slice().sort(function (a, b) { return a - b; }), med = pct(s, 0.5);
       lo = Math.floor(pct(s, 0.1)); hi = Math.ceil(pct(s, 0.9));
       if (lens.length < 6) { lo -= 2; hi += 2; }
       lo = Math.min(lo, Math.floor(med) - 2); hi = Math.max(hi, Math.ceil(med) + 2);
       res.status = 'ok';
-      res.label = lens.length < 6 ? 'rough estimate (' + lens.length + ' cycles)' : hi - lo <= 6 ? 'fairly steady (' + lens.length + ' cycles)' : 'varies a fair bit (' + lens.length + ' cycles)';
+      res.label = (lens.length < 6 ? 'rough estimate' : hi - lo <= 6 ? 'fairly steady' : 'varies a fair bit') + ', from ' + lens.length + ' cycles';
     }
     if (lo != null) {
       lo = Math.max(lo, 15);
