@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cosy barn interior game room: plank walls, hay bales in the back right corner, a feed trough on the back wall, straw nesting boxes in the back left corner, an open doorway in the left wall near the front. Seen from a high bird's-eye view looking down at about 55 degrees, like the Animal Crossing New Horizons room camera: back wall and side walls visible, front wall removed, a wide open floor filling the middle and front of the frame. Straw on the floorboards. No people, animals or text. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 56.9,
+ "bytes": 1996598
+}

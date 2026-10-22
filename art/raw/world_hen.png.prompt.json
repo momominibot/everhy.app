@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Sprite sheet of one cute round white hen with a small red comb, four poses in one row with wide gaps between them: standing side view facing left, pecking the ground, sitting fluffed up, flapping happily. The same hen in every pose, side-on, each fully visible, no floor, no shadow, no text. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood. Solid flat pure bright green #00FF00 background.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 50.9,
+ "bytes": 1059528
+}

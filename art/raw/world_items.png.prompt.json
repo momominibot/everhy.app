@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Sprite sheet of six separate small game item icons in two rows of three with wide gaps: a brown speckled egg, an opaque white milk bottle with a pink cap, a small blue fish, a medium orange fish, a large pink and silver fish, a soft boiled egg in a little wooden egg cup. Each object centred and fully visible, no floor, no shadow, no text. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood. Solid flat pure bright green #00FF00 background.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 47.3,
+ "bytes": 1287910
+}

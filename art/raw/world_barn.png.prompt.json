@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cosy barn interior game background: honey wooden plank walls, hay bales stacked at the back right, a low feed trough along the back wall in the middle, two straw nesting boxes on a low shelf at the back left, a hanging lantern, an open barn doorway at the far left edge. Seen from the front and slightly above like a side-on game stage, a wide flat open floor of wooden boards with loose straw across the lower third. No people, no animals, no text. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 56.0,
+ "bytes": 1782465
+}
