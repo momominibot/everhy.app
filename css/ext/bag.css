@@ -1,0 +1,39 @@
+/* bag extension: the round Bag button bottom-left above the sound toggle (clear of the first-run hint and the centred
+ * action button), and the bag sheet: items in a grid, grouped by kind. */
+.bag-btn { position: absolute; z-index: 5; left: max(14px, env(safe-area-inset-left)); bottom: calc(max(25px, env(safe-area-inset-bottom) + 15px) + 92px);
+  width: 54px; height: 54px; border: 0; border-radius: 50%; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: var(--card); color: var(--ink); box-shadow: 0 4px 14px rgba(40, 30, 30, 0.18); font: 800 11px var(--font); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bag-btn > svg { width: 22px; height: 22px; color: var(--accent); }
+.bag-btn .bag-pic { width: 30px; height: 30px; }
+.bag-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+html[data-text="large"] .bag-btn { font-size: 12px; }
+html[data-text="larger"] .bag-btn { font-size: 13px; }
+
+.bag-sheet .sheet { max-height: 84vh; gap: 10px; }
+.bag-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.bag-head p { margin: 0; font-weight: 600; font-size: 13px; }
+.bag-sheet .sheet-body { display: flex; flex-direction: column; gap: 12px; }
+.bag-kind h3 { margin: 0 0 2px; font-size: 14px; color: var(--soft); text-transform: uppercase; letter-spacing: 0.04em; }
+.bag-kind p { margin: 0 0 6px; font-size: 13px; }
+.bag-empty { padding: 10px 12px; border: 1.5px dashed var(--line); border-radius: 14px; }
+.bag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.bag-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 8px; min-height: 104px;
+  border: 2px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); font: 700 12px/1.2 var(--font); text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.bag-item:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.bag-name { display: block; max-width: 100%; overflow-wrap: anywhere; }
+.bag-count { position: absolute; top: 6px; right: 6px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; display: grid; place-items: center;
+  background: var(--accent); color: #fff; font: 800 12px var(--font); font-variant-numeric: tabular-nums; }
+
+/* an icon cell: a soft disc with the item's first letter under the clay picture, so a missing picture still reads */
+.bag-pic { position: relative; display: grid; place-items: center; width: 56px; height: 56px; flex: none; }
+.bag-letter { position: absolute; inset: 4px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); font: 800 20px var(--font); }
+.bag-ico { position: relative; display: block; width: 100%; height: 100%; }
+.bag-pic.big { width: 96px; height: 96px; }
+.bag-pic.big .bag-letter { font-size: 34px; }
+
+.bag-detail { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: start; }
+.bag-words { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.bag-words h3 { margin: 0; font-size: 19px; }
+.bag-words p { margin: 0; }
+.bag-held { font-weight: 700; color: var(--soft); }
+@media (max-width: 360px) { .bag-detail { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
