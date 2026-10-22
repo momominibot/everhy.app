@@ -64,6 +64,21 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .decobar .btn { min-height: 44px; }
 .decobar .btn.primary { background: var(--teal); border-color: var(--teal); }
 .scene.decorating { cursor: grab; }
+/* life: ambient motion and reaction bubbles */
+.life-twinkle { fill: #fff3c4; animation: twinkle 2.3s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+.life-glow { animation: breathe 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes breathe { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+.life-mote { fill: #fff6e0; opacity: 0; animation: mote 9s linear infinite; }
+.life-pollen { fill: #fff2b8; opacity: 0; animation: mote 9s linear infinite; }
+.life-mist { fill: #ffffff; opacity: 0; animation: mote 5s linear infinite; }
+@keyframes mote { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 0.85; } 85% { opacity: 0.6; } 100% { opacity: 0; transform: translate(1.5px, -14px); } }
+.life-petal { fill: #f6c6d3; animation: petal 7s ease-in-out infinite; }
+@keyframes petal { 0% { opacity: 0; transform: translate(0, 0) rotate(0deg); } 10% { opacity: 1; } 50% { transform: translate(-4px, 20px) rotate(160deg); } 90% { opacity: 0.9; } 100% { opacity: 0; transform: translate(3px, 42px) rotate(330deg); } }
+.life-steam { fill: #ffffff; opacity: 0; animation: steam 4.5s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes steam { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 25% { opacity: 0.55; } 100% { opacity: 0; transform: translate(2px, -22px) scale(1.5); } }
+.life-pop { animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .fall { animation: fall 1.4s linear infinite; }
 @keyframes fall { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -14; } }
 .goddess { animation: rise 4.2s ease both; }
@@ -71,4 +86,4 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .spark { animation: spark 1.6s ease-out both; }
 @keyframes spark { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-14px); } }
 @media (max-width: 420px) { .wardrobe { grid-template-columns: 1fr; } .wardrobe .preview { margin: 0 auto; } .counts { font-size: 12px; gap: 8px; } .place { font-size: 16px; } }
-@media (prefers-reduced-motion: reduce) { .fall, .goddess, .spark { animation: none; } .scene { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fall, .goddess, .spark, .life-twinkle, .life-glow, .life-mote, .life-pollen, .life-mist, .life-petal, .life-steam, .life-pop { animation: none; } .scene { transition: none; } }

@@ -6,8 +6,8 @@
   var SCENES = {
     bedroom: { /* one dreamy render (plate 4:7, so y runs 0..175) with the furniture painted in; `shell` is the empty room she can furnish herself */
       name: 'Bedroom', plate: 'art/plates/bedroom-dream.webp', shell: 'art/plates/bedroom-tall.webp', aspect: [4, 7], indoor: true, depth: [95, 0.25, 175, 0.33],
-      floor: [[16, 95], [84, 95], [86, 175], [14, 175]],
-      solids: [[14, 80, 27, 118], [66, 80, 90, 122], [0, 138, 20, 175], [78, 160, 100, 175]],
+      floor: [[16, 97], [84, 97], [86, 175], [14, 175]],
+      solids: [[28, 50, 64, 97], [14, 80, 28, 119], [66, 80, 90, 123], [0, 138, 21, 175], [77, 160, 100, 175]],
       shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
       shellDoors: [{ id: 'toFarm', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
@@ -15,11 +15,11 @@
         { id: 'toBathroom', rect: [81, 128, 86, 160], to: 'bathroom', arrive: { x: 72, y: 128 }, label: 'Into the bathroom' }
       ],
       spots: [
-        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 45, y: 72 }, stand: { x: 45, y: 100 }, label: 'How did you sleep?' },
-        { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 70, y: 62 }, stand: { x: 60, y: 100 }, label: 'Waking temperature' },
+        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 45, y: 72 }, stand: { x: 45, y: 101 }, label: 'How did you sleep?' },
+        { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 70, y: 62 }, stand: { x: 62, y: 101 }, label: 'Waking temperature' },
         { id: 'desk', kind: 'log', topic: 'mood', at: { x: 80, y: 98 }, stand: { x: 62, y: 108 }, label: 'Write in the journal' },
         { id: 'drawers', kind: 'wardrobe', at: { x: 76, y: 112 }, stand: { x: 62, y: 120 }, label: 'Change clothes' },
-        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 10, y: 55 }, stand: { x: 30, y: 100 }, label: 'Mindfulness course' },
+        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 10, y: 55 }, stand: { x: 32, y: 101 }, label: 'Mindfulness course' },
         { id: 'cushion', kind: 'cushion', at: { x: 47, y: 118 }, stand: { x: 47, y: 130 }, label: 'Sit for a practice' }
       ],
       start: { x: 47, y: 145 }
@@ -27,7 +27,7 @@
     bathroom: {
       name: 'Bathroom', plate: 'art/plates/bathroom-dream.webp', shell: 'art/plates/bathroom-tall.webp', aspect: [4, 7], indoor: true, depth: [88, 0.25, 175, 0.33],
       floor: [[22, 88], [78, 88], [88, 120], [90, 175], [8, 175], [6, 120]],
-      solids: [[8, 70, 26, 118], [63, 78, 84, 100], [72, 100, 96, 125], [40, 133, 68, 150], [12, 125, 36, 150], [70, 140, 90, 160]],
+      solids: [[10, 55, 40, 94], [8, 70, 27, 119], [62, 78, 85, 101], [71, 100, 96, 126], [39, 133, 69, 151], [11, 125, 37, 151], [69, 140, 91, 161]],
       shellFloor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
       shellDoors: [{ id: 'toBedroom', rect: [66, 90, 86, 104] }],
       doors: [{ id: 'toBedroom', rect: [84, 122, 90, 142], to: 'bedroom', arrive: { x: 78, y: 140 }, label: 'Back to the bedroom' }],
