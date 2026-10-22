@@ -20,21 +20,21 @@
     ],
     start: { x: 60, y: 140 }
   });
-  W.register('spring', { /* tall plate: steaming pool upper middle, stone deck from y 91, steps and path out at bottom left */
-    name: 'Hot spring', plate: 'art/plates/spring-tall.webp', aspect: [4, 7], depth: [91, 0.22, 175, 0.33], water: '#6c5641', /* sampled from the pool */
-    floor: [[20, 94], [40, 91], [72, 91], [84, 97], [82, 108], [82, 128], [73, 132], [34, 132], [34, 150], [30, 160], [28, 175],
-      [2, 175], [4, 160], [12, 150], [16, 135], [20, 128]],
-    doors: [{ id: 'toFalls', rect: [2, 158, 26, 175], to: 'waterfall', arrive: { x: 90, y: 118 }, label: 'Back to the waterfall' }],
-    spots: [{ id: 'soak', kind: 'soak', at: { x: 56, y: 72 }, stand: { x: 56, y: 96 }, label: 'Slip into the warm water' }],
-    start: { x: 50, y: 115 }
+  W.register('spring', { /* 23 Oct render: bathing hut top left, the stone pool in the upper middle, a wooden deck below, stepping stones out at the bottom */
+    name: 'Hot spring', plate: 'art/plates/spring_ac.webp', aspect: [4, 7], depth: [76, 0.2, 175, 0.33], water: '#a9dbe8', /* sampled from the pool */
+    floor: [[4, 76], [88, 76], [88, 175], [4, 175]],
+    solids: [[10, 68, 86, 112], [16, 106, 30, 118], [60, 108, 82, 128], [8, 116, 30, 152], [80, 116, 92, 150], [78, 145, 100, 165]], /* pool and rocks, table, bonsai, well, pink lamp, boulder */
+    doors: [{ id: 'toFalls', rect: [36, 171, 62, 175], to: 'waterfall', arrive: { x: 88, y: 106 }, label: 'Back to the waterfall' }],
+    spots: [{ id: 'soak', kind: 'soak', at: { x: 48, y: 92 }, stand: { x: 46, y: 116 }, label: 'Slip into the warm water' }],
+    start: { x: 48, y: 160 }
   });
   W.addDoor('farm', { id: 'toBarn', rect: [0, 118, 6, 134], to: 'barn', arrive: { x: 78, y: 99 }, label: 'Path to the barn' });
-  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 110, 100, 126], to: 'spring', arrive: { x: 24, y: 152 }, label: 'Steam past the trees' });
+  W.addDoor('waterfall', { id: 'toSpring', rect: [93, 100, 100, 112], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Over the little bridge' });
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
   if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
-    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 88, y: 80 }, stand: { x: 88, y: 110 }, float: { x: 73, y: 97 }, label: 'Fish from the pier' });
+    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 70, y: 100 }, stand: { x: 70, y: 116 }, float: { x: 62, y: 102 }, label: 'Fish by the pond' });
   }
-  var SIT_IN_WATER = { x: 56, y: 75.5 };
+  var SIT_IN_WATER = { x: 48, y: 92 };
 
   var doc = root.document;
   if (!doc || !root.EbbGame) return; /* the node harness stops here */

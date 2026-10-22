@@ -17,7 +17,7 @@ function world() { /* a fresh copy of the core world plus the map module, with n
 function addWorld(W) {
   W.register('barn', { name: 'Barn', plate: '', floor: [[10, 53], [17, 46], [27, 44], [78, 45], [92, 65], [90, 84], [60, 96], [8, 77]], start: { x: 22, y: 58 } });
   W.register('spring', { name: 'Hot spring', plate: '', floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]], start: { x: 12, y: 82 } });
-  W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 88, y: 80 }, stand: { x: 88, y: 110 }, label: 'Fish from the pier' });
+  W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 70, y: 100 }, stand: { x: 70, y: 116 }, label: 'Fish by the pond' });
 }
 /* a stand-in for EbbGame.api that records calls in order */
 function fakeApi(scene, log) {
@@ -85,7 +85,7 @@ function fakeApi(scene, log) {
   const fishSpot = W.SCENES.waterfall.spots.filter(sp => sp.id === 'fishing')[0];
   check('pier arrives at the fishing stand point', !!arr && !!fishSpot && log[1][1] === 'waterfall' && arr.x === fishSpot.stand.x && arr.y === fishSpot.stand.y);
   if (arr) arr.x = 0;
-  check('arrival is a copy, not the spot itself', W.SCENES.waterfall.spots.filter(s => s.id === 'fishing')[0].stand.x === 36);
+  check('arrival is a copy, not the spot itself', W.SCENES.waterfall.spots.filter(s => s.id === 'fishing')[0].stand.x === 70);
   check('travel reads the world at tap time', M.status(M.pin('barn'), W.SCENES, 'barn') === 'here');
 })();
 

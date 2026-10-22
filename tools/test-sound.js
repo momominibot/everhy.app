@@ -125,7 +125,7 @@ check('footsteps have no gap (they follow the walk)', S.allowed('step:wood', 30,
 const fall = W.SCENES.waterfall, pond = fall.spots.find(s => s.kind === 'pond');
 const wm = p => S.mixFor('falls', 'waterfall', fall, p);
 check('waterfall: full at the pond', wm(pond.stand).water > 0.95);
-check('waterfall: quiet at the far path', wm(fall.start).water < 0.15);
+check('waterfall: quiet at the far path', wm(fall.start).water < 0.3); /* the 23 Oct plate's path starts nearer the pond */
 let mono = true, prevW = -1;
 for (let i = 0; i <= 20; i++) { const p = { x: fall.start.x + (pond.stand.x - fall.start.x) * i / 20, y: fall.start.y + (pond.stand.y - fall.start.y) * i / 20 }, w = wm(p).water; if (w < prevW - 1e-9) mono = false; prevW = w; }
 check('waterfall: grows steadily as she walks to the pond', mono);

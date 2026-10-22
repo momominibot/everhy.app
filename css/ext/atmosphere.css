@@ -1,0 +1,94 @@
+/* atmosphere extension: animated water, steam, mist and sparkle effects. All keyframes are pure CSS; the SVG
+ * elements carry inline animation-duration and animation-delay for natural staggering. Everything goes still under
+ * prefers-reduced-motion. */
+
+/* falling water streams: dashoffset moves downward */
+.atmo-stream {
+  stroke-dasharray: 3 7;
+  animation: atmo-fall linear infinite;
+}
+@keyframes atmo-fall {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -20; }
+}
+
+/* splash droplets: burst upward and outward, fade */
+.atmo-splash {
+  animation: atmo-splash ease-out infinite;
+  opacity: 0;
+}
+@keyframes atmo-splash {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  20% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -6px) scale(1.2); }
+}
+
+/* pond ripples: expand and fade */
+.atmo-ripple {
+  animation: atmo-ripple ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+@keyframes atmo-ripple {
+  0% { opacity: 0; transform: scale(0.3); }
+  15% { opacity: 0.7; }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* mist: rise and drift, fade in and out */
+.atmo-mist {
+  animation: atmo-mist ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes atmo-mist {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  25% { opacity: 0.5; }
+  75% { opacity: 0.35; }
+  100% { opacity: 0; transform: translate(3px, -16px) scale(1.4); }
+}
+
+/* steam: rise slowly, expand, fade */
+.atmo-steam {
+  animation: atmo-steam ease-out infinite;
+  opacity: 0;
+}
+@keyframes atmo-steam {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  20% { opacity: 0.45; }
+  100% { opacity: 0; transform: translate(1px, -20px) scale(1.6); }
+}
+
+/* water surface shimmer: drift horizontally */
+.atmo-shimmer {
+  animation: atmo-shimmer ease-in-out infinite;
+}
+@keyframes atmo-shimmer {
+  0%, 100% { transform: translateX(0); opacity: 0.25; }
+  50% { transform: translateX(4px); opacity: 0.55; }
+}
+
+/* spray sparkles: twinkle */
+.atmo-spark {
+  animation: atmo-spark 2s ease-in-out infinite;
+}
+@keyframes atmo-spark {
+  0%, 100% { opacity: 0.2; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* the whole waterfall group gets a very subtle sway */
+.atmo-waterfall {
+  animation: atmo-waterfall-sway 6s ease-in-out infinite;
+}
+@keyframes atmo-waterfall-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(0.5px); }
+}
+
+/* reduced motion: freeze everything */
+@media (prefers-reduced-motion: reduce) {
+  .atmo-stream, .atmo-splash, .atmo-ripple, .atmo-mist, .atmo-steam, .atmo-shimmer, .atmo-spark, .atmo-waterfall {
+    animation: none;
+  }
+}

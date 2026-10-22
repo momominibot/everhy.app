@@ -228,7 +228,7 @@
       if (Math.abs(dx) > Math.abs(dy) * 1.2) { me.view = 'side'; me.flip = dx < 0; } else { me.view = dy > 0 ? 'front' : 'back'; me.flip = false; }
       me.action = 'walk'; me.tool = 'none';
       if (dist <= v) { me.x = tgt.x; me.y = tgt.y; path.shift(); } else { me.x += dx / dist * v; me.y += dy / dist * v; }
-      me.phase = (me.phase + dt * 1.3) % 1;
+      me.phase = (me.phase + dt * 0.7) % 1;
       var door = W.doorAt(st.scene, me);
       if (door) { fadeTo(door); return root.requestAnimationFrame(step); }
       if (!path.length) { me.action = 'idle'; me.view = 'front'; var p = pending; pending = null; if (p) act(p); }

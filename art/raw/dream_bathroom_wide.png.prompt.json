@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A big, airy, L-shaped dreamy pastel bathroom, seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing room camera: no ceiling, no front wall, walls only along the back and the two far sides, and the floor filling most of the frame as a wide open space to walk. Back left: a pink clawfoot bathtub with bubbles under a round window, candles and plants on a ledge. Back right: a double pedestal sink with a wide round mirror, tiny plants and jars. Left wall: a toilet, a towel rail with soft towels, a wicker laundry basket. Right wall, in an alcove: a small wooden cabinet with a wall calendar above it, a stool, a tall plant. A fluffy bath mat in the middle and a soft rug. Door in the right wall. No people, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm glowing light, gentle bloom, pastel pink, cream, lilac, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 56.0,
+ "bytes": 1757622
+}

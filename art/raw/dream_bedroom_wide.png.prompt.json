@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A big, airy, L-shaped dreamy girl's bedroom, seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing room camera: no ceiling, no front wall, walls only along the back and the two far sides, and the floor filling most of the frame as a wide open space to walk. Back left: a bed with a pink quilt and heart cushions under a round window ringed with fairy lights, a bedside table with a little lamp. Back right, in a cosy alcove: a reading nook with a window seat, cushions, a bookshelf with plush toys, a small writing desk with an open journal. Left wall: a wardrobe and a tall plant. Right wall: a chest of drawers, a floor lamp, a framed picture. A big round pink rug in the middle with a meditation cushion. Arched door in the left wall, door in the right wall. No people, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm glowing light, gentle bloom, pastel pink, cream, lilac, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 79.2,
+ "bytes": 1854870
+}

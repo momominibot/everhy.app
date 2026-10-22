@@ -256,13 +256,18 @@
   /* ---------- the bedroom cushion ---------- */
   function cushion(spot, api) {
     var sitAt = { x: spot.at.x, y: spot.at.y + 0.2 }, up = function () { api.stand(spot.stand.y); };
-    if (!K() || K().cushionMode(course(api)) !== 'course') { /* the course has not started: the simple practice, as before */
-      api.sit(sitAt); root.EbbUi.openPractice(up); return;
-    }
     api.sit(sitAt);
-    var c = course(api), P = T().PRACTICES, nodes = [para('Week ' + c.weekReached + ' of the course. Choose a practice.')];
+    var c = course(api), P = T().PRACTICES;
+    var courseActive = K() && K().cushionMode(c) === 'course';
+    /* before the course starts, offer three short voice-guided practices; after, the course's own unlocked set */
+    var ids = courseActive ? K().openPractices(c) : ['arrive', 'breath', 'sound'];
+    var intro = courseActive
+      ? para('Week ' + c.weekReached + ' of the course. Choose a practice.')
+      : para('A short guided practice with Erin’s voice. You can pause or end at any time.');
+    var nodes = [intro];
     var cards = el('div', 'course-cards');
-    K().openPractices(c).forEach(function (id) {
+    ids.forEach(function (id) {
+      if (!P[id]) return;
       var p = P[id], b = el('button', 'course-card'); b.type = 'button'; b.dataset.practice = id;
       b.appendChild(icon(p.icon, p.title.charAt(0)));
       var tx = el('span', 'cw-text'); tx.appendChild(el('b', '', p.title)); tx.appendChild(el('small', '', p.minutes + ' min. ' + p.blurb)); b.appendChild(tx);

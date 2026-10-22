@@ -15,15 +15,15 @@
   function sets() { return FAMILY.filter(has); }
 
   function pick(pose) {
-    var p = pose || {}, view = IDLE[p.view] !== undefined ? p.view : 'front', phase = p.phase || 0, breathe = 0;
+    var p = pose || {}, view = IDLE[p.view] !== undefined ? p.view : 'front', phase = p.phase || 0, breathe = 0, bob = 0;
     var strip = 'idle', frame = IDLE[view], flip = view === 'side' && !!p.flip;
-    if (p.action === 'walk') { strip = 'walk_' + view; frame = Math.floor(phase * 8) % 8; }
+    if (p.action === 'walk') { strip = 'walk_' + view; frame = Math.floor(phase * 8) % 8; bob = Math.abs(Math.sin(phase * Math.PI * 2)) * 1.1; }
     else if (p.action === 'sit') { strip = 'sit'; frame = 0; flip = false; breathe = Math.sin(phase * Math.PI * 2); }
     else if (p.action === 'work' && p.tool && p.tool !== 'none') {
       strip = 'work'; flip = !!p.flip; /* work poses face right */
       frame = p.tool === 'can' ? 0 : p.tool === 'hoe' ? (phase < 0.5 ? 1 : 2) : 3;
     } else breathe = Math.sin(phase * Math.PI * 2);
-    return { strip: strip, frame: frame, flip: flip, breathe: breathe };
+    return { strip: strip, frame: frame, flip: flip, breathe: breathe, bob: bob };
   }
 
   function url(set, strip) { return 'art/chars/' + set + '/' + strip + '.webp'; }
@@ -53,7 +53,7 @@
       c.img.setAttribute('href', url(set, k.strip));
       c.img.setAttribute('width', m.w * m.frames); c.img.setAttribute('height', m.h);
     }
-    var tf = 'scale(' + (k.flip ? -1 : 1) + ' ' + (1 + k.breathe * 0.012).toFixed(4) + ')';
+    var tf = 'translate(0,' + (-k.bob).toFixed(2) + ') scale(' + (k.flip ? -1 : 1) + ' ' + (1 + k.breathe * 0.012).toFixed(4) + ')';
     if (tf !== c.tf) { c.tf = tf; c.body.setAttribute('transform', tf); }
     return true;
   }

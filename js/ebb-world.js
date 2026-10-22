@@ -45,7 +45,7 @@
         [64, 68, 92, 100], [66, 92, 82, 118], [83, 90, 94, 112], [82, 108, 100, 126]],
       doors: [
         { id: 'toBedroom', rect: [0, 78, 6, 104], to: 'bedroom', arrive: { x: 22, y: 128 }, label: 'To the bedroom' },
-        { id: 'toFarm', rect: [95, 76, 100, 104], to: 'farm', arrive: { x: 44, y: 112 }, label: 'Out to the farm' }
+        { id: 'toFarm', rect: [95, 76, 100, 104], to: 'farm', arrive: { x: 88, y: 84 }, label: 'Out to the farm' }
       ],
       spots: [
         { id: 'kettle', kind: 'tea', at: { x: 51, y: 60 }, stand: { x: 51, y: 75 }, label: 'Make a warm cup' },
@@ -56,29 +56,35 @@
       ],
       arriveFix: {}, start: { x: 50, y: 125 }
     },
-    farm: { /* one painted farm: shed and jars behind the fence, five raised beds in the sandy garden, a stone path leaving bottom right */
-      name: 'Farm', plate: 'art/plates/farm-garden.webp', aspect: [4, 7], depth: [92, 0.22, 175, 0.33],
-      floor: [[2, 92], [72, 92], [72, 112], [100, 118], [100, 175], [2, 175]],
-      solids: [[22, 93, 59, 110], [0, 106, 37, 131], [51, 113, 91, 146], [0, 131, 29, 161], [33, 136, 79, 166], [72, 92, 100, 117]],
-      doorFix: { toBarn: { rect: [0, 163, 6, 175], arrive: { x: 10, y: 170 } } }, arriveFix: { barn: { x: 10, y: 170 }, waterfall: { x: 96, y: 136 } }, /* the world extension's barn door, moved onto this plate's free left edge */
+    farm: { /* spacious painted farm (23 Oct render): shed and seed jars top left, fence across the back, four raised beds on wide sandy paths, a stone path down the right edge */
+      name: 'Farm', plate: 'art/plates/farm-garden.webp', aspect: [4, 7], depth: [74, 0.22, 175, 0.33],
+      floor: [[2, 74], [98, 74], [98, 175], [2, 175]],
+      /* the shed, then each bed box with a margin above it so she never stands "behind" painted soil */
+      solids: [[5, 55, 33, 76], [24, 80, 57, 101], [55, 91, 91, 116], [6, 97, 41, 124], [36, 110, 78, 143]],
+      doorFix: { toBarn: { rect: [0, 163, 6, 175], arrive: { x: 10, y: 170 } } }, arriveFix: { barn: { x: 10, y: 170 }, waterfall: { x: 88, y: 150 } }, /* the world extension's barn door, moved onto this plate's free left edge */
       doors: [
-        { id: 'toHouse', rect: [60, 92, 71, 95], to: 'living', arrive: { x: 80, y: 121 }, label: 'Back inside' },
-        { id: 'toFalls', rect: [93, 150, 100, 166], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
+        { id: 'toHouse', rect: [78, 74, 98, 78], to: 'living', arrive: { x: 80, y: 121 }, label: 'Back inside' },
+        { id: 'toFalls', rect: [92, 140, 100, 160], to: 'waterfall', arrive: { x: 46, y: 166 }, label: 'Path to the waterfall' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 52, y: 60 }, stand: { x: 65, y: 99 }, label: 'Seeds from the jars' }],
-      /* bed centres and widths on the painted soil; crops and water show on top of the painting */
-      beds: [{ x: 40, y: 101, w: 30, stand: { x: 40, y: 113 } }, { x: 17, y: 119, w: 30, stand: { x: 44, y: 124 } }, { x: 71, y: 129, w: 32, stand: { x: 45, y: 132 } },
-        { x: 14, y: 146, w: 26, stand: { x: 14, y: 166 } }, { x: 54, y: 151, w: 40, stand: { x: 54, y: 170 } }],
-      start: { x: 44, y: 120 }
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 18, y: 66 }, stand: { x: 18, y: 86 }, label: 'Seeds from the jars' }],
+      /* bed centres and widths on the painted soil; crops and water show on top of the painting. Stand points sit beside
+       * each bed on open sand (the beds zig-zag, so the pocket below the first bed is sealed off) */
+      beds: [
+        { x: 40, y: 93, w: 32, stand: { x: 17, y: 94 } },
+        { x: 73, y: 106, w: 34, stand: { x: 84, y: 121 } },
+        { x: 23, y: 113, w: 35, stand: { x: 22, y: 131 } },
+        { x: 57, y: 129, w: 42, stand: { x: 57, y: 150 } }
+      ],
+      start: { x: 50, y: 160 }
     },
-    waterfall: { /* tall plate: the falls and pond across the top, the meadow below, a sandy path from the bottom left */
-      name: 'Waterfall', plate: 'art/plates/waterfall-tall.webp', aspect: [4, 7], depth: [106, 0.22, 175, 0.33],
-      floor: [[2, 108], [98, 108], [98, 175], [2, 175]],
-      solids: [[38, 140, 56, 150]],
-      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 96, y: 136 }, label: 'Back to the farm' }],
-      spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 94 }, stand: { x: 50, y: 110 }, label: 'Offer to the pond' }],
-      fall: { x: 44, y0: 42, x1: 54, y1: 86 },
-      start: { x: 14, y: 165 }
+    waterfall: { /* 23 Oct render: cherry trees on the cliff, the falls into a round pond, a wishing well on the left, a little bridge over the stream on the right, the path out at the bottom */
+      name: 'Waterfall', plate: 'art/plates/waterfall_ac.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33],
+      floor: [[2, 109], [68, 109], [68, 100], [98, 100], [98, 175], [2, 175]], /* the meadow plus the bridge deck */
+      solids: [[17, 86, 72, 109], [10, 96, 27, 118], [78, 113, 100, 126]], /* pond, well, the stream below the bridge */
+      doors: [{ id: 'toFarm', rect: [34, 171, 58, 175], to: 'farm', arrive: { x: 88, y: 150 }, label: 'Back to the farm' }],
+      spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 96 }, stand: { x: 50, y: 114 }, label: 'Offer to the pond' }],
+      fall: { x: 42, y0: 56, x1: 58, y1: 90 },
+      start: { x: 46, y: 165 }
     }
   };
 

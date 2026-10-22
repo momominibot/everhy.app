@@ -2,25 +2,35 @@
 
 Ebb is the separate gameplay wellness app for Dr Patrick's Ebb spec (plan: https://claude.ai/artifact/EbYrzwTvqTijxffjJqdwjW).
 Written from scratch: no Rhythme code is copied (Jamie, 22 Oct 2026). Rhythme is only a behavioural reference.
+Design rules: docs/AC-STUDY.md. Blueprint mapping: docs/BLUEPRINT-MAP.md. Hooks for workstreams: docs/EXTENDING.md.
 
-## Look
-Jamie chose clay (concept A) on 22 Oct, keeping the clay character turnarounds. The first slice still runs on the
-flat (E) backgrounds and a flat SVG puppet while the clay art is generated.
+## Look (settled 22 Oct 2026, late evening)
+- Dreamy Animal Crossing inspired clay, every image from Seedream 5.0 pro via tools/run_batch.py (guarded queue).
+- Tall 4:7 plates (768x1344), full phone width, blurred fill above and below; scenes declare `aspect: [4, 7]`,
+  x 0..100 and y 0..175 in one unit. Square scenes still work.
+- Rooms are ONE whole render each (bedroom-dream, bathroom-dream) with fixed spots on the painted objects. The empty
+  shells plus movable pieces exist only behind "Decorate this room" (More menu).
+- The player is the Animal Crossing proportioned girl (art/chars/ac); lilac and tudung outfits are rendering as
+  ac_lilac and ac_tudung. The older chibi sets stay on disk, hidden from the wardrobe.
+- Life layer (js/ebb-life.js): twinkling lights, motes, petals, steam, mist, reaction bubbles.
 
-## Done (slice 1, 22 Oct 2026)
-- js/ebb-world.js: three scenes (bedroom, farm, waterfall), floor polygons, doors, spots, own A* planner.
-- js/ebb-farm.js: beds grow by watered days (overnight), nothing decays, 3 free seeds a day, basket.
-- js/ebb-puppet.js: flat cut-out puppet, front/back/side, walk/idle/work/sit, outfit layers, tudung hides hair.
-- js/ebb-ui.js: wardrobe with live preview; 3 or 5 minute sitting practice with anchor choice, pause, end,
-  save finished/partial or not, "That felt hard" path. Practice copy is a draft for teacher review.
-- js/ebb-store.js: versioned local save; practices stored as observations with provenance.
-- tools/test-core.js: 207 node checks pass.
+## Merged into main (22 Oct 2026)
+settings/offline/export, safety/consent/onboarding, chat logging and cycle chart (pop-ups from room objects), course
+with Erin's voice (Jamie approved), barn/hot spring/fishing on tall plates, world map, day and night with weather,
+ambient and action sound. Node suites: core 346, settings 75, safety 187, log 145, course 134, world 254, map 77,
+sky 63, sound 171.
+
+## In flight (sessions)
+- ebb-integrate: make every browser smoke pass together, tools/run_all_tests.sh.
+- ebb-sound: proximity ambience (waterfall swells near the pond, birds by the trees) and cute UI sounds.
+- ebb-bag (Phase 2): EbbItems registry, state.bag, Bag sheet.
+- ebb-trees (Phase 3): peach trees and daily dig nodes. Art: art/raw/tree_stages.png, dig_items.png (queued).
+- ebb-npc was cancelled by Jamie (no wandering cat).
 
 ## Next
-1. Clay art: backgrounds failed once at 62 s (art/BLOCKED.json). Needs Jamie's OK to rerun (plan: text-only prompts).
-2. Clay walk sheets (front, back, side), sit and work poses for the default outfit, then lilac and Erin.
-3. Swap the flat puppet for clay sprite frames; clay props for beds, crops, cushion, Goddess.
-4. Playwright smoke at 390 px; Codex review of the slice.
-5. Then: Ebb's chat-first logging, cycle ring, red-flag rules, consent, per the spec mapping.
+1. Slice ac_lilac and ac_tudung when the batch ends; `python3 tools/build_clay_sets.py`.
+2. Merge integrate, sound, bag, trees when they report; run tools/run_all_tests.sh; Codex review of main.
+3. Painted-room occlusion cutouts (so she can pass behind the floor lamp and plants) if Jamie wants it.
+4. Update the Ebb plan doc to the full world.
 
-Preview: launch entry "ebb" (port 8096) in ovumind/.claude/launch.json.
+Preview: launch entry "ebb" (port 8096) in ovumind/.claude/launch.json. Phone screenshots: python3 tools/shot.py <prefix> [scenes].

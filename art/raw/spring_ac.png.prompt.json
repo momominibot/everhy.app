@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background, fills whole frame edge to edge. A clean Animal Crossing New Horizons style hot spring scene seen from front and above like a side-on game stage. Center: a large round stone pool filled with calm light blue water, surrounded by smooth grey rocks and a wooden deck on one side. Two stone lanterns on either side of the pool. Cherry blossom trees with pink flowers in the background. A small wooden changing shed on the left. Lower area: wooden decking and stone path, open space for a character to walk and sit. No people, no animals, no text. Style: clean Animal Crossing inspired, soft rounded 3D shapes, smooth matte textures, pastel colors, warm daylight, simple and uncluttered.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 54.1,
+ "bytes": 1784636
+}
