@@ -130,8 +130,8 @@ check('index.html loads sky.css once', (html.match(/css\/ext\/sky\.css/g) || [])
 const css = fs.readFileSync(path.join(ROOT, 'css/ext/sky.css'), 'utf8');
 check('the .sky wrapper never forms a stacking context', !/\.sky\s*\{[^}]*(opacity|transform|filter|z-index|isolation|will-change)/.test(css));
 check('reduced motion hides rain and fireflies in CSS too', /prefers-reduced-motion[^{]*\{[^}]*\.sky-rain[^}]*\.sky-flies/.test(css) && /data-motion="reduce"\] \.sky-rain/.test(css));
-const src = fs.readFileSync(path.join(ROOT, 'js/ext/sky.js'), 'utf8') + css;
-check('no em dashes in the sky files', src.indexOf('—') < 0);
+const src = fs.readFileSync(path.join(ROOT, 'js/ext/sky.js'), 'utf8') + css + fs.readFileSync(__filename, 'utf8');
+check('no em dashes in the sky files', src.indexOf(String.fromCharCode(0x2014)) < 0);
 
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
