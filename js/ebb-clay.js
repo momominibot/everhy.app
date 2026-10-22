@@ -9,8 +9,9 @@
   var IDLE = { front: 0, side: 1, back: 2 };
 
   function has(set) { return !!SETS[set]; }
-  function setFor(outfit) { var s = outfit && outfit.set; return has(s) ? s : 'default'; }
-  function sets() { return Object.keys(SETS); }
+  var BASE = SETS.ac ? 'ac' : 'default'; /* the Animal Crossing proportioned girl when she is shipped */
+  function setFor(outfit) { var s = outfit && outfit.set; return has(s) && (s === BASE || s.indexOf(BASE + '_') === 0) ? s : BASE; }
+  function sets() { return Object.keys(SETS).filter(function (s) { return s === BASE || s.indexOf(BASE + '_') === 0; }); }
 
   function pick(pose) {
     var p = pose || {}, view = IDLE[p.view] !== undefined ? p.view : 'front', phase = p.phase || 0, breathe = 0;

@@ -82,7 +82,8 @@ function fakeApi(scene, log) {
   log = [];
   M.travel(M.pin('pier'), fakeApi('farm', log), close);
   const arr = log[1] && log[1][0] === 'enter' ? log[1][2] : null;
-  check('pier arrives at the fishing stand point', !!arr && log[1][1] === 'waterfall' && arr.x === 36 && arr.y === 74);
+  const fishSpot = W.SCENES.waterfall.spots.filter(sp => sp.id === 'fishing')[0];
+  check('pier arrives at the fishing stand point', !!arr && !!fishSpot && log[1][1] === 'waterfall' && arr.x === fishSpot.stand.x && arr.y === fishSpot.stand.y);
   if (arr) arr.x = 0;
   check('arrival is a copy, not the spot itself', W.SCENES.waterfall.spots.filter(s => s.id === 'fishing')[0].stand.x === 36);
   check('travel reads the world at tap time', M.status(M.pin('barn'), W.SCENES, 'barn') === 'here');

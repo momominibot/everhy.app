@@ -1,5 +1,11 @@
 # World extension: barn, hot spring, fishing (22 Oct 2026)
 
+Tall plates (4:7, x 0..100, y 0..175): barn on `art/plates/barn-tall.webp` (indoor, depth [83, 0.27, 175, 0.34], doorway
+in the right wall at [81, 86, 93, 92]); hot spring on `art/plates/spring-tall.webp` (depth [91, 0.22, 175, 0.33], exit
+down the bottom-left path at [2, 158, 26, 175], raised so a thumb can reach it under the camera); farm `toBarn` at
+[0, 118, 6, 134]; waterfall `toSpring` at [94, 110, 100, 126]; fishing from the pier (stand {88, 110}, at {88, 80},
+float in the pond at {73, 97}). The hot spring water drawn over her uses the pool colour sampled from the plate.
+
 Files: `js/ext/world.js` (entry), `js/world/rules.js` (pure rules), `css/ext/world.css`, `art/world/*`,
 `tools/test-world.js` (254 node checks), `tools/smoke_world.py` (24 headless checks at 390 px), `tools/jobs_world.json`.
 
@@ -23,6 +29,12 @@ Files: `js/ext/world.js` (entry), `js/world/rules.js` (pure rules), `css/ext/wor
 Works under main's full-screen follow camera (2355466). Every world card (animals, hot spring, fishing) is a compact
 floating card with no dimming, so the world stays in view. tools/smoke_world.py taps like a player: when a target is
 off screen it taps toward it, lets her walk and the camera follow, then taps it.
+
+## Main's farm (seen by test-world while remapping)
+- The bedroom door's arrival on the tall farm, {19, 77}, is off the farm floor (15 test-world checks start from it).
+- Bed 5's stand point is {14, 174.5}: the planner rounds its goal cell to y 175, which is off the floor, so from the
+  waterfall arrival {94, 136} (where the cobble solid blocks a straight line) there is no path. Moving bed 5 up a little
+  (stand y <= 174) fixes it.
 
 ## For the integrator
 1. The engine's `offer()` names an item with `EbbFarm.CROPS[item].name`, which would throw for eggs, milk or fish.
