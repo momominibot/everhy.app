@@ -1,0 +1,31 @@
+/* Today: the sun button under the top bar, the Today sheet and its three invitations. */
+.today-sun { position: absolute; z-index: 5; top: calc(max(10px, env(safe-area-inset-top)) + 62px); left: max(10px, env(safe-area-inset-left));
+  width: 42px; height: 42px; min-height: 0; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--card) 88%, transparent); box-shadow: 0 4px 14px rgba(40, 30, 30, 0.16); }
+.today-sun svg { width: 24px; height: 24px; display: block; }
+/* the engine's toast starts to the right of the sun so neither covers the other */
+.toast { left: calc(max(14px, env(safe-area-inset-left)) + 50px); }
+
+.today-greet { padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f2c14e 16%, var(--card)); }
+.today-greet p { margin: 0; }
+.today-greet p + p { margin-top: 2px; font-size: 14px; }
+.today-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.today-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.today-item.done { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); }
+.today-icon { flex: none; width: 34px; height: 34px; background-image: url("../../art/ui/icons.webp"); background-repeat: no-repeat;
+  background-size: calc(34px * 9) 34px; background-position: calc(var(--f, 0) * -34px) 0; }
+.today-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.today-text b { font-size: 15px; }
+.today-text small { color: var(--soft); font-size: 12px; }
+.today-tick { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.6); transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.today-tick svg { width: 16px; height: 16px; display: block; }
+.today-item.done .today-tick { opacity: 1; transform: scale(1); }
+.today-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.today-hearts { margin: 2px 0 0; font-weight: 700; }
+.today-hearts b { font-variant-numeric: tabular-nums; }
+.today-line { margin: 0; }
+.today-run { margin: 0; font-size: 13px; }
+html[data-motion="reduce"] .today-tick { transition: none; }
+@media (prefers-reduced-motion: reduce) { .today-tick { transition: none; } }
+html[data-text="large"] .today-text b { font-size: 17px; }
+html[data-text="larger"] .today-text b { font-size: 19px; }
