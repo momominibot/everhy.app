@@ -105,7 +105,7 @@ def main():
         # water the planted bed: she walks to it and the engine does the watering
         bed = page.evaluate("() => EbbWorld.SCENES.farm.beds[0]")
         check('bed 0 wants water', page.evaluate("() => EbbFarm.nextAction(EbbGame.state().farm, 0, EbbStore.today())") == 'water')
-        page.evaluate("b => EbbGame.walkTo({ x: b.x, y: b.y + 4.5 }, { bed: 0 })", bed)
+        page.evaluate("b => EbbGame.walkTo(EbbWorld.bedStand(b), { bed: 0 })", bed)  # the farm's beds carry their own stand points beside the soil
         page.wait_for_function("() => EbbGame.state().farm.beds[0].watered.length === 1", timeout=15000)
         check('the bed is watered today', page.evaluate("() => EbbGame.state().farm.beds[0].watered[0]") == today)
         page.wait_for_function("() => document.querySelector('#counts span b') && [...document.querySelectorAll('#counts span')].some(s => /Hearts/.test(s.textContent) && s.querySelector('b').textContent === '1')", timeout=6000)
