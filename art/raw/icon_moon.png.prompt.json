@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A single app icon object: a chunky rounded crescent moon in soft pink cradling one round glossy cream pearl, two tiny sage leaves sprouting at the moon's lower tip. One object, centred, fully visible, front view, no text, no border, no cast shadow. Solid flat pure bright magenta #FF00FF background. Cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 62.0,
+ "bytes": 1140242
+}

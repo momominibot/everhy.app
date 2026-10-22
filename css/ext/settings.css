@@ -1,0 +1,38 @@
+/* Settings panel and the comfort preferences it sets on <html>: data-motion and data-text. */
+.settings h3 { margin: 0 0 6px; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.settings p { margin: 0 0 8px; }
+.set-group { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.set-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.set-row .btn { flex: 1 1 140px; }
+.quiet label { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.quiet input { font: 600 15px var(--font); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 44px; }
+.quiet input:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.draft { font-size: 12px; font-weight: 700; color: #7a4a00; background: #ffe7b8; border-radius: 999px; padding: 2px 8px; }
+.btn.danger { color: #a23b2c; border-color: #e7b8ae; }
+.btn.danger.solid { background: #a23b2c; border-color: #a23b2c; color: #fff; }
+.confirm { background: var(--bg); border: 1px solid #e7b8ae; border-radius: 14px; padding: 12px; }
+.confirm[hidden] { display: none; }
+@media (prefers-color-scheme: dark) { .draft { color: #ffe7b8; background: #5a3c10; } .btn.danger { color: #ffb4a6; border-color: #7a3b31; } }
+
+/* reduced motion chosen in Settings, whatever the device says */
+html[data-motion="reduce"] .fall, html[data-motion="reduce"] .goddess, html[data-motion="reduce"] .spark { animation: none; }
+html[data-motion="reduce"] .scene { transition: none; }
+html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+
+/* text size: ebb.css sets pixel sizes per element, so each readable element is raised here */
+html[data-text="large"] body { font-size: 17px; }
+html[data-text="larger"] body { font-size: 19px; }
+html[data-text="large"] :is(.btn, .pill, .menu-item, .prompt, .quiet label, .quiet input) { font-size: 17px; }
+html[data-text="larger"] :is(.btn, .pill, .menu-item, .prompt, .quiet label, .quiet input) { font-size: 19px; }
+html[data-text="large"] :is(.hint, .counts, .muted) { font-size: 15px; }
+html[data-text="larger"] :is(.hint, .counts, .muted) { font-size: 17px; }
+html[data-text="large"] :is(.place, .settings h3) { font-size: 19px; }
+html[data-text="larger"] :is(.place, .settings h3) { font-size: 21px; }
+html[data-text="large"] :is(.sheet h2, .run .cue) { font-size: 22px; }
+html[data-text="larger"] :is(.sheet h2, .run .cue) { font-size: 25px; }
+html[data-text="large"] .toast { font-size: 17px; }
+html[data-text="larger"] .toast { font-size: 19px; }
+
+/* the More menu holds the panels; ebb.css gives .menu display:flex, which beats the hidden attribute, so the menu
+   showed all the time. Integrator: move this line into css/ebb.css. */
+.menu[hidden] { display: none; }
