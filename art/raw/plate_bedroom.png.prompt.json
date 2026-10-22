@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cosy bedroom game background. Seen straight from the front and slightly above like a side-on game stage, the floor a wide flat open area across the lower half so a character can walk left and right. No people, no animals, no text, no user interface. A bed on the left, a round window at the back wall with a soft sunset, a leafy plant, a small bookshelf, an open doorway on the right edge. Style: modern flat vector illustration for a calm premium wellness game, simple clean shapes, subtle paper grain, soft coral, warm sand, cream and deep teal, generous empty space, no outlines.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 49.6,
+ "bytes": 1928337
+}

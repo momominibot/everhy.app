@@ -1,0 +1,32 @@
+[
+ {
+  "id": "walk_front",
+  "prompt": "Walk cycle sprite sheet of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers), walking towards the viewer, front view, legs and arms alternating through a full step. Eight frames in two rows of four, evenly spaced, every frame the same size with feet on the same baseline in its row, nothing touching. No text, no floor, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png"
+ },
+ {
+  "id": "walk_back",
+  "prompt": "Walk cycle sprite sheet of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers), walking away from the viewer, back view, legs and arms alternating through a full step. Eight frames in two rows of four, evenly spaced, every frame the same size with feet on the same baseline in its row, nothing touching. No text, no floor, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png"
+ },
+ {
+  "id": "walk_side",
+  "prompt": "Walk cycle sprite sheet of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers), walking to the right, side view, legs and arms alternating through a full step. Eight frames in two rows of four, evenly spaced, every frame the same size with feet on the same baseline in its row, nothing touching. No text, no floor, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png"
+ },
+ {
+  "id": "pose_sit",
+  "prompt": "Two poses of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers): left, sitting cross-legged on the floor facing the viewer with hands resting on knees and eyes gently closed; right, the same pose breathing in with shoulders slightly lifted. Same size, side by side, nothing touching. No text, no cushion, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png"
+ },
+ {
+  "id": "pose_work",
+  "prompt": "Four poses of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers) in side view facing right, in a row: holding a small watering can tilted forward, raising a garden hoe, bringing the hoe down to the ground, crouching to pick a vegetable. Same size, evenly spaced, nothing touching. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+  "size": "1024x1024",
+  "ref": "art/raw/char_player_default.png"
+ }
+]

@@ -1,0 +1,20 @@
+[
+ {
+  "id": "clay_bedroom",
+  "size": "1024x1024",
+  "ref": "art/plates/bedroom.webp",
+  "prompt": "A cosy bedroom game background with the same layout as the reference: bed on the left, round window on the back wall, a leafy plant, a small bookshelf, an open doorway at the right edge. Seen from the front and slightly above like a side-on game stage, the floor a wide flat open area across the lower third so a character can walk left and right. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay diorama, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "clay_farm",
+  "size": "1024x1024",
+  "ref": "art/plates/farm.webp",
+  "prompt": "A small farm field game background with the same layout as the reference: a little wooden shed on the left, a fence along the back, rolling hills, flat open soil in front, a path leaving at the right edge. Seen from the front and slightly above like a side-on game stage, the floor a wide flat open area across the lower third so a character can walk left and right. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay diorama, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "clay_waterfall",
+  "size": "1024x1024",
+  "ref": "art/plates/waterfall.webp",
+  "prompt": "A peaceful forest clearing with the same layout as the reference: a gentle waterfall falling into a round pond at the back centre, smooth stones, trees, flat grass in front, a path leaving at the lower left. Seen from the front and slightly above like a side-on game stage, the floor a wide flat open area across the lower third so a character can walk left and right. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay diorama, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ }
+]

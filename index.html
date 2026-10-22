@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ebb</title>
+<link rel="stylesheet" href="css/ebb.css">
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <span class="place" id="place">Bedroom</span>
+    <span class="counts" aria-label="Your things">
+      <span title="Seeds">Seeds <b id="hudSeeds">0</b></span>
+      <span title="Basket">Basket <b id="hudBasket">0</b></span>
+      <span title="Offerings">Pond <b id="hudPond">0</b></span>
+    </span>
+    <button type="button" class="btn small" id="wardrobeBtn">Wardrobe</button>
+  </header>
+  <div class="scene" id="scene" aria-label="Game scene. Tap the floor to walk.">
+    <img id="plate" alt="" draggable="false">
+    <svg class="layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <defs><radialGradient id="halo"><stop offset="0" stop-color="#fff6d8" stop-opacity="0.9"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient></defs>
+      <g id="props"></g>
+      <g id="me"></g>
+      <g id="fx"></g>
+    </svg>
+    <p class="toast" id="toast" role="status" hidden></p>
+  </div>
+  <div class="actionbar"><button type="button" class="prompt" id="prompt" hidden></button></div>
+  <p class="hint">Tap the floor to walk. Tap a bed, the shed, the cushion or the pond to use it.</p>
+</main>
+<script src="js/ebb-puppet.js"></script>
+<script src="js/ebb-world.js"></script>
+<script src="js/ebb-farm.js"></script>
+<script src="js/ebb-store.js"></script>
+<script src="js/ebb-props.js"></script>
+<script src="js/ebb-ui.js"></script>
+<script src="js/ebb-game.js"></script>
+</body>
+</html>

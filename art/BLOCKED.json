@@ -1,0 +1,7 @@
+{
+ "item": "clay_bedroom",
+ "rc": 5,
+ "stdout": "",
+ "stderr": "connection error (RemoteDisconnected): Remote end closed connection without response; attempt 1/1 after 62.1s\n",
+ "at": "Thu Oct 22 21:55:37 2026"
+}
