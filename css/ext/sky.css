@@ -1,0 +1,52 @@
+/* Ebb sky: time-of-day light and gentle weather (js/ext/sky.js).
+ * .sky sits in #stage between the plate and the SVG layer. It and its wrappers must never form a stacking context
+ * (no opacity, transform, filter, z-index or isolation on them), or the blend modes inside would blend with nothing
+ * instead of the plate. Strength is set per blended element instead, through --sky-lamp or its own opacity. */
+.sky { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.sky-shade, .sky-glow, .sky-vignette, .sky-windows, .sky-lights, .sky-flies { position: absolute; inset: 0; pointer-events: none; }
+
+/* outdoors: the plate multiplied by the hour's colour, plus a soft light screened in from the sky */
+.sky-shade { mix-blend-mode: multiply; background-color: rgb(255 255 255); transition: background-color 1.6s ease; }
+.sky-glow { --sky-glow: 255 200 160; mix-blend-mode: screen; opacity: 0; transition: opacity 1.6s ease;
+  background: linear-gradient(to bottom, rgb(var(--sky-glow)) 0%, rgb(var(--sky-glow) / 0.42) 38%, rgb(var(--sky-glow) / 0) 70%); }
+
+/* indoors at night: a warm room, darker in the corners, lit by its lamps; daylight in the windows turns to night */
+.sky-vignette { mix-blend-mode: multiply; opacity: 0; transition: opacity 1.6s ease;
+  background: radial-gradient(ellipse 72% 66% at 50% 50%, rgb(255 240 222), rgb(252 226 202) 52%, rgb(196 166 172)); }
+.sky-window { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; mix-blend-mode: multiply;
+  opacity: var(--sky-lamp, 0); transition: opacity 1.6s ease;
+  background: radial-gradient(closest-side, rgb(78 92 150) 0%, rgb(92 106 160) 86%, rgb(255 255 255 / 0) 100%); }
+
+/* pools of warm light: one at her feet outdoors after dark, one at each lamp indoors */
+.sky-light { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; mix-blend-mode: screen;
+  opacity: var(--sky-lamp, 0); transition: opacity 1.6s ease; }
+.sky-light.her { background: radial-gradient(closest-side, rgb(255 214 156 / 0.62), rgb(255 200 136 / 0.26) 50%, rgb(255 190 120 / 0)); }
+.sky-light.lamp { background: radial-gradient(closest-side, rgb(255 214 150 / 0.72), rgb(255 196 122 / 0.28) 42%, rgb(255 186 112 / 0)); }
+
+/* fireflies by the waterfall on dry nights: a few dots that drift and glow, nothing more */
+.sky-flies i { position: absolute; width: 0.65%; aspect-ratio: 1; margin: -0.32% 0 0 -0.32%; border-radius: 50%;
+  background: #fff8b8; box-shadow: 0 0 6px 3px rgb(255 236 140 / 0.85), 0 0 18px 8px rgb(255 226 120 / 0.28);
+  animation-timing-function: ease-in-out, ease-in-out; animation-iteration-count: infinite, infinite; animation-direction: alternate, normal; }
+.sky-flies i.f0 { animation-name: sky-fly-a, sky-blink; }
+.sky-flies i.f1 { animation-name: sky-fly-b, sky-blink; }
+.sky-flies i.f2 { animation-name: sky-fly-c, sky-blink; }
+@keyframes sky-fly-a { 0% { transform: translate(0, 0); } 35% { transform: translate(9px, -7px); } 70% { transform: translate(-4px, -13px); } 100% { transform: translate(5px, 2px); } }
+@keyframes sky-fly-b { 0% { transform: translate(0, 0); } 40% { transform: translate(-10px, -5px); } 75% { transform: translate(-3px, 8px); } 100% { transform: translate(7px, -9px); } }
+@keyframes sky-fly-c { 0% { transform: translate(0, 0); } 30% { transform: translate(6px, 9px); } 65% { transform: translate(12px, -4px); } 100% { transform: translate(-6px, -8px); } }
+@keyframes sky-blink { 0%, 100% { opacity: 0.12; } 40% { opacity: 1; } 62% { opacity: 0.85; } }
+
+/* light rain over the visible screen only: two tiled streak layers sliding down, under the top bar and buttons */
+.sky-rain { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.sky-rain i { position: absolute; left: 0; right: 0; top: -260px; bottom: 0; background-repeat: repeat; will-change: transform;
+  animation: sky-rain 0.8s linear infinite; }
+.sky-rain i.far { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='260'%3E%3Cg stroke='rgba(236,243,255,0.4)' stroke-width='1' stroke-linecap='round' fill='none'%3E%3Cpath d='M10 253l-1 9'/%3E%3Cpath d='M10 -7l-1 9'/%3E%3Cpath d='M29 146l-1 9'/%3E%3Cpath d='M46 68l-1 10'/%3E%3Cpath d='M73 204l-1 9'/%3E%3Cpath d='M87 124l-1 11'/%3E%3Cpath d='M114 18l-1 11'/%3E%3Cpath d='M129 166l-1 12'/%3E%3C/g%3E%3C/svg%3E"); }
+.sky-rain i.near { animation-duration: 0.5s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='260'%3E%3Cg stroke='rgba(236,243,255,0.52)' stroke-width='1.4' stroke-linecap='round' fill='none'%3E%3Cpath d='M24 258l-1 18'/%3E%3Cpath d='M24 -2l-1 18'/%3E%3Cpath d='M64 163l-1 18'/%3E%3Cpath d='M122 79l-1 19'/%3E%3Cpath d='M157 221l-1 17'/%3E%3C/g%3E%3C/svg%3E"); }
+@keyframes sky-rain { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, 260px, 0); } }
+
+/* on a scene change the new light lands at once, under the engine's fade */
+.sky.snap *, .sky.snap { transition: none !important; }
+
+/* reduced motion: a still tint only, no falling rain or drifting fireflies */
+@media (prefers-reduced-motion: reduce) { .sky-rain, .sky-flies { display: none !important; } .sky * { transition: none !important; } }
+html[data-motion="reduce"] .sky-rain, html[data-motion="reduce"] .sky-flies { display: none !important; }
+html[data-motion="reduce"] .sky * { transition: none !important; }
