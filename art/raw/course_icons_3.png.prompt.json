@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Three round cream clay medallion tiles in one row, same size, evenly spaced, not touching, each with one raised pastel motif: a soft heart with two small leaves; a glowing lantern; a little brass bell. Solid flat pure bright green #00FF00 background. No text, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 50.8,
+ "bytes": 1705470
+}

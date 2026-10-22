@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Slice a green-screen pose sheet into a normalised sprite strip for Ebb.
 
-Usage: slice_sheet.py sheet.png out_prefix --count N [--ref ref.webp --match height|head] [--height 300]
+Usage: slice_sheet.py sheet.png out_prefix --count N [--ref ref.webp --match height|head | --scale S] [--height 300]
                       [--centre box|head] [--order rows|cols]
 
 - the key colour is the median of the sheet's border, so off-green backgrounds key cleanly;
@@ -103,11 +103,14 @@ def main():
     ap.add_argument('--ref'); ap.add_argument('--match', choices=['height', 'head'], default='height')
     ap.add_argument('--height', type=int, default=300)
     ap.add_argument('--centre', choices=['box', 'head'], default='box')
+    ap.add_argument('--scale', type=float, help='a fixed scale, e.g. to cut an outfit edit exactly like its base sheet')
     a = ap.parse_args()
     crops = frames(key(Image.open(a.sheet)), a.count)
     heights = sorted(c.shape[0] for c in crops)
     med_h = heights[len(heights) // 2]
-    if a.ref:
+    if a.scale:
+        scale = a.scale
+    elif a.ref:
         ref = np.asarray(Image.open(a.ref).convert('RGBA')).astype(np.float32) / 255
         ys = np.where((ref[..., 3] > 0.5).any(1))[0]
         if a.match == 'height':
