@@ -1,0 +1,32 @@
+[
+ {
+  "id": "tall_bedroom",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. An empty cosy bedroom seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing New Horizons room camera: back wall across the top, both side walls running down the sides, no front wall, no ceiling, the floor filling the whole lower two thirds of the frame. Pink walls, a round window and two wall lamps on the back wall, an arched door in the left wall, a door in the right wall, clear honey wooden floorboards, no furniture, no rug. No people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "tall_bathroom",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. An empty cosy bathroom seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing New Horizons room camera: back wall across the top, both side walls running down the sides, no front wall, no ceiling, the floor filling the whole lower two thirds of the frame. Soft pastel tiled walls, a small round window on the back wall, a door in the right wall, clear pale tiled floor, no fixtures, no furniture. No people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "tall_farm",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. A small farm seen from the front and above like a side-on game stage: sky and soft hills across the top, a little wooden shed with jars on the left, a fence along the middle, a wide flat open soil yard filling the lower half so a character can walk, a stone path leaving at the right edge. No people, no animals, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "tall_waterfall",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. A peaceful forest clearing seen from the front and above: a waterfall falling into a round stone-edged pond in the upper middle, trees behind, a wide flat grass meadow filling the lower half so a character can walk, a sandy path leaving at the lower left. No people, no animals, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "tall_barn",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. An empty cosy wooden barn interior seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing New Horizons room camera: back wall across the top, both side walls running down the sides, no front wall, no ceiling, the floor filling the whole lower two thirds of the frame. Warm plank walls, a hay loft ladder on the back wall, a round hay bale in a corner, a wide open door in the right wall, clear plank floor with a little straw. No animals, no people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "tall_spring",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, no border, no margins. A hot spring in a rocky glade seen from the front and above: a steaming round pool with smooth stone edges in the upper middle, pink blossom trees and rocks behind, a wide flat stone-paved deck filling the lower half so a character can walk, a path leaving at the lower left. No people, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood."
+ }
+]

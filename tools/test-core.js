@@ -43,6 +43,8 @@ check('clay idle views', ['front', 'side', 'back'].map(v => C.pick({ view: v }).
 check('clay tools', ['can', 'hoe', 'seed', 'pick'].map(t => C.pick({ action: 'work', tool: t, phase: 0.7 }).frame).join() === '0,2,3,3');
 check('clay offering is the idle back view', C.pick({ action: 'work', tool: 'none', view: 'back' }).strip === 'idle');
 check('clay sit', C.pick({ action: 'sit', view: 'front' }).strip === 'sit');
+check('every floor fits its plate', Object.keys(W.SCENES).every(id => W.SCENES[id].floor.every(p => p[0] >= 0 && p[0] <= 100 && p[1] >= 0 && p[1] <= W.units(id))));
+check('square scenes are 100 units tall', W.units('farm') === 100);
 check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => W.scaleAt(70, id) < W.scaleAt(95, id)));
 
 /* world: every start, door arrival and stand point is walkable and reachable from the start */

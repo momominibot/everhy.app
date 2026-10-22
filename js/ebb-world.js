@@ -49,6 +49,10 @@
     return inside;
   }
   function inRect(pt, r) { return pt.x >= r[0] && pt.x <= r[2] && pt.y >= r[1] && pt.y <= r[3]; }
+  /* a scene's plate may be taller than wide: x runs 0..100 across the plate and y runs 0..units(scene) down it, in the
+   * same unit, so walking speed and figure size mean the same thing in every direction */
+  function units(scene) { var s = typeof scene === 'string' ? SCENES[scene] : scene, a = s && s.aspect; return a ? 100 * a[1] / a[0] : 100; }
+  function inFloor(scene, pt) { var s = typeof scene === 'string' ? SCENES[scene] : scene; return !!s && inPoly(pt, s.floor); }
   function walkable(scene, pt) {
     var s = typeof scene === 'string' ? SCENES[scene] : scene;
     if (!s || !inPoly(pt, s.floor)) return false;
@@ -130,6 +134,6 @@
   }
   function addDoor(sceneId, door) { var s = SCENES[sceneId]; if (!s) return false; s.doors.push(door); return true; }
 
-  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
+  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
     doorAt: doorAt, inRect: inRect, scaleAt: scaleAt };
 })(typeof window !== 'undefined' ? window : globalThis);

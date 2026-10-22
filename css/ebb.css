@@ -17,7 +17,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .counts { display: flex; gap: 10px; color: var(--soft); font-size: 13px; margin-right: auto; font-variant-numeric: tabular-nums; }
 .counts b { color: var(--ink); }
 .scene { position: absolute; inset: 0; overflow: hidden; background: #efe2cf; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: opacity 0.3s ease; }
-.stage { position: absolute; left: 0; top: 0; width: 100vmax; height: 100vmax; transform-origin: 0 0; will-change: transform; }
+.stage { position: absolute; left: 0; top: 0; width: 100vmax; height: 100vmax; transform-origin: 0 0; will-change: transform; } /* sized per scene by the camera */
 .scene.fading { opacity: 0; }
 .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .stage .layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
