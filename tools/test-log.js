@@ -90,6 +90,31 @@ const cases = [
 ];
 cases.forEach(([t, fn]) => { let r; try { r = p(t); check('parse: ' + t, fn(r), r.items.map(i => [i.type, i.value, i.start, i.negated, i.hedged])); } catch (e) { check('parse: ' + t + ' threw ' + e.message, false); } });
 check('parser has at least 40 phrasings', cases.length >= 40, cases.length);
+/* topic-aware phrasings from the room pop-ups */
+const pt = (t, topic) => LP.parse(t, TODAY, { topic });
+const topicCases = [
+  ['egg white mucus', null, r => find(r, 'mucus', 'eggwhite')],
+  ['discharge is creamy', null, r => find(r, 'mucus', 'creamy') && !find(r, 'symptom', 'discharge')],
+  ['sticky', 'bleeding', r => find(r, 'mucus', 'sticky')],
+  ['sticky', null, r => !find(r, 'mucus')],
+  ['no mucus today', null, r => find(r, 'mucus', 'dry')],
+  ['feels wet', 'bleeding', r => find(r, 'sensation', 'wet')],
+  ['feeling dry', null, r => !find(r, 'sensation')],
+  ['slippery sensation down there', null, r => find(r, 'sensation', 'slippery')],
+  ['waking temp 36.4', null, r => find(r, 'temperature', 36.4) && find(r, 'temperature').unit === 'C'],
+  ['36,5', 'temperature', r => find(r, 'temperature', 36.5)],
+  ['36.7c this morning', null, r => find(r, 'temperature', 36.7)],
+  ['97.9 f', null, r => find(r, 'temperature', 97.9) && find(r, 'temperature').unit === 'F'],
+  ['37', 'temperature', r => find(r, 'temperature', 37)],
+  ['day 37 of my cycle', null, r => !find(r, 'temperature')],
+  ['7', 'sleep', r => find(r, 'sleep', 7)],
+  ['7.5', 'sleep', r => find(r, 'sleep', 7.5)],
+  ['7', null, r => !find(r, 'sleep')],
+  ['so stressed about work', null, r => find(r, 'mood', 'stressed') && !find(r, 'mood', 'anxious')],
+  ['dry skin and a breakout', 'body', r => find(r, 'symptom', 'dry skin') && find(r, 'symptom', 'acne')]
+];
+topicCases.forEach(([t, topic, fn]) => { let r; try { r = pt(t, topic); check('topic parse: ' + t + ' / ' + topic, fn(r), r.items.map(i => [i.type, i.value])); } catch (e) { check('topic parse threw: ' + t, false, e.message); } });
+check('cycle engine ignores mucus and temperature', C.episodes([{ type: 'mucus', value: 'eggwhite', start: TODAY, end: TODAY, confirmed: true }, { type: 'temperature', value: 36.8, start: TODAY, end: TODAY, confirmed: true }]).length === 0);
 /* every parsed item carries provenance-ready fields */
 const all = p('heavy flow, cramps 6/10, maybe bloated, slept 5 hours, anxious');
 check('items have start/end/confidence', all.items.every(i => i.start && i.end && typeof i.confidence === 'number' && i.confidence > 0 && i.confidence <= 1), all.items);
@@ -155,7 +180,9 @@ const made2 = M.confirm(st, p('slept 6 hours').items, { source: 'chat', now: t0 
 const u1 = M.undo(st, t0 + 3000);
 check('undo retracts only the last card', u1.ok && u1.count === 1 && made2[0].retracted && !made[0].retracted);
 const u2 = M.undo(st, t0 + 4000);
-check('a second undo takes the card before', u2.ok && made[0].retracted);
+check('a second undo reverses the edit', u2.ok && made[0].value === 'heavy' && !made[0].retracted);
+const u3 = M.undo(st, t0 + 4500);
+check('a third undo takes the first card', u3.ok && made[0].retracted);
 check('nothing left to undo', M.undo(st, t0 + 5000).reason === 'nothing');
 M.confirm(st, p('bloated').items, { now: t0 });
 check('undo after 24 hours is refused', M.undo(st, t0 + 25 * 3600 * 1000).reason === 'expired');
@@ -168,6 +195,43 @@ const cal = M.setBleeding(st2, '2026-10-21', 'heavy', { now: t0 + 1000 });
 check('calendar edit updates the day with history', cal[0].value === 'heavy' && cal[0].history.length === 1 && M.activeObs(st2).filter(o => o.type === 'bleeding').length === 1);
 M.setBleeding(st2, '2026-10-21', 'clear', { now: t0 + 2000 });
 check('calendar clear removes the day', M.activeObs(st2).filter(o => o.type === 'bleeding').length === 0);
+
+/* ---------- regressions from the Codex review, 22 Oct 2026 ---------- */
+check("period hasn't started is not a period", find(p("my period hasn't started"), 'bleeding', 'none') && !find(p("my period hasn't started"), 'bleeding', 'period'));
+check('not heavy bleeding is not heavy', !find(p('not heavy bleeding'), 'bleeding', 'heavy') && find(p('not heavy bleeding'), 'bleeding'));
+check('heavy cramps on day 2 is not bleeding', !find(p('i have heavy cramps on day 2'), 'bleeding'));
+check('light cramps is not bleeding', !find(p('light cramps'), 'bleeding'));
+check('heavy with clots still heavy', find(p('heavy with clots'), 'bleeding', 'heavy'));
+check('flow is heavy', find(p('flow is really heavy today'), 'bleeding', 'heavy'));
+const dd = p('maybe light period, heavy period, cramps');
+check('dedup keeps unrelated items', find(dd, 'symptom', 'cramps') && dd.items.filter(i => i.type === 'bleeding').length === 1, dd.items.map(i => [i.type, i.value]));
+check('explicit years are kept', find(p('my period started 1 january 2025'), 'bleeding').start === '2025-01-01');
+check('a future explicit date is not used', find(p('period on 1 january 2027'), 'bleeding').start === TODAY);
+/* calendar edits are undoable on their own, and undo never reaches past them to unrelated cards */
+const st3 = {};
+M.confirm(st3, [{ type: 'bleeding', value: 'light', start: '2026-10-21', end: '2026-10-21' }], { now: t0 });
+M.confirm(st3, [{ type: 'sleep', value: 7, unit: 'h', start: '2026-10-21', end: '2026-10-22' }], { now: t0 + 1000 });
+M.setBleeding(st3, '2026-10-21', 'heavy', { now: t0 + 2000 });
+M.undo(st3, t0 + 3000);
+const act3 = M.activeObs(st3);
+check('undo after a calendar edit restores the day, keeps sleep', act3.some(o => o.type === 'sleep') && act3.filter(o => o.type === 'bleeding')[0].value === 'light', act3.map(o => [o.type, o.value]));
+M.setBleeding(st3, '2026-10-21', 'clear', { now: t0 + 4000 });
+check('calendar clear removes the day', !M.activeObs(st3).some(o => o.type === 'bleeding'));
+M.undo(st3, t0 + 5000);
+check('undo a calendar clear brings it back', M.activeObs(st3).filter(o => o.type === 'bleeding')[0].value === 'light');
+/* same as yesterday copies only what counts for yesterday */
+const st4 = {};
+M.confirm(st4, [{ type: 'bleeding', value: 'light', start: '2026-10-21', end: '2026-10-21' }], { now: t0 });
+M.confirm(st4, [{ type: 'bleeding', value: 'heavy', start: '2026-10-20', end: '2026-10-21' }], { now: t0 + 1000 });
+M.setBleeding(st4, '2026-10-21', 'none', { now: t0 + 2000 });
+const same4 = M.sameAsYesterday(st4, TODAY, '2026-10-21');
+check('same as yesterday uses the latest bleeding only', same4.length === 1 && same4[0].value === 'none', same4.map(i => i.value));
+/* explicit no bleeding today ends the period on the ring */
+const nb = [bleed('2026-10-01', 'light'), bleed('2026-10-02', 'none')];
+check('no bleeding today is not in period', !C.summary(nb, '2026-10-02').inPeriod && C.summary(nb, '2026-10-02').phase !== 'period');
+check('flow yesterday, nothing yet today, still in period', C.summary([bleed('2026-10-01', 'light')], '2026-10-02').inPeriod);
+check('early range says not enough data yet', /Not enough data yet/.test(C.nextLine(s2)) && /fewer than 3/.test(C.nextLine(s2)));
+check('steady range is labelled 80%', /80% range/.test(C.nextLine(s3)));
 
 console.log(`log checks: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

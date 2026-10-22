@@ -34,11 +34,11 @@
       var dd = +m[1], p = today.split('-'), cand = p[0] + '-' + p[1] + '-' + pad(dd);
       if (dd >= 1 && dd <= 31) { if (cand > today) { var prev = new Date(+p[0], +p[1] - 2, dd); cand = iso(prev); } return { start: cand, end: today, phrase: m[0] }; }
     }
-    if ((m = t.match(/\b(\d{1,2})(?:st|nd|rd|th)? (?:of )?(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]* (\d{1,2})(?:st|nd|rd|th)?\b/))) {
-      var day = +(m[1] || m[4]), mon = MONTHS.indexOf((m[2] || m[3]).slice(0, 3)), y = +today.slice(0, 4);
+    if ((m = t.match(/\b(\d{1,2})(?:st|nd|rd|th)? (?:of )?(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*(?:,? (\d{4}))?\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]* (\d{1,2})(?:st|nd|rd|th)?(?:,? (\d{4}))?\b/))) {
+      var day = +(m[1] || m[5]), mon = MONTHS.indexOf((m[2] || m[4]).slice(0, 3)), yr = m[3] || m[6], y = yr ? +yr : +today.slice(0, 4);
       var s = y + '-' + pad(mon + 1) + '-' + pad(day);
-      if (s > today) s = (y - 1) + '-' + pad(mon + 1) + '-' + pad(day);
-      if (day >= 1 && day <= 31) return { start: s, end: s, phrase: m[0] };
+      if (s > today && !yr) s = (y - 1) + '-' + pad(mon + 1) + '-' + pad(day);
+      if (day >= 1 && day <= 31 && s <= today) return { start: s, end: s, phrase: m[0] };
     }
     if ((m = t.match(new RegExp('\\b(last |on |this past )?' + WD + '\\b')))) {
       var d1 = lastWeekday(today, dayIndex(m[2]), /last|past/.test(m[1] || ''));
@@ -58,7 +58,7 @@
 
   /* ---------- clauses, negation and hedging ---------- */
   function clauses(t) {
-    return t.split(/(?<!\d)\.(?!\d)|[;!?\n]+|,\s*|\s+but\s+|\s+(?:and|also|plus)\s+(?!a half)(?=(?:no|not|i|i'm|im|my|some|a|bit|slept|got|had|feeling|feel|felt|period|cramps?|pain|headache\w*|bloat\w*|tired|mood|energy|still|heavy|light|spotting|maybe|kind|sort)\b)|\s+then\s+/)
+    return t.split(/(?<!\d)\.(?!\d)|[;!?\n]+|,(?!\d)\s*|,\s+|\s+but\s+|\s+(?:and|also|plus)\s+(?!a half)(?=(?:no|not|i|i'm|im|my|some|a|bit|slept|got|had|feeling|feel|felt|period|cramps?|pain|headache\w*|bloat\w*|tired|mood|energy|still|heavy|light|spotting|maybe|kind|sort)\b)|\s+then\s+/)
       .map(function (c) { return c.trim(); }).filter(Boolean);
   }
   var HEDGE = /\b(maybe|might|perhaps|possibly|probably|i think|i guess|i suppose|kind of|kinda|sort of|sorta|not sure|unsure|could be|seems|seem to|a bit\?|ish)\b|-ish\b/;
@@ -88,11 +88,14 @@
     ['dizziness', /\b(dizzy|dizziness|light ?-?headed|woozy)\b/],
     ['hot flushes', /\bhot (flush|flash)(es)?\b/],
     ['night sweats', /\bnight sweats?\b/],
-    ['discharge', /\bdischarge\b/]
+    ['discharge', /\bdischarge\b/],
+    ['dry skin', /\bdry skin\b/],
+    ['oily skin', /\b(oily|greasy) (skin|face)\b/]
   ];
   var MOODS = [
     ['low', /\b(sad|teary|tearful|crying|cried|miserable|weepy|feeling low|feel low|felt low|low mood|mood (is |was )?low|(feeling|feel|felt|so|bit|pretty|quite|really) down|blue)\b/],
-    ['anxious', /\b(anxious|anxiety|worried|worrying|nervous|on edge|stressed( out)?|stress|overwhelmed|panicky|jittery)\b/],
+    ['anxious', /\b(anxious|anxiety|worried|worrying|nervous|on edge|panicky|jittery)\b/],
+    ['stressed', /\b(stressed( out)?|stress|stressful|overwhelmed|under pressure|frazzled|swamped)\b/],
     ['irritable', /\b(irritable|irritated|grumpy|snappy|cranky|angry|annoyed|short[- ]tempered|frustrated)\b/],
     ['mood swings', /\b(mood swings?|moody|emotional|up and down)\b/],
     ['good', /\b(happy|cheerful|content|good mood|great mood|in a good mood|upbeat|calm|relaxed|(feel|feeling|felt) (good|great|fine|ok|okay|alright|better))\b/]
@@ -119,19 +122,35 @@
     ['side', /\b(left side|right side|ovar(y|ies)|side)\b/], ['joints', /\bjoints?\b/], ['head', /\bhead\b/]
   ];
 
-  var BLEED_CTX = /\b(flow|period|bleed\w*|bled|blood|day|pads?|tampons?|cup|clots?|clotting)\b/;
   var NOT_BLEEDING = /\bperiod (pain|pains|cramps?|symptoms?|app|tracker|tracking|pants)\b|\b(before|waiting for|expecting|due for) (my |the )?period\b|\bperiod (is |was )?(late|due)\b|\bno sign of (my |the )?period\b|\bpre-?period\b/g;
+
+  /* an intensity word counts for bleeding only when it is attached to flow, period or bleeding ("heavy flow",
+   * "flow is heavy"), or when an earlier clause was about bleeding ("yesterday heavy, today light") */
+  var BETWEEN = "(?: (?!cramp|pain|ache|headache|back|tummy|belly|stomach)\\w+){0,2}";
+  function level(t, word, carried) {
+    var w = '(?:very |super |really |quite |so |a bit )?' + word;
+    var re = new RegExp('\\b' + w + '(?: flow| period| bleeding| bleed| day| days)\\b|\\b' + w + BETWEEN + ' (?:flow|period|bleeding|bleed|clots|clotting)\\b|\\b(?:flow|period|bleeding)(?: is| was| feels| seems| got| getting| has been| been| today| now)*(?: very| really| quite| super| so| a bit)? ' + word + '\\b');
+    var m = t.match(re);
+    if (!m && carried && new RegExp('^(?:and |then |but )?(?:\\w+ )?' + w + '\\w*(?: again| now| today| yesterday)?$').test(t.replace(/\b(today|yesterday|this morning|now)\b/, '').trim())) m = { index: 0 };
+    if (!m) return 0;
+    return /\b(not|isn't|wasn't|no longer) (very |that |too |so |as )?$/.test(t.slice(0, m.index)) ? -1 : 1;
+  }
+  var NONE_RE = /\b(no|not|without|zero) (bleeding|blood|period|spotting|bleed)\b|\bperiod'?s? (has |is )?(stopped|ended|finished|over|gone|done)\b|\b(stopped|finished|done) bleeding\b|\bbleeding (has |is )?(stopped|ended|over)\b|\bno more (bleeding|blood|period)\b|\b(didn't|haven't|hasn't|did not|have not) (bleed|bled)\b|\b(period|bleeding)\b[^,]*?\b(hasn't|hasnt|has not|didn't|didnt|did not|isn't|isnt|is not|not|still hasn't) (started|start|come|came|arrived|arrive|here|shown|showed|turned)\b|\b(period|bleeding) (is )?not (here )?yet\b/;
+  var PERIOD_RE = /\b(on my period|got my period|period (came|started|arrived|is here|began|has started|has come|showed up|turned up)|first day of (my )?period|day \d+ of (my )?period|still bleeding|still on my period|my period|period|periods|menstruat\w*|time of the month|aunt flo)\b/;
 
   function bleeding(c, carried) {
     var t = c.replace(NOT_BLEEDING, function (s) { return s.replace(/./g, '_'); });
-    if (/\b(no|not|without|zero) (bleeding|blood|period|spotting|bleed)\b|\bperiod'?s? (has |is )?(stopped|ended|finished|over|gone|done)\b|\b(stopped|finished|done) bleeding\b|\bbleeding (has |is )?(stopped|ended|over)\b|\bno more (bleeding|blood|period)\b|\b(didn't|haven't|hasn't|did not|have not) (bleed|bled)\b/.test(t)) return { value: 'none' };
+    if (NONE_RE.test(t)) return { value: 'none' };
     if (/\bspott(ing|ed|y)\b|\bspots? of blood\b|\bbrown (discharge|blood)\b|\bpink (discharge|when i wiped|on the tissue)\b|\bonly when (i )?wip(e|ed|ing)\b/.test(t)) return { value: 'spotting' };
-    var ctx = BLEED_CTX.test(t) || (carried && /^(and |then |but )?(\w+ )?(very |super |really )?(light|lighter|heavy|heavier|medium|moderate)\w*( again| now| today| yesterday)?$/.test(t.replace(/\b(today|yesterday|this morning|now)\b/, '').trim()));
-    if (/\b(soak(ed|ing)( through)?|flood(ing|ed)?|changing (my )?(pads?|tampons?) every)\b/.test(t) || (ctx && /\b(very |super |really )?heavy\b/.test(t))) return { value: 'heavy' };
-    if (ctx && /\b(medium|moderate|normal|regular|average)\b/.test(t)) return { value: 'medium' };
-    if (ctx && /\b(light|lighter|lightish)\b/.test(t)) return { value: 'light' };
-    if (/\b(on my period|got my period|period (came|started|arrived|is here|began|has started|has come|showed up|turned up)|first day of (my )?period|day \d+ of (my )?period|still bleeding|still on my period|my period|period|periods|menstruat\w*|time of the month|aunt flo)\b/.test(t)) return { value: 'period' };
-    if (/\b(bleed(ing|s)?|bled|blood)\b/.test(t)) return { value: 'ambiguous' };
+    if (/\b(soak(ed|ing)( through)?|flood(ing|ed)?|changing (my )?(pads?|tampons?) every)\b/.test(t)) return { value: 'heavy' };
+    var neg = false, L;
+    if ((L = level(t, 'heav(?:y|ier)', carried)) > 0) return { value: 'heavy' }; else if (L < 0) neg = true;
+    if ((L = level(t, '(?:medium|moderate|normal|regular|average)', carried)) > 0) return { value: 'medium' }; else if (L < 0) neg = true;
+    if ((L = level(t, '(?:light|lighter|lightish)', carried)) > 0) return { value: 'light' }; else if (L < 0) neg = true;
+    var m = t.match(PERIOD_RE);
+    if (m && !negatedAt(t, m.index)) return { value: neg ? 'ambiguous' : 'period' };
+    if (m) return { value: 'none' };
+    if ((m = t.match(/\b(bleed(ing|s)?|bled|blood)\b/))) return { value: negatedAt(t, m.index) ? 'none' : 'ambiguous' };
     return null;
   }
 
@@ -171,6 +190,35 @@
     return out;
   }
 
+  var MUCUS_CTX = /\b(mucus|discharge|cm|cervical)\b/;
+  var MUCUS = [
+    ['eggwhite', /\begg[- ]?whites?\b|\b(clear and )?stretchy\b|\bslippery (mucus|discharge|cm)\b/, false],
+    ['watery', /\b(watery|wet) (mucus|discharge|cm)\b|\b(mucus|discharge|cm) (is |was |feels |looks )?(watery|wet)\b/, false],
+    ['creamy', /\b(creamy|lotion-?like|milky)\b/, true],
+    ['sticky', /\b(sticky|tacky|pasty|gummy|crumbly)\b/, true],
+    ['dry', /\b(no|dry) (mucus|discharge|cm)\b|\b(mucus|discharge|cm) (is |was )?(dry|none)\b/, false]
+  ];
+  function mucusIn(c, topic) {
+    var ctx = MUCUS_CTX.test(c) || topic === 'bleeding';
+    for (var i = 0; i < MUCUS.length; i++) if (MUCUS[i][1].test(c) && (ctx || !MUCUS[i][2])) return MUCUS[i][0];
+    return null;
+  }
+  function sensationIn(c, topic) {
+    var m = c.match(/\b(?:feels?|feeling|felt|sensation(?: is| was)?|it'?s|quite|very|bit|a bit) (dry|damp|moist|wet|slippery|lubricated)\b/) || c.match(/\b(dry|damp|moist|wet|slippery|lubricated) (?:sensation|feeling)\b/);
+    if (!m || !(topic === 'bleeding' || /\b(down there|vulva|vagina\w*|sensation)\b/.test(c))) return null;
+    return { moist: 'damp', lubricated: 'slippery' }[m[1]] || m[1];
+  }
+  function tempIn(c, topic) {
+    var m = c.match(/\b(3[4-9]|4[0-2])(?:[.,](\d{1,2}))?\s*(°\s*c\b|°|c\b|celsius)?|\b(9[4-9]|10[0-7])(?:[.,](\d{1,2}))?\s*(°\s*f\b|°|f\b|fahrenheit)?/);
+    if (!m) return null;
+    var unitSaid = m[3] || m[6], ctx = /\b(temp|temperature|bbt|thermometer|waking|degrees)\b|°/.test(c) || topic === 'temperature';
+    if (!ctx && !unitSaid) return null;
+    if (m[1] && !m[2] && !unitSaid && topic !== 'temperature') return null; /* "36" alone could be anything */
+    if (m[1]) return { value: +(m[1] + '.' + (m[2] || '0')), unit: 'C' };
+    if (!m[5] && !unitSaid && topic !== 'temperature') return null;
+    return { value: +(m[4] + '.' + (m[5] || '0')), unit: 'F' };
+  }
+
   /* ---------- whole-message intents ---------- */
   function intentOf(t) {
     if (/^(please )?(undo|undo (that|it|this|last|the last one|my last entry)|take (that|it) back|delete (that|the last one)|remove (that|the last one)|scratch that)[.! ]*$/.test(t)) return 'undo';
@@ -183,9 +231,11 @@
 
   function conf(hedged, negated, estimated) { var c = hedged ? 0.55 : negated ? 0.85 : 0.9; if (estimated) c = Math.min(c, 0.6); return c; }
 
-  function parse(text, today) {
+  function parse(text, today, opts) {
     today = today || iso(new Date());
+    var topic = opts && opts.topic;
     var t = clean(text), res = { text: String(text || ''), intent: t ? intentOf(t) : 'empty', items: [], clarify: null };
+    if (res.intent === 'log' && topic === 'sleep' && /^\d{1,2}(\.\d)?( ?h| ?hrs?| ?hours?)?$/.test(t) && +t.replace(/[^\d.]/g, '') <= 16) t = 'slept ' + t.replace(/[^\d.]/g, '') + ' hours';
     if (res.intent !== 'log') return res;
     var parts = clauses(t), dates = parts.map(function (c) { return findDate(c, today); });
     var prevBleed = false, found = dates.filter(Boolean), carry = found.length ? found[0] : null, single = found.length === 1 ? found[0] : null;
@@ -208,7 +258,7 @@
       else if (cm) add('clots', 'yes', { negated: true }, null);
       SYMPTOMS.forEach(function (S) {
         var m = c.match(S[1]); if (!m) return;
-        if (S[0] === 'discharge' && b && b.value === 'spotting') return;
+        if (S[0] === 'discharge' && (b && b.value === 'spotting' || mucusIn(c, topic))) return;
         if (S[0] === 'nausea' && /\b(threw up|vomit)/.test(c)) return;
         add('symptom', S[0], null, m.index);
       });
@@ -217,18 +267,20 @@
       ENERGY.forEach(function (E) { var m = !em && c.match(E[1]); if (m) { em = m; var neg = negatedAt(c, m.index); add('energy', neg ? (E[0] === 'low' ? 'normal' : 'low') : E[0], { negated: false, estimated: neg }, null); } });
       var pm = c.match(PAIN_WORD), p = painIn(c, pm ? negatedAt(c, pm.index) : false, hedged);
       if (p) add('pain', p.value, { unit: '/10', location: p.location, estimated: p.estimated, negated: !!p.negated || (pm ? negatedAt(c, pm.index) : false) }, null);
+      var mu = mucusIn(c, topic); if (mu) add('mucus', mu, null, null);
+      var se = sensationIn(c, topic); if (se) add('sensation', se, null, null);
+      var te = tempIn(c, topic); if (te) add('temperature', te.value, { unit: te.unit }, null);
       var sd = d.night ? { start: d.start, end: addDays(d.start, 1) } : d;
       sleepIn(c, sd).forEach(function (s) { add(s.type, s.value, { unit: s.unit || null, start: sd.start, end: sd.end }, null); });
       Array.prototype.push.apply(res.items, items);
     });
     /* one entry per type, value and day: the most confident wins */
-    var seen = {};
-    res.items = res.items.filter(function (it) {
-      var k = it.type + '|' + (it.type === 'bleeding' || it.type === 'pain' || it.type === 'sleep' || it.type === 'energy' || it.type === 'sleepQuality' ? '' : it.value) + '|' + it.start;
-      if (seen[k] && seen[k].confidence >= it.confidence) return false;
-      if (seen[k]) res.items.splice(res.items.indexOf(seen[k]), 1);
-      seen[k] = it; return true;
+    var SINGLE = { bleeding: 1, pain: 1, sleep: 1, energy: 1, sleepQuality: 1, mucus: 1, sensation: 1, temperature: 1 }, best = {}, order = [];
+    res.items.forEach(function (it) {
+      var k = it.type + '|' + (SINGLE[it.type] ? '' : it.value) + '|' + it.start;
+      if (!(k in best)) { order.push(k); best[k] = it; } else if (it.confidence > best[k].confidence) best[k] = it;
     });
+    res.items = order.map(function (k) { return best[k]; });
     if (!res.items.length) res.intent = 'unknown';
     return res;
   }

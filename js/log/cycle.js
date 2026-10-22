@@ -53,27 +53,28 @@
   }
 
   function summary(obs, today) {
-    var eps = episodes(obs), cyc = cycles(eps), usable = cyc.filter(function (c) { return c.usable; }).slice(-12);
+    var map = byDay(obs), eps = episodes(obs), cyc = cycles(eps), usable = cyc.filter(function (c) { return c.usable; }).slice(-12);
     var lens = usable.map(function (c) { return c.length; }), last = eps[eps.length - 1] || null;
     var res = { episodes: eps, cycles: cyc, lengths: lens, lastStart: last ? last.start : null, cycleDay: null,
       inPeriod: false, range: null, label: 'not enough data yet', status: 'none', late: 0, phase: null };
     if (!last) return res;
     res.cycleDay = diff(last.start, today) + 1;
-    res.inPeriod = diff(last.end, today) <= 1 && res.cycleDay <= 10;
+    /* today counts as a period day when she logged flow today, or flow yesterday and nothing yet today */
+    res.inPeriod = res.cycleDay <= 10 && (!!PERIOD[map[today]] || (diff(last.end, today) === 1 && !map[today]));
     var periodLens = eps.slice(-6).map(function (e) { return e.days; }), periodLen = Math.round(periodLens.reduce(function (a, b) { return a + b; }, 0) / periodLens.length);
     res.periodLength = periodLen;
     var lo, hi;
     if (!lens.length) { res.status = 'few'; res.label = 'not enough data yet'; }
     else if (lens.length < 3) {
       lo = Math.min.apply(null, lens) - 5; hi = Math.max.apply(null, lens) + 5;
-      res.status = 'early'; res.label = 'early guess, wide range, fewer than 3 cycles';
+      res.status = 'early'; res.label = 'not enough data yet for a firm range: an early guess from fewer than 3 cycles';
     } else {
       var s = lens.slice().sort(function (a, b) { return a - b; }), med = pct(s, 0.5);
       lo = Math.floor(pct(s, 0.1)); hi = Math.ceil(pct(s, 0.9));
       if (lens.length < 6) { lo -= 2; hi += 2; }
       lo = Math.min(lo, Math.floor(med) - 2); hi = Math.max(hi, Math.ceil(med) + 2);
       res.status = 'ok';
-      res.label = (lens.length < 6 ? 'rough estimate' : hi - lo <= 6 ? 'fairly steady' : 'varies a fair bit') + ', from ' + lens.length + ' cycles';
+      res.label = '80% range, ' + (lens.length < 6 ? 'a rough estimate' : hi - lo <= 6 ? 'fairly steady' : 'varies a fair bit') + ', from ' + lens.length + ' cycles';
     }
     if (lo != null) {
       lo = Math.max(lo, 15);
@@ -98,7 +99,7 @@
   }
 
   function fmt(s) {
-    var d = toDate(s); return d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+    var d = toDate(s); return d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()] + (d.getFullYear() !== new Date().getFullYear() ? ' ' + d.getFullYear() : '');
   }
   function lateLine(r) {
     return 'Your period hasn’t been logged yet, and it is ' + r.late + ' day' + (r.late === 1 ? '' : 's') + ' past the range I estimated. Cycles shift for lots of everyday reasons. Log it whenever it comes, and if anything worries you, a clinic can help.';
@@ -107,6 +108,7 @@
     if (!r.lastStart) return 'Not enough data yet. Once you log a period start, I’ll begin counting.';
     if (r.late) return lateLine(r);
     if (!r.range) return 'Not enough data yet: I need at least two period starts to guess the next one. Your last period started ' + fmt(r.lastStart) + '.';
+    if (r.status === 'early') return 'Not enough data yet for a firm estimate. Early guess for the next period: between ' + fmt(r.range.from) + ' and ' + fmt(r.range.to) + ', from fewer than 3 cycles. This is an estimate, not for contraception.';
     return 'Next period: likely between ' + fmt(r.range.from) + ' and ' + fmt(r.range.to) + ' (' + r.label + '). This is an estimate, not for contraception.';
   }
 
