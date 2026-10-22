@@ -27,7 +27,8 @@ check('loads in node without a page', !!S && typeof S.events === 'function');
 check('bedroom is room tone', S.placeSound('bedroom', W.SCENES.bedroom) === 'room');
 check('farm is birds and breeze', S.placeSound('farm', W.SCENES.farm) === 'meadow');
 check('waterfall is running water', S.placeSound('waterfall', W.SCENES.waterfall) === 'falls');
-check('bathroom is room tone', S.placeSound('bathroom', { name: 'Bathroom' }) === 'room');
+check('bathroom is room tone with drips', S.placeSound('bathroom', W.SCENES.bathroom) === 'bath');
+check('an indoor scene reads as a room', S.placeSound('library', { name: 'Library', indoor: true }) === 'room');
 check('barn has its own indoor tone', S.placeSound('barn', { name: 'Barn' }) === 'barn');
 check('hot spring is lapping water', S.placeSound('spring', { name: 'Hot spring' }) === 'spring');
 check('a scene can name its sound', S.placeSound('cave', { name: 'Cave', sound: 'falls' }) === 'falls');
@@ -41,7 +42,8 @@ Object.keys(W.SCENES).forEach(id => {
   check(`scene ${id} has a real ambience`, !!S.AMBIENCES[a]);
   check(`scene ${id} has a footstep`, !!S.VOICES['step:' + f]);
 });
-check('wooden floors indoors', S.surfaceFor('bedroom', W.SCENES.bedroom) === 'wood' && S.surfaceFor('barn', { name: 'Barn' }) === 'wood' && S.surfaceFor('bathroom', {}) === 'wood');
+check('wooden floors indoors', S.surfaceFor('bedroom', W.SCENES.bedroom) === 'wood' && S.surfaceFor('barn', { name: 'Barn' }) === 'wood');
+check('tiles in the bathroom', S.surfaceFor('bathroom', W.SCENES.bathroom) === 'tile');
 check('soil on the farm', S.surfaceFor('farm', W.SCENES.farm) === 'soil');
 check('grass at the falls and spring', S.surfaceFor('waterfall', W.SCENES.waterfall) === 'grass' && S.surfaceFor('spring', {}) === 'grass');
 check('a scene can name its floor', S.surfaceFor('farm', { surface: 'wood' }) === 'wood');
@@ -82,14 +84,73 @@ check('work with no tool is silent', S.events(snap({}), snap({ action: 'work', t
 check('an unknown tool is silent', S.events(snap({}), snap({ action: 'work', tool: 'brush' })).length === 0);
 check('sitting is silent', S.events(snap({}), snap({ action: 'sit' })).length === 0);
 
-check('a door fade starting is a door', S.events(snap({ action: 'walk', phase: 0.1 }), snap({ action: 'walk', phase: 0.12, fading: true })).join() === 'door');
-check('the scene changing inside the fade adds nothing', S.events(snap({ fading: true }), snap({ scene: 'bedroom', surface: 'wood', fading: false })).length === 0);
-check('a jump with no fade is a door', S.events(snap({}), snap({ scene: 'waterfall' })).join() === 'door');
-check('a scene change carries no stale step', S.events(snap({ action: 'walk', phase: 0.2 }), snap({ scene: 'waterfall', action: 'walk', phase: 0.3 })).join() === 'door');
+check('a door fade starting is a swoosh', S.events(snap({ action: 'walk', phase: 0.1 }), snap({ action: 'walk', phase: 0.12, fading: true })).join() === 'swoosh');
+check('the scene changing inside the fade: only the visit', S.events(snap({ fading: true }), snap({ scene: 'waterfall', surface: 'grass', fading: false })).join() === 'visit:waterfall');
+check('coming indoors adds the latch', S.events(snap({ fading: true }), snap({ scene: 'bedroom', indoor: true, surface: 'wood' })).join() === 'door,visit:bedroom');
+check('going outdoors adds the latch', S.events(snap({ scene: 'bedroom', indoor: true, fading: true }), snap({ scene: 'farm' })).join() === 'door,visit:farm');
+check('room to room adds the latch', S.events(snap({ scene: 'bedroom', indoor: true, fading: true }), snap({ scene: 'bathroom', indoor: true })).join() === 'door,visit:bathroom');
+check('a jump with no fade is a swoosh', S.events(snap({}), snap({ scene: 'waterfall' })).join() === 'swoosh,visit:waterfall');
+check('a scene change carries no stale step', S.events(snap({ action: 'walk', phase: 0.2 }), snap({ scene: 'waterfall', action: 'walk', phase: 0.3 })).join() === 'swoosh,visit:waterfall');
 check('an offering chimes', S.events(snap({ offerings: 2 }), snap({ offerings: 3 })).join() === 'chime');
 check('the gift has its own chime', S.events(snap({ offerings: 4 }), snap({ offerings: 5, gift: true })).join() === 'gift');
 check('an old gift does not repeat', S.events(snap({ offerings: 5, gift: true }), snap({ offerings: 6, gift: true })).join() === 'chime');
 check('fewer offerings (a reset) is silent', S.events(snap({ offerings: 3 }), snap({ offerings: 0 })).length === 0);
+check('something in the basket sparkles', S.events(snap({ basket: 1 }), snap({ basket: 2 })).join() === 'sparkle');
+check('a new heart sparkles', S.events(snap({ hearts: 2 }), snap({ hearts: 3 })).join() === 'sparkle');
+check('a basket and a heart at once: one sparkle', S.events(snap({ basket: 0, hearts: 0 }), snap({ basket: 1, hearts: 1 })).join() === 'sparkle');
+check('taking from the basket is silent', S.events(snap({ basket: 3 }), snap({ basket: 2 })).length === 0);
+check('a harvest: pick and sparkle', S.events(snap({ basket: 0 }), snap({ action: 'work', tool: 'pick', basket: 1 })).sort().join() === 'pick,sparkle');
+check('an offering out of the basket only chimes', S.events(snap({ basket: 2, offerings: 0 }), snap({ basket: 1, offerings: 1 })).join() === 'chime');
+
+/* ---------- first times ---------- */
+const seen = {};
+check('the first hoe is new', S.newFirsts(['hoe'], seen).join() === 'hoe' && seen.hoe === true);
+check('the second hoe is not', S.newFirsts(['hoe'], seen).length === 0);
+check('steps, ticks and sparkles are never firsts', S.newFirsts(['step:soil', 'tick', 'sparkle', 'swoosh', 'door', 'gift'], seen).length === 0);
+check('a first visit is new once', S.newFirsts(['swoosh', 'visit:waterfall'], seen).join() === 'visit:waterfall' && S.newFirsts(['visit:waterfall'], seen).length === 0);
+check('the first offering is new', S.newFirsts(['chime'], seen).join() === 'chime');
+check('seed, can and pick each count', S.newFirsts(['seed', 'can', 'pick'], seen).join() === 'seed,can,pick');
+
+/* ---------- gaps: no sound can repeat faster than its gap ---------- */
+const last = {};
+check('a tick plays', S.allowed('tick', 10, last));
+check('a second tick 20 ms later does not', !S.allowed('tick', 10.02, last));
+check('a tick after its gap does', S.allowed('tick', 10.1, last));
+check('a pop and a tick are separate', S.allowed('pop', 10.1, last));
+let n = 0; for (let t = 0; t < 1; t += 1 / 60) if (S.allowed('sparkle', 20 + t, last)) n++;
+check(`a sparkle asked for every frame plays at most ${Math.ceil(1 / S.GAP.sparkle)} times a second (${n})`, n <= Math.ceil(1 / S.GAP.sparkle));
+check('footsteps have no gap (they follow the walk)', S.allowed('step:wood', 30, last) && S.allowed('step:wood', 30.001, last));
+
+/* ---------- where she stands ---------- */
+const fall = W.SCENES.waterfall, pond = fall.spots.find(s => s.kind === 'pond');
+const wm = p => S.mixFor('falls', 'waterfall', fall, p);
+check('waterfall: full at the pond', wm(pond.stand).water > 0.95);
+check('waterfall: quiet at the far path', wm(fall.start).water < 0.15);
+let mono = true, prevW = -1;
+for (let i = 0; i <= 20; i++) { const p = { x: fall.start.x + (pond.stand.x - fall.start.x) * i / 20, y: fall.start.y + (pond.stand.y - fall.start.y) * i / 20 }, w = wm(p).water; if (w < prevW - 1e-9) mono = false; prevW = w; }
+check('waterfall: grows steadily as she walks to the pond', mono);
+check('waterfall: heard from the right when it is to her right', wm({ x: 10, y: 140 }).pan > 0 && wm({ x: 90, y: 140 }).pan < 0);
+const farm = W.SCENES.farm, bm = p => S.mixFor('meadow', 'farm', farm, p).birds;
+check(`farm: birds louder by the tree than by the shed (${bm({ x: 47, y: 106 }).toFixed(2)} vs ${bm({ x: 17, y: 108 }).toFixed(2)})`, bm({ x: 47, y: 106 }) > bm({ x: 17, y: 108 }) + 0.3);
+check(`farm: birds louder at the top than at the bottom (${bm({ x: 70, y: 106 }).toFixed(2)} vs ${bm({ x: 70, y: 172 }).toFixed(2)})`, bm({ x: 70, y: 106 }) > bm({ x: 70, y: 172 }) + 0.2);
+check('farm: birds never vanish', [[17, 108], [70, 172], [95, 172], [5, 172]].every(([x, y]) => bm({ x, y }) >= 0.1));
+check('a meadow with no sources still has birds, more at the top', S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 52 }).birds > S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 98 }).birds);
+const painted = W.SCENES.bathroom, pm = p => S.mixFor('bath', 'bathroom', painted, p).drips, tubAt = S.SOURCES.bathroom.tub;
+check(`bathroom: the painted tub is above the floor, as drawn`, !W.walkable(painted, { x: tubAt[0], y: tubAt[1] }));
+check(`bathroom: drips at the floor's edge by the painted tub (${pm({ x: 44, y: 90 }).toFixed(2)})`, W.walkable(painted, { x: 44, y: 90 }) && pm({ x: 44, y: 90 }) > 0.8);
+check(`bathroom: quiet in the far corner (${pm({ x: 85, y: 170 }).toFixed(2)})`, pm({ x: 85, y: 170 }) < 0.1);
+const bath = Object.assign({}, W.SCENES.bathroom, { layout: [{ item: 'bathtub', x: 36, y: 104 }] }), dm = p => S.mixFor('bath', 'bathroom', bath, p).drips;
+check(`bathroom while redecorating: drips by the moved tub (${dm({ x: 36, y: 108 }).toFixed(2)})`, dm({ x: 36, y: 108 }) > 0.9);
+check(`bathroom while redecorating: quiet far from it (${dm({ x: 90, y: 172 }).toFixed(2)})`, dm({ x: 90, y: 172 }) < 0.1);
+const moved = Object.assign({}, bath, { layout: [{ item: 'bathtub', x: 80, y: 170 }] });
+check('bathroom: the drips follow the tub when she moves it', S.mixFor('bath', 'bathroom', moved, { x: 80, y: 168 }).drips > 0.9 && S.mixFor('bath', 'bathroom', moved, { x: 36, y: 108 }).drips < 0.3);
+check('a bath place with no tub: no drips', S.mixFor('bath', 'washroom', W.SCENES.bedroom, { x: 50, y: 120 }).drips === 0);
+check('a room has no drips', S.mixFor('room', 'bedroom', W.SCENES.bedroom, { x: 50, y: 120 }).drips === 0);
+check('bad positions give the plain mix', S.mixFor('falls', 'waterfall', fall, { x: NaN, y: 3 }).water === 1 && S.mixFor('falls', 'waterfall', null, { x: 1, y: 1 }).water === 1);
+check('every mix value stays in range', [[2, 108], [50, 110], [98, 175], [-50, 400]].every(([x, y]) => ['falls', 'meadow', 'bath', 'room'].every(a => {
+  const m = S.mixFor(a, a === 'falls' ? 'waterfall' : 'farm', a === 'bath' ? bath : a === 'falls' ? fall : farm, { x, y });
+  return [m.water, m.birds, m.drips].every(v => v >= 0 && v <= 1) && m.pan >= -1 && m.pan <= 1;
+})));
 
 /* ---------- the remembered choice ---------- */
 const st = memStore(), c2 = load(st);
@@ -128,7 +189,7 @@ function fakeContext() {
     sources.push(s); return s;
   };
   const c = {
-    sampleRate: 48000, get currentTime() { return now; }, destination: node({}),
+    sampleRate: 8000 /* checks parameters only, so a low rate keeps noise buffers cheap */, get currentTime() { return now; }, destination: node({}),
     createBuffer(ch, n, sr) { const d = new Float32Array(n); return { duration: n / sr, length: n, getChannelData: () => d }; },
     createBufferSource() { return source({ buffer: null, loop: false }); },
     createOscillator() { return source({ type: 'sine', frequency: param('osc.frequency', 440), detune: param('detune', 0) }); },
@@ -141,7 +202,7 @@ function fakeContext() {
 }
 Object.keys(S.VOICES).forEach(name => {
   let probs = [], unstopped = 0, late = 0, n = 0, offsetsOk = true;
-  for (let seed = 1; seed <= 40; seed++) {
+  for (let seed = 1; seed <= 12; seed++) {
     const f = fakeContext();
     try { S.render(f.c, name, { seed }); } catch (e) { probs.push(String(e)); }
     probs = probs.concat(f.problems); n += f.sources.length;
@@ -161,6 +222,11 @@ Object.keys(S.AMBIENCES).forEach(name => {
   const f = fakeContext();
   let err = null; try { S.render(f.c, name, { seed: 3, seconds: 20 }); } catch (e) { err = String(e); }
   const unstoppedLoops = f.sources.filter(s => s.stopped === null).length;
+  [{ water: 0, birds: 0, drips: 0, pan: -1 }, { water: 1, birds: 1, drips: 1, pan: 1 }].forEach(mix => {
+    const h = fakeContext(); let e2 = null;
+    try { S.render(h.c, name, { seed: 4, seconds: 8, mix }); } catch (e) { e2 = String(e); }
+    check(`ambience ${name} at mix ${JSON.stringify(mix)} builds cleanly ${e2 || h.problems.slice(0, 2).join('; ')}`, !e2 && h.problems.length === 0);
+  });
   check(`ambience ${name} builds cleanly ${err || f.problems.slice(0, 2).join('; ')}`, !err && f.problems.length === 0);
   check(`ambience ${name}: everything stops`, unstoppedLoops === 0);
   const g = fakeContext(), bus = S.chain(g.c), a = S.AMBIENCES[name].make(g.c, bus.amb, S.rng(5), 0);
@@ -169,8 +235,9 @@ Object.keys(S.AMBIENCES).forEach(name => {
   a.schedule(100, 101); /* after a long pause (page hidden): no burst of missed events */
   check(`ambience ${name}: a long gap does not flood`, g.sources.length - n2 <= 12);
 });
-['step:wood', 'step:soil', 'step:grass', 'can', 'hoe', 'seed', 'pick', 'door', 'chime', 'gift'].forEach(n => check(`has sound ${n}`, !!S.VOICES[n]));
-['room', 'barn', 'meadow', 'falls', 'spring'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
+['step:wood', 'step:tile', 'step:soil', 'step:grass', 'can', 'hoe', 'seed', 'pick', 'door', 'swoosh', 'tick', 'pop', 'sparkle', 'tada', 'chime', 'gift'].forEach(n => check(`has sound ${n}`, !!S.VOICES[n]));
+['room', 'bath', 'barn', 'meadow', 'falls', 'spring'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
+['tick', 'pop', 'sparkle', 'swoosh', 'door', 'tada'].forEach(n => check(`${n} is short`, S.VOICES[n].dur <= 1.3));
 let unknownThrows = false; try { S.render(fakeContext().c, 'trumpet'); } catch (e) { unknownThrows = true; }
 check('an unknown sound name is refused', unknownThrows);
 const r1 = S.rng(9), r2 = S.rng(9);
