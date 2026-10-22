@@ -53,6 +53,9 @@ def main():
         page.goto(f'http://127.0.0.1:{port}/index.html')
         page.wait_for_function('window.EbbGame && EbbGame._ready && window.EbbCourse')
         cushion = "EbbWorld.SCENES.bedroom.spots.find(s => s.kind === 'cushion')"
+        page.wait_for_timeout(300)
+        if page.locator('.sf-onboard').count():  # the safety workstream's first-run welcome: skip it
+            page.locator('.sf-onboard').get_by_role('button', name='Skip all').click()
 
         # the cushion before the course: the simple practice, as before
         page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
@@ -66,7 +69,7 @@ def main():
         check('course panel opens', page.locator('.course-wrap h2', has_text='Course').count() == 1)
         check('called MBSR-informed', 'MBSR-informed' in page.inner_text('.course-wrap'))
         if (ROOT / 'art/course/icons_1.webp').exists():
-            page.wait_for_timeout(400); page.click('#moreBtn'); page.click('#panel-course')
+            page.wait_for_selector('.course-cover.art', timeout=4000)  # the open panel repaints once the art loads
             check('clay cover shows', page.locator('.course-cover.art').count() == 1)
         shot(page, '01-course-start')
         btn(page, 'start')

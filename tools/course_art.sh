@@ -9,6 +9,7 @@ for n in 1 2 3; do
   [ -f "$SRC/course_icons_$n.png.prompt.json" ] && cp "$SRC/course_icons_$n.png.prompt.json" art/raw/
   python3 tools/slice_sheet.py "art/raw/course_icons_$n.png" "art/course/icons_$n" --count 3 --height 160
 done
+python3 tools/roundel.py art/course/icons_1 art/course/icons_2 art/course/icons_3 --size 160
 cp "$SRC/course_cover.png" art/raw/
 [ -f "$SRC/course_cover.png.prompt.json" ] && cp "$SRC/course_cover.png.prompt.json" art/raw/
 python3 -c "from PIL import Image; Image.open('art/raw/course_cover.png').convert('RGB').resize((768, 768), Image.LANCZOS).save('art/course/cover.webp', quality=82, method=6)"

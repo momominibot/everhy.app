@@ -45,17 +45,18 @@ nothing is offered for hot flushes.
   a neutral line and a disabled "Not available yet" button. It needs a real booking or message route before launch;
   the evidence favours courses with some human contact.
 
-## Art: not made yet
-- My own run stopped on `course_sheet` at 61.3 s (RemoteDisconnected); `art/BLOCKED.json` stays in this worktree (copy
-  at `art/blocks/2026-10-22-course-sheet-timeout.json`). Main took over the course art as three 3-icon sheets plus the
-  cover in its single queue, but that queue stopped at 22:50 on `map_world` (same cutoff) before reaching them.
-- Until art exists the panel shows plain soft circles with week numbers and a gradient cover.
-- When `course_icons_1..3.png` and `course_cover.png` exist, run `tools/course_art.sh <their art/raw dir>`. It copies
-  them in, cuts each sheet with `slice_sheet.py --count 3 --height 160` into `art/course/icons_N.webp` and writes
-  `art/course/cover.webp`. The panel picks each file up on its own once it loads. Check that each strip reads
-  cushion, feather, cloud / mat, tea, pebbles / heart, lantern, bell; the smoke test then also checks the icons show.
+## Art
+- Main rendered the course art in its approved queue run (22 Oct, ~22:56): three sheets of three clay medallions and the
+  cover, `art/raw/course_icons_1..3.png` and `course_cover.png` in main's checkout (raw files not committed here, to
+  avoid clashing with main's untracked copies).
+- `tools/course_art.sh <raw dir>` cuts them: `slice_sheet.py --count 3 --height 160`, then `tools/roundel.py` keeps
+  each round disc (drops the cast shadow and clamps green key spill on the cream rim) and centres it in a 160 px square
+  cell, then writes `art/course/cover.webp` at 768 px. Order checked by eye: cushion, feather, cloud / mat, tea,
+  pebbles / heart, lantern, bell, matching `ICON` in `content.js`.
+- My earlier blocked run's record is kept at `art/blocks/2026-10-22-course-sheet-timeout.json`.
 
 ## For the integrator
 - `registerKind('cushion')` replaces the engine's cushion handler; the fallback reproduces it (sit at the cushion,
   `EbbUi.openPractice`, stand at the stand point).
-- Checked merged onto main `2355466` (full screen, 390x844): test-core 227, test-course 134, smoke 42, all pass.
+- On main `2b192cc` plus the art (390x844, safety welcome skipped): test-core 227, test-course 134, log 145, safety 187,
+  settings 75, world 254, course smoke 44, all pass.
