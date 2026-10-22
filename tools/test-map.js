@@ -17,7 +17,7 @@ function world() { /* a fresh copy of the core world plus the map module, with n
 function addWorld(W) {
   W.register('barn', { name: 'Barn', plate: '', floor: [[10, 53], [17, 46], [27, 44], [78, 45], [92, 65], [90, 84], [60, 96], [8, 77]], start: { x: 22, y: 58 } });
   W.register('spring', { name: 'Hot spring', plate: '', floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]], start: { x: 12, y: 82 } });
-  W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 36, y: 65 }, stand: { x: 36, y: 74 }, label: 'Fish at the pond edge' });
+  W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 88, y: 80 }, stand: { x: 88, y: 110 }, label: 'Fish from the pier' });
 }
 /* a stand-in for EbbGame.api that records calls in order */
 function fakeApi(scene, log) {
