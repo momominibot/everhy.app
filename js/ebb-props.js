@@ -40,11 +40,12 @@
       (near ? '<ellipse cx="' + x + '" cy="' + y + '" rx="6.4" ry="2.8" fill="none" stroke="#fff6e8" stroke-width="0.45" stroke-dasharray="1.1 0.9"/>' : '');
   }
 
-  function shimmer() { /* falling light over the painted waterfall */
+  function shimmer(f) { /* falling light over the painted waterfall; f = { x, y0, x1, y1 } */
+    f = f || { x: 50.5, y0: 40, x1: 60, y1: 57 };
     var out = '';
     for (var i = 0; i < 7; i++) {
-      var x = 50.5 + i * 1.6;
-      out += '<line class="fall" x1="' + x + '" y1="40" x2="' + x + '" y2="57" stroke="#ffffff" stroke-width="0.35" stroke-dasharray="2 5" style="animation-delay:-' + (i * 0.37).toFixed(2) + 's"/>';
+      var x = f.x + i * (f.x1 - f.x) / 6;
+      out += '<line class="fall" x1="' + x + '" y1="' + f.y0 + '" x2="' + x + '" y2="' + f.y1 + '" stroke="#ffffff" stroke-width="0.35" stroke-dasharray="2 5" style="animation-delay:-' + (i * 0.37).toFixed(2) + 's"/>';
     }
     return '<g opacity="0.55">' + out + '</g>';
   }

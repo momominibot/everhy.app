@@ -4,37 +4,39 @@
   'use strict';
 
   var SCENES = {
-    bedroom: {
-      name: 'Bedroom', plate: 'art/plates/bedroom.webp',
-      floor: [[3, 75], [46, 75], [47, 71], [97, 71], [97, 98], [3, 98]],
-      solids: [],
-      doors: [{ id: 'toFarm', rect: [84, 70, 97, 77], to: 'farm', arrive: { x: 8, y: 84 }, label: 'Out to the farm' }],
+    bedroom: { /* bird's-eye room: floor is the wooden diamond, furniture footprints are solids */
+      name: 'Bedroom', plate: 'art/plates/bedroom-birdseye.webp', depth: [42, 0.19, 95, 0.23],
+      floor: [[32, 42], [80, 55], [93, 72], [57, 95], [5, 69]],
+      solids: [[16, 38, 52, 57], [28, 57, 46, 63], [5, 56, 21, 70], [61, 44, 79, 56], [72, 56, 82, 67]],
+      doors: [{ id: 'toFarm', rect: [83, 66, 92, 74], to: 'farm', arrive: { x: 19, y: 77 }, label: 'Out to the farm' }],
       spots: [
-        { id: 'cushion', kind: 'cushion', at: { x: 56, y: 84 }, stand: { x: 56, y: 85 }, label: 'Sit for a practice' },
-        { id: 'wardrobe', kind: 'wardrobe', at: { x: 75, y: 60 }, stand: { x: 75, y: 74 }, label: 'Change clothes' },
-        { id: 'bed', kind: 'bed', at: { x: 22, y: 66 }, stand: { x: 22, y: 78 }, label: 'Rest on the bed' }
+        { id: 'cushion', kind: 'cushion', at: { x: 54, y: 71 }, stand: { x: 54, y: 74 }, label: 'Sit for a practice' },
+        { id: 'wardrobe', kind: 'wardrobe', at: { x: 69, y: 46 }, stand: { x: 67, y: 60 }, label: 'Change clothes' },
+        { id: 'bed', kind: 'bed', at: { x: 35, y: 50 }, stand: { x: 42, y: 66 }, label: 'Rest on the bed' }
       ],
-      start: { x: 60, y: 88 }
+      start: { x: 55, y: 84 }
     },
     farm: {
-      name: 'Farm', plate: 'art/plates/farm.webp',
-      floor: [[2, 67], [98, 67], [98, 98], [2, 98]],
+      name: 'Farm', plate: 'art/plates/farm-clay.webp', depth: [63, 0.115, 98, 0.17],
+      floor: [[15, 75], [15, 71], [24, 70], [29, 66], [31, 64], [72, 64], [73, 70], [93, 70], [98, 71], [98, 90], [88, 92], [86, 98],
+        [27, 98], [24, 90], [14, 86], [3, 86], [3, 76]],
       solids: [],
       doors: [
-        { id: 'toHouse', rect: [2, 76, 6, 96], to: 'bedroom', arrive: { x: 86, y: 80 }, label: 'Back inside' },
-        { id: 'toFalls', rect: [94, 66, 98, 80], to: 'waterfall', arrive: { x: 8, y: 76 }, label: 'Path to the waterfall' }
+        { id: 'toHouse', rect: [15, 70.5, 23, 73], to: 'bedroom', arrive: { x: 79, y: 76 }, label: 'Back inside' },
+        { id: 'toFalls', rect: [94, 71, 98, 82], to: 'waterfall', arrive: { x: 8, y: 78 }, label: 'Path to the waterfall' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 25, y: 58 }, stand: { x: 25, y: 69 }, label: 'Seeds from the shed' }],
-      beds: [{ x: 40, y: 75 }, { x: 55, y: 75 }, { x: 70, y: 75 }, { x: 40, y: 87 }, { x: 55, y: 87 }, { x: 70, y: 87 }],
-      start: { x: 10, y: 84 }
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 26, y: 63 }, stand: { x: 27, y: 70 }, label: 'Seeds from the jars' }],
+      beds: [{ x: 32, y: 74 }, { x: 45, y: 74 }, { x: 58, y: 74 }, { x: 32, y: 85 }, { x: 45, y: 85 }, { x: 58, y: 85 }],
+      start: { x: 40, y: 70 }
     },
     waterfall: {
-      name: 'Waterfall', plate: 'art/plates/waterfall.webp',
-      floor: [[2, 71], [98, 71], [98, 98], [28, 98], [28, 83], [2, 83]],
+      name: 'Waterfall', plate: 'art/plates/waterfall-clay.webp', depth: [60, 0.12, 98, 0.185],
+      floor: [[2, 64], [16, 63], [22, 66], [32, 69], [50, 69.5], [68, 68.5], [78, 66], [86, 61], [98, 60], [98, 98], [2, 98]],
       solids: [],
-      doors: [{ id: 'toFarm', rect: [2, 71, 6, 83], to: 'farm', arrive: { x: 90, y: 73 }, label: 'Back to the farm' }],
-      spots: [{ id: 'pond', kind: 'pond', at: { x: 60, y: 62 }, stand: { x: 60, y: 73 }, label: 'Offer to the pond' }],
-      start: { x: 10, y: 77 }
+      doors: [{ id: 'toFarm', rect: [2, 69, 6, 88], to: 'farm', arrive: { x: 91, y: 76 }, label: 'Back to the farm' }],
+      spots: [{ id: 'pond', kind: 'pond', at: { x: 52, y: 58 }, stand: { x: 52, y: 72 }, label: 'Offer to the pond' }],
+      fall: { x: 51, y0: 30, x1: 60, y1: 49 },
+      start: { x: 10, y: 78 }
     }
   };
 
@@ -113,8 +115,12 @@
     for (var i = 0; i < s.doors.length; i++) if (inRect(pt, s.doors[i].rect)) return s.doors[i];
     return null;
   }
-  /* figure size by depth: further up the floor is further away */
-  function scaleAt(y) { return 0.17 + 0.11 * Math.max(0, Math.min(1, (y - 60) / 38)); }
+  /* figure size by depth: further up the floor is further away; a scene's depth is [yFar, scaleFar, yNear, scaleNear] */
+  var DEPTH = [60, 0.17, 98, 0.28];
+  function scaleAt(y, sceneId) {
+    var s = sceneId && SCENES[sceneId], d = s && s.depth || DEPTH;
+    return d[1] + (d[3] - d[1]) * Math.max(0, Math.min(1, (y - d[0]) / (d[2] - d[0])));
+  }
 
   /* extension points: other modules add places and doors without editing this file */
   function register(id, scene) {

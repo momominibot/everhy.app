@@ -2,7 +2,7 @@
  * Movement, planning and rules live in the pure modules; this file wires them to the page. */
 (function (root) {
   'use strict';
-  var doc = root.document, W = root.EbbWorld, P = root.EbbPuppet, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
+  var doc = root.document, W = root.EbbWorld, P = root.EbbPuppet, C = root.EbbClay, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
   var NEAR = 7, SPEED = 20;
   var els = {}, st, me = { x: 50, y: 85, view: 'front', flip: false, action: 'idle', phase: 0, tool: 'none' };
   var path = [], pending = null, busyUntil = 0, last = 0, fxHtml = '', fxUntil = 0, toastTimer = 0, sitting = false;
@@ -32,7 +32,7 @@
     var s = scene(), near = nearest(), out = '';
     if (st.scene === 'farm') s.beds.forEach(function (b, i) { out += PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
     if (st.scene === 'bedroom') { var c = s.spots[0]; out += PR.cushion(c.at.x, c.at.y, near && near.spot === c); }
-    if (st.scene === 'waterfall') out += PR.shimmer();
+    if (st.scene === 'waterfall') out += PR.shimmer(s.fall);
     (propDrawers[st.scene] || []).forEach(function (fn) { try { out += fn(api, near) || ''; } catch (e) { console.error(e); } });
     els.props.innerHTML = out;
   }
@@ -89,8 +89,8 @@
       if (before === 'needSeeds') { toast('Pick up seeds from the shed first'); return; }
       if (before === 'done') { toast('Already watered today. It grows overnight.'); return; }
       var res = F.act(st.farm, t.bed, today()); S.save();
-      work({ hoe: 'hoe', plant: 'seed', water: 'can', harvest: 'none' }[res.action] || 'none', 700, 'side');
-      me.flip = false;
+      work({ hoe: 'hoe', plant: 'seed', water: 'can', harvest: 'pick' }[res.action] || 'none', 700, 'side');
+      me.flip = scene().beds[t.bed].x < me.x - 1; /* face the bed */
       var crop = res.crop && F.CROPS[res.crop] ? F.CROPS[res.crop].name.toLowerCase() : '';
       toast({ hoe: 'Soil turned', plant: 'Planted a ' + crop + ' seed', water: 'Watered. It grows overnight.', harvest: 'Picked a ' + crop + ' for the basket' }[res.action] || '');
       updateHud(); drawProps(); return;
@@ -116,7 +116,8 @@
     if (!item) { toast('The pond is quiet. Bring something from the farm.'); return; }
     st.pond.offerings += 1; S.save(); updateHud();
     me.view = 'back'; work('none', 900, 'back');
-    fxHtml = PR.sparkles(60, 63, 12) + PR.goddess(60, 54); fxUntil = Date.now() + 4200;
+    var pond = scene().spots.filter(function (sp) { return sp.kind === 'pond'; })[0], px = pond ? pond.at.x : 60, py = pond ? pond.at.y : 60;
+    fxHtml = PR.sparkles(px, py + 3, 12) + PR.goddess(px, py - 4); fxUntil = Date.now() + 4200;
     var n = st.pond.offerings, line = 'Thank you for the ' + F.CROPS[item].name.toLowerCase() + '.';
     if (n >= 5 && !st.pond.gift) { st.pond.gift = true; S.save(); line += ' Please keep this moon pearl.'; }
     else if (n < 5) line += ' ' + (5 - n) + ' more and I will have something for you.';
@@ -128,11 +129,11 @@
     var dt = last ? Math.min(0.05, (t - last) / 1000) : 0; last = t;
     if (path.length && Date.now() >= busyUntil) {
       var tgt = path[0], dx = tgt.x - me.x, dy = (tgt.y - me.y), dist = Math.hypot(dx, dy);
-      var v = SPEED * (0.6 + W.scaleAt(me.y) * 2) * dt;
+      var v = SPEED * (0.6 + W.scaleAt(me.y, st.scene) * 2) * dt;
       if (Math.abs(dx) > Math.abs(dy) * 1.2) { me.view = 'side'; me.flip = dx < 0; } else { me.view = dy > 0 ? 'front' : 'back'; me.flip = false; }
       me.action = 'walk'; me.tool = 'none';
       if (dist <= v) { me.x = tgt.x; me.y = tgt.y; path.shift(); } else { me.x += dx / dist * v; me.y += dy / dist * v; }
-      me.phase = (me.phase + dt * 2.2) % 1;
+      me.phase = (me.phase + dt * 1.3) % 1;
       var door = W.doorAt(st.scene, me);
       if (door) { fadeTo(door); return root.requestAnimationFrame(step); }
       if (!path.length) { me.action = 'idle'; me.view = 'front'; var p = pending; pending = null; if (p) act(p); }
@@ -149,9 +150,12 @@
   }
   var lastProps = '';
   function render() {
-    var s = W.scaleAt(me.y);
+    var s = W.scaleAt(me.y, st.scene);
     els.me.setAttribute('transform', 'translate(' + me.x.toFixed(2) + ' ' + me.y.toFixed(2) + ') scale(' + s.toFixed(3) + ')');
-    els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
+    if (!(C && C.draw(els.me, C.setFor(st.outfit), me))) { /* the flat puppet only when no clay set is shipped */
+      els.me._clay = null;
+      els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
+    }
     els.fx.innerHTML = Date.now() < fxUntil ? fxHtml : '';
     var key = st.scene + (nearest() ? JSON.stringify(nearest().bed !== undefined ? nearest().bed : nearest().spot.id) : '');
     if (key !== lastProps) { lastProps = key; drawProps(); }

@@ -1,0 +1,32 @@
+[
+ {
+  "id": "room_birdseye",
+  "size": "1024x1024",
+  "prompt": "A cosy bedroom seen from a high bird's-eye view looking down at about 55 degrees, like the Animal Crossing New Horizons room camera: back wall and side walls visible, front wall removed, a wide open wooden floor filling the middle and front of the frame. Bed against the back left wall, round window on the back wall, a leafy plant, small bookshelf, chest of drawers, round pink rug in the centre, a door in the right wall. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "props_soil",
+  "size": "1024x1024",
+  "prompt": "Three square garden plot tiles seen from a high three-quarter view looking down, in one row, evenly spaced, same size, nothing touching: a patch of short green grass, a plot of dry light brown tilled soil with neat furrows, the same plot dark brown and wet from watering. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "crop_turnip",
+  "size": "1024x1024",
+  "prompt": "Five growth stages of a turnip plant in one row left to right, seen from a high three-quarter view, evenly spaced, same scale, nothing touching, each on a tiny mound of soil: a tiny sprout, a two-leaf seedling, a leafy young plant, a big leafy plant, a ripe white and purple turnip peeking out with leaves. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "crop_carrot",
+  "size": "1024x1024",
+  "prompt": "Five growth stages of a carrot plant in one row left to right, seen from a high three-quarter view, evenly spaced, same scale, nothing touching, each on a tiny mound of soil: a tiny sprout, a feathery seedling, a feathery young plant, a big feathery plant, a ripe orange carrot peeking out with feathery leaves. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "crop_sunflower",
+  "size": "1024x1024",
+  "prompt": "Five growth stages of a sunflower in one row left to right, seen from a high three-quarter view, evenly spaced, same scale, nothing touching, each on a tiny mound of soil: a tiny sprout, a two-leaf seedling, a short leafy stem, a tall stem with a closed green bud, a tall blooming yellow sunflower. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "props_misc",
+  "size": "1024x1024",
+  "prompt": "Two objects side by side, nothing touching: left, a round pink meditation floor cushion seen from a high three-quarter view; right, a gentle glowing harvest goddess spirit floating, a kind young woman with long flowing pale teal hair, white and soft gold robes, hands together, warm smile, full body. Solid flat pure bright magenta #FF00FF background. No text, no cast shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ }
+]
