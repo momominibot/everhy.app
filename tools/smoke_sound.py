@@ -288,8 +288,8 @@ def main():
         tap_scene(page, 50, 160)
         check('tile footsteps in the bathroom', wait_played(page, 'step:tile', 5000))
         idle(page)
-        tub = page.evaluate("EbbWorld.SCENES.bathroom.layout.find(p => p.item === 'bathtub')")
-        m_near = stand_at(page, tub['x'], tub['y'] + 6, 2200)
+        tub = page.evaluate("EbbSound.SOURCES.bathroom.tub")  # painted in the room; she stands at the floor's edge below it
+        m_near = stand_at(page, tub[0] + 7, 90, 2200)
         e0 = status(page)['ambienceEvents']; page.wait_for_timeout(3500); e1 = status(page)['ambienceEvents']
         check(f'drips by the tub ({m_near["drips"]:.2f}, {e1 - e0} drips in 3.5 s)', m_near['drips'] > 0.8 and e1 - e0 >= 1)
         m_far = stand_at(page, 90, 172, 2600)

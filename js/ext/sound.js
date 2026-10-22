@@ -47,8 +47,9 @@
   }
 
   /* ---------- where she stands: how near each sound source is, 0..1 ---------- */
-  /* bird trees and quiet spots by scene, as [x, y, radius] in scene units; a scene can carry its own soundSources */
-  var SOURCES = { farm: { birds: [[45, 80, 55], [85, 90, 45]], hush: [[17, 100, 26]] } };
+  /* bird trees and quiet spots as [x, y, radius], and the painted tub as [x, y], in scene units; a scene can carry its
+   * own soundSources */
+  var SOURCES = { farm: { birds: [[45, 80, 55], [85, 90, 45]], hush: [[17, 100, 26]] }, bathroom: { tub: [37, 60] } };
   var LOUDEST = { water: 1, birds: 1, drips: 1, pan: 0 };
   function nearness(d, full, none) { return d <= full ? 1 : d >= none ? 0 : 1 - (d - full) / (none - full); }
   function sceneUnits(scene) { var a = scene && scene.aspect; return a ? 100 * a[1] / a[0] : 100; }
@@ -70,9 +71,10 @@
       (S.hush || []).forEach(function (h) { hush = Math.max(hush, nearness(dist(h[0], h[1]), 6, h[2])); });
       m.birds = clamp(0.25 + 0.35 * high + 0.5 * tree, 0.25, 1) * (1 - 0.6 * hush);
       m.pan = clamp((treeX - me.x) / 60, -0.6, 0.6) * tree;
-    } else if (amb === 'bath') { /* drips from the tub, wherever she has moved it */
-      var tub = (scene.layout || []).filter(function (p) { return p && p.item === 'bathtub'; })[0];
-      if (tub && isFinite(tub.x) && isFinite(tub.y)) { m.drips = nearness(dist(tub.x, tub.y - 9), 10, 70); m.pan = clamp((tub.x - me.x) / 60, -0.7, 0.7); }
+    } else if (amb === 'bath') { /* drips from the tub: the painted one, or wherever she has moved it while redecorating */
+      var moved = (scene.layout || []).filter(function (p) { return p && p.item === 'bathtub' && isFinite(p.x) && isFinite(p.y); })[0];
+      var T = scene.soundSources || SOURCES[id], tub = moved ? [moved.x, moved.y - 9] : T && T.tub;
+      if (tub) { m.drips = nearness(dist(tub[0], tub[1]), 24, 80); m.pan = clamp((tub[0] - me.x) / 60, -0.7, 0.7); }
     }
     return m;
   }

@@ -135,12 +135,16 @@ check(`farm: birds louder by the tree than by the shed (${bm({ x: 47, y: 106 }).
 check(`farm: birds louder at the top than at the bottom (${bm({ x: 70, y: 106 }).toFixed(2)} vs ${bm({ x: 70, y: 172 }).toFixed(2)})`, bm({ x: 70, y: 106 }) > bm({ x: 70, y: 172 }) + 0.2);
 check('farm: birds never vanish', [[17, 108], [70, 172], [95, 172], [5, 172]].every(([x, y]) => bm({ x, y }) >= 0.1));
 check('a meadow with no sources still has birds, more at the top', S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 52 }).birds > S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 98 }).birds);
+const painted = W.SCENES.bathroom, pm = p => S.mixFor('bath', 'bathroom', painted, p).drips, tubAt = S.SOURCES.bathroom.tub;
+check(`bathroom: the painted tub is above the floor, as drawn`, !W.walkable(painted, { x: tubAt[0], y: tubAt[1] }));
+check(`bathroom: drips at the floor's edge by the painted tub (${pm({ x: 44, y: 90 }).toFixed(2)})`, W.walkable(painted, { x: 44, y: 90 }) && pm({ x: 44, y: 90 }) > 0.8);
+check(`bathroom: quiet in the far corner (${pm({ x: 85, y: 170 }).toFixed(2)})`, pm({ x: 85, y: 170 }) < 0.1);
 const bath = Object.assign({}, W.SCENES.bathroom, { layout: [{ item: 'bathtub', x: 36, y: 104 }] }), dm = p => S.mixFor('bath', 'bathroom', bath, p).drips;
-check(`bathroom: drips by the tub (${dm({ x: 36, y: 108 }).toFixed(2)})`, dm({ x: 36, y: 108 }) > 0.9);
-check(`bathroom: quiet far from it (${dm({ x: 90, y: 172 }).toFixed(2)})`, dm({ x: 90, y: 172 }) < 0.1);
+check(`bathroom while redecorating: drips by the moved tub (${dm({ x: 36, y: 108 }).toFixed(2)})`, dm({ x: 36, y: 108 }) > 0.9);
+check(`bathroom while redecorating: quiet far from it (${dm({ x: 90, y: 172 }).toFixed(2)})`, dm({ x: 90, y: 172 }) < 0.1);
 const moved = Object.assign({}, bath, { layout: [{ item: 'bathtub', x: 80, y: 170 }] });
 check('bathroom: the drips follow the tub when she moves it', S.mixFor('bath', 'bathroom', moved, { x: 80, y: 168 }).drips > 0.9 && S.mixFor('bath', 'bathroom', moved, { x: 36, y: 108 }).drips < 0.3);
-check('bathroom with no tub: no drips', S.mixFor('bath', 'bathroom', W.SCENES.bedroom, { x: 50, y: 120 }).drips === 0);
+check('a bath place with no tub: no drips', S.mixFor('bath', 'washroom', W.SCENES.bedroom, { x: 50, y: 120 }).drips === 0);
 check('a room has no drips', S.mixFor('room', 'bedroom', W.SCENES.bedroom, { x: 50, y: 120 }).drips === 0);
 check('bad positions give the plain mix', S.mixFor('falls', 'waterfall', fall, { x: NaN, y: 3 }).water === 1 && S.mixFor('falls', 'waterfall', null, { x: 1, y: 1 }).water === 1);
 check('every mix value stays in range', [[2, 108], [50, 110], [98, 175], [-50, 400]].every(([x, y]) => ['falls', 'meadow', 'bath', 'room'].every(a => {
