@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A big, airy, open-plan kitchen and living room, L-shaped, seen from a high bird's-eye view looking down at about 55 degrees like the Animal Crossing room camera: no ceiling, no front wall, walls only along the back and the two far sides, and the floor filling most of the frame as a wide open space to walk. Back left: a pastel kitchen nook with a mint fridge, stove with kettle, sink under a round window, a small island with stools. Back right, a step up: a cosy living corner with a curved pink sofa, cushions, a knitted throw, a round coffee table, a floor lamp, a tall plant, a bookshelf, a record player. Front right: a round dining table with chairs by a bay window with a window seat. A big soft round rug in the middle, warm wooden floor, fairy lights along the walls. An arched door in the left wall, a door in the right wall. No people, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm glowing light, gentle bloom, pastel pink, cream, lilac, mint, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 55.8,
+ "bytes": 1842486
+}
