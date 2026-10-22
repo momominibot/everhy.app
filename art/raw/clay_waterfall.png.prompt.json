@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A peaceful forest clearing: a gentle waterfall falling into a round pond at the back centre, smooth stones, trees, flat grass in front, a path leaving at the lower left. Seen from the front and slightly above like a side-on game stage, the floor a wide flat open area across the lower third so a character can walk left and right. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay diorama, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 57.6,
+ "bytes": 1833643
+}

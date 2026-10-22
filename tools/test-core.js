@@ -6,9 +6,9 @@ ctx.globalThis = ctx;
 const mem = {};
 ctx.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
 vm.createContext(ctx);
-['ebb-puppet.js', 'ebb-world.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
+['ebb-puppet.js', 'ebb-clay-sets.js', 'ebb-clay.js', 'ebb-world.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f }));
-const { EbbPuppet: P, EbbWorld: W, EbbFarm: F, EbbStore: S } = ctx;
+const { EbbPuppet: P, EbbClay: C, EbbClaySets: CS, EbbWorld: W, EbbFarm: F, EbbStore: S } = ctx;
 
 let pass = 0, fail = 0;
 function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', name); } }
@@ -26,6 +26,24 @@ function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', na
   check(`tudung hides hair ${view}/${action}`, s.indexOf('#123456') < 0);
 }));
 check('stored colours are cleaned', P.svg({ top: '"><script>' }, {}).indexOf('<script>') < 0);
+
+
+/* clay: every shipped set has every strip on disk with the frame count its metadata says, and pick() maps poses */
+Object.keys(CS).forEach(set => Object.keys(CS[set]).forEach(strip => {
+  const m = CS[set][strip], f = path.join(__dirname, '..', 'art/chars', set, strip + '.webp');
+  check(`clay ${set}/${strip} file`, fs.existsSync(f));
+  const b = fs.existsSync(f) ? fs.readFileSync(f) : null; /* VP8X canvas width is 24 bits at byte 24 */
+  const w = b && b.toString('ascii', 12, 16) === 'VP8X' ? 1 + (b[24] | b[25] << 8 | b[26] << 16) : -1;
+  check(`clay ${set}/${strip} width = frames x cell`, w === m.frames * m.w);
+}));
+check('clay default set ships', C.has('default') && C.setFor({}) === 'default' && C.setFor({ set: 'nope' }) === 'default');
+check('clay walk uses 8 frames', [0, 0.13, 0.5, 0.99].map(ph => C.pick({ action: 'walk', view: 'front', phase: ph }).frame).join() === '0,1,4,7');
+check('clay walking left flips the side strip', C.pick({ action: 'walk', view: 'side', flip: true }).flip && !C.pick({ action: 'walk', view: 'front', flip: true }).flip);
+check('clay idle views', ['front', 'side', 'back'].map(v => C.pick({ view: v }).frame).join() === '0,1,2');
+check('clay tools', ['can', 'hoe', 'seed', 'pick'].map(t => C.pick({ action: 'work', tool: t, phase: 0.7 }).frame).join() === '0,2,3,3');
+check('clay offering is the idle back view', C.pick({ action: 'work', tool: 'none', view: 'back' }).strip === 'idle');
+check('clay sit', C.pick({ action: 'sit', view: 'front' }).strip === 'sit');
+check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => W.scaleAt(70, id) < W.scaleAt(95, id)));
 
 /* world: every start, door arrival and stand point is walkable and reachable from the start */
 Object.keys(W.SCENES).forEach(id => {

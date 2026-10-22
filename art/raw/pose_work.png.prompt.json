@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Four poses of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers) in side view facing right, in a row: holding a small watering can tilted forward, raising a garden hoe, bringing the hoe down to the ground, crouching to pick a vegetable. Same size, evenly spaced, nothing touching. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_player_default.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 30.6,
+ "bytes": 1629422
+}

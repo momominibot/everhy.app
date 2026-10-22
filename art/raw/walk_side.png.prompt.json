@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Walk cycle sprite sheet of the same chibi clay girl as the reference (long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved top, loose sage green trousers, cream sneakers), walking to the right, side view, legs and arms alternating through a full step. Eight frames in two rows of four, evenly spaced, every frame the same size with feet on the same baseline in its row, nothing touching. No text, no floor, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_player_default.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 41.5,
+ "bytes": 1982226
+}
