@@ -175,14 +175,14 @@
       var a = w.barn.animals[sp.id], x = sp.at.x, y = sp.at.y, isNear = near && near.spot === sp, flash = Date.now() < (flashUntil[sp.id] || 0);
       if (a.kind === 'hen') {
         var hf = flash ? 3 : a.nest > 0 ? 2 : R().fedOn(a, day) ? 1 : 0;
-        out += shadow(x, y + 0.3, 3.4) + sprite('hen', hf, x, y + 0.6, 8.5, sp.id === 'hen2', 'world-animal');
+        out += shadow(x, y + 0.3, 3.4) + sprite('hen', hf, x, y + 0.6, 10, sp.id === 'hen2', 'world-animal');
         if (a.nest > 0) out += sprite('items', ITEM_FRAME.egg, x + 4.6, y + 0.8, 2.6);
-        if (isNear) out += ring(x, y + 0.4, 5.5) + heartsRow(x, y - 10.5, R().hearts(a));
+        if (isNear) out += ring(x, y + 0.4, 5.5) + heartsRow(x, y - 12, R().hearts(a));
       } else {
         var cared = R().caredOn(a, day), cf = a.milkDay === day ? 2 : cared && a.lastAct === 'feed' ? 1 : 0;
-        out += shadow(x, y + 0.4, 9) + sprite('cow', cf, x, y + 0.8, 15, false, 'world-animal');
-        if (R().canMilk(w.barn, sp.id, day)) out += sprite('items', ITEM_FRAME.milk, x + 11, y + 0.6, 3.6);
-        if (isNear) out += ring(x, y + 0.6, 11) + heartsRow(x, y - 17, R().hearts(a));
+        out += shadow(x, y + 0.4, 10.5) + sprite('cow', cf, x, y + 0.8, 19, false, 'world-animal');
+        if (R().canMilk(w.barn, sp.id, day)) out += sprite('items', ITEM_FRAME.milk, x + 13.5, y + 0.6, 3.8);
+        if (isNear) out += ring(x, y + 0.6, 12.5) + heartsRow(x, y - 21, R().hearts(a));
       }
     });
     return out;
