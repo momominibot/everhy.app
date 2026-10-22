@@ -1,0 +1,10 @@
+/* Ebb sound toggle: a round button at the bottom-left of the scene, level with the centred action button. */
+.snd-toggle { position: absolute; z-index: 5; left: max(14px, env(safe-area-inset-left)); bottom: max(25px, calc(env(safe-area-inset-bottom) + 15px));
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: color-mix(in srgb, var(--card) 84%, transparent); color: var(--soft); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(40, 30, 30, 0.18); -webkit-tap-highlight-color: transparent; }
+.snd-toggle svg { width: 24px; height: 24px; }
+.snd-toggle[aria-pressed="true"] { color: var(--teal); }
+.snd-toggle:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+/* a very long prompt wraps before it reaches the toggle */
+.actionbar .prompt { max-width: calc(100% - 2 * (max(14px, env(safe-area-inset-left)) + 52px)); }
