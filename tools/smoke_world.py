@@ -26,6 +26,7 @@ def main():
     yesterday = (today - datetime.timedelta(days=1)).isoformat()
     beds = [{"state": "grass", "crop": None, "watered": []} for _ in range(6)]
     save = {"v": 1, "scene": "farm", "pos": None, "outfit": None, "observations": [], "pond": {"offerings": 0, "gift": False},
+            "safety": {"onboardSkippedAt": "2026-10-22T08:00:00Z"},  # a returning player: the first-launch welcome is done
             "farm": {"beds": beds, "seedDay": None, "seedsLeft": 0, "basket": {}, "seeds": {}},
             "world": {"barn": {"animals": {"hen1": {"kind": "hen", "name": "Pip", "careDates": [yesterday], "careBase": 0,
                                                     "lastAct": "feed", "fed": [yesterday], "nest": 0, "milkDay": None}}}}}
@@ -53,13 +54,14 @@ def main():
         def tap(x, y, tries=8):
             # the camera shows part of the square stage: tap toward an off-screen target like a player exploring,
             # let her walk and the camera follow, then tap it once it is in view (clear of the top bar and button)
-            W, H, top, bottom, side = 390, 844, 120, 112, 16
+            W, H, top, bottom, side = 390, 844, 120, 76, 16
             start = page.locator('#place').inner_text()
             for _ in range(tries):
                 if page.locator('#place').inner_text() != start:
                     return  # a step toward an edge door already walked her through it
                 r = page.locator('#stage').bounding_box()
-                sx, sy = r['x'] + r['width'] * x / 100, r['y'] + r['height'] * y / 100
+                units = page.evaluate('() => EbbWorld.units(EbbGame.state().scene)')  # tall plates run 0..175 down
+                sx, sy = r['x'] + r['width'] * x / 100, r['y'] + r['height'] * y / units
                 if side <= sx <= W - side and top <= sy <= H - bottom:
                     page.mouse.click(sx, sy); return
                 page.mouse.click(min(max(sx, side + 12), W - side - 12), min(max(sy, top + 12), H - bottom - 12))
@@ -81,17 +83,17 @@ def main():
             return page.evaluate('() => Object.assign({}, EbbGame.state().farm.basket)')
 
         place('Farm'); shot('01-farm')
-        tap(4, 81); place('Barn'); page.wait_for_timeout(500); shot('02-barn')
+        tap(3, 126); place('Barn'); page.wait_for_timeout(500); shot('02-barn')
         check('farm -> barn', True)
 
-        tap(39, 47); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(14, 100); page.wait_for_selector('.world-sheet', timeout=15000)
         check('hen sheet opens', page.locator('.world-sheet h2').inner_text() == 'Pip')
         page.click('#collectEgg'); check('egg from yesterday collected', basket().get('egg') == 1)
         page.click('#care-feed'); check('feeding counts once today', page.evaluate('() => EbbGame.state().world.barn.animals.hen1.careDates.length') == 2)
         shot('03-hen-sheet')
         page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_selector('.world-sheet', state='detached')
 
-        tap(32, 84); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(28, 148); page.wait_for_selector('.world-sheet', timeout=15000)
         check('cow sheet opens', page.locator('.world-sheet h2').inner_text() == 'Mochi')
         check('no milk before care', page.locator('#milkCow').count() == 0)
         page.click('#care-brush'); page.click('#milkCow')
@@ -99,10 +101,10 @@ def main():
         check('milk once a day', page.locator('#milkCow').count() == 0)
         page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_timeout(300); shot('04-barn-after')
 
-        tap(20, 47); place('Farm'); check('barn -> farm', True)
-        tap(96, 76); place('Waterfall'); check('farm -> waterfall', True)
+        tap(87, 89); place('Farm'); check('barn -> farm', True)
+        tap(94, 145); place('Waterfall'); check('farm -> waterfall', True)
 
-        tap(36, 65); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(88, 80); page.wait_for_selector('.world-sheet', timeout=15000)
         check('fishing sheet opens', page.locator('.world-sheet h2').inner_text() == 'Fishing')
         page.wait_for_function('() => /nibble!/.test(document.getElementById("fishStatus").textContent)', timeout=8000)
         shot('05a-nibble'); page.wait_for_timeout(400); page.click('#reelIn')
@@ -117,19 +119,19 @@ def main():
         page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_selector('.world-sheet', state='detached')
         page.wait_for_timeout(300); check('she can walk again after fishing', page.evaluate('() => EbbGame.me().action') != 'work')
 
-        tap(96, 77); place('Hot spring'); page.wait_for_timeout(400); shot('06-spring')
+        tap(97, 118); place('Hot spring'); page.wait_for_timeout(400); shot('06-spring')
         check('waterfall -> hot spring', True)
-        tap(52, 62); page.wait_for_selector('.world-sheet', timeout=15000)
+        tap(56, 72); page.wait_for_selector('.world-sheet', timeout=15000)
         check('soaking: she sits in the water', page.evaluate('() => EbbGame.me().action') == 'sit')
         page.click('#dropEgg')
         b2 = basket(); check('spa-boiled egg made from the egg', b2.get('spaEgg') == 1 and b2.get('egg') == 0)
         page.wait_for_timeout(2600); shot('07-soak')
         page.click('#leaveSpring'); page.wait_for_selector('.world-sheet', state='detached')
         check('climbs out standing', page.evaluate('() => EbbGame.me().action') != 'sit')
-        tap(5, 61); place('Waterfall'); check('hot spring -> waterfall', True)
+        tap(12, 163); place('Waterfall'); check('hot spring -> waterfall', True)
 
         page.evaluate('() => { const f = EbbGame.state().farm; f.basket = { milk: 2 }; }')
-        tap(52, 58); page.wait_for_function('() => /Goddess/.test(document.getElementById("toast").textContent)', timeout=15000)
+        tap(50, 93); page.wait_for_function('() => /Goddess/.test(document.getElementById("toast").textContent)', timeout=15000)
         toast = page.locator('#toast').inner_text()
         check('the pond names a barn item: ' + toast, 'milk' in toast and 'undefined' not in toast)
         shot('08-pond')
