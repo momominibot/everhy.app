@@ -47,7 +47,7 @@
         { id: 'toFalls', rect: [88, 140, 100, 150], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
       ],
       spots: [{ id: 'shed', kind: 'shed', at: { x: 46, y: 104 }, stand: { x: 46, y: 112 }, label: 'Seeds from the jars' }],
-      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 36, y: 170 }],
+      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 36, y: 166 }],
       start: { x: 40, y: 120 }
     },
     waterfall: { /* tall plate: the falls and pond across the top, the meadow below, a sandy path from the bottom left */

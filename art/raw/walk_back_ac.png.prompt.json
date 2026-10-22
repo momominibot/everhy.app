@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Walk cycle sprite sheet of the same Animal Crossing style girl as the reference (huge round head, tiny body, big oval eyes, long dark brown hair, pink tee, sage trousers, cream sneakers), walking away from the viewer, back view, legs and arms alternating through a full step. Eight frames in two rows of four, evenly spaced, same size, feet on one baseline per row, nothing touching. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_ac.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 39.7,
+ "bytes": 1967142
+}

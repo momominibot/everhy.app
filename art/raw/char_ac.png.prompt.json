@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Character turnaround sheet, three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body standing, arms relaxed. Animal Crossing New Horizons player character style: an oversized round head almost as big as the whole body, tiny stubby body, short arms and legs, big oval black eyes with white highlights, small simple smile, soft matte clay shading. Long wavy dark brown hair, warm light-brown skin, soft pink short-sleeved tee, loose sage green trousers, cream sneakers. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 49.4,
+ "bytes": 1426476
+}
