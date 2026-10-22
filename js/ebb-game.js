@@ -46,7 +46,8 @@
     var ratio = W.units(st.scene) / 100; /* plate height over width */
     /* the plate always shows its full width; a tall plate on a taller screen leaves room above and below, which the
      * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
-    cam.W = r.width; cam.H = r.height; cam.S = r.width; cam.Sh = cam.S * ratio; cam.snap = true;
+    var sc = scene(), zoom = sc.zoom || (sc.indoor ? 1.12 : 1.3); /* a little larger than the screen, so the camera has somewhere to go */
+    cam.W = r.width; cam.H = r.height; cam.S = r.width * zoom; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
     if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
@@ -63,7 +64,7 @@
 
   function drawProps() {
     var s = scene(), near = nearest(), out = '', front = '';
-    if (st.scene === 'farm') s.beds.forEach(function (b, i) { out += PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
+    if (s.beds) s.beds.forEach(function (b, i) { if (!st.farm.beds[i]) return; out += b.w ? PR.paintedBed(st.farm.beds[i], b.x, b.y, b.w, today(), near && near.bed === i) : PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
     if (st.scene === 'waterfall') out += PR.shimmer(s.fall);
     if (s.layout) { /* furniture: pieces whose front edge is above her feet go behind her, the rest in front */
       s.layout.slice().sort(function (a, b) { return (Fu.CATALOG[a.item].flat ? -1 : 0) - (Fu.CATALOG[b.item].flat ? -1 : 0) || a.y - b.y; }).forEach(function (p) {
@@ -80,7 +81,7 @@
   function nearest() {
     var s = scene(), best = null, d;
     s.spots.forEach(function (sp) { d = Math.hypot(sp.stand.x - me.x, (sp.stand.y - me.y) * 1.6); if (d < NEAR && (!best || d < best.d)) best = { spot: sp, d: d }; });
-    (s.beds || []).forEach(function (b, i) { d = Math.hypot(b.x - me.x, (b.y + 4.5 - me.y) * 1.6); if (d < NEAR && (!best || d < best.d)) best = { bed: i, d: d }; });
+    (s.beds || []).forEach(function (b, i) { var sb = W.bedStand(b); d = Math.hypot(sb.x - me.x, (sb.y - me.y) * 1.6); if (d < NEAR + (b.w ? b.w / 4 : 0) && (!best || d < best.d)) best = { bed: i, d: d }; });
     return best;
   }
   function promptFor(n) {
@@ -105,7 +106,7 @@
     if (sitting || deco.on) return;
     var pt = scenePoint(ev), s = scene(), target = null;
     s.spots.forEach(function (sp) { if (Math.hypot(sp.at.x - pt.x, sp.at.y - pt.y) < 8) target = { pt: sp.stand, then: { spot: sp } }; });
-    (s.beds || []).forEach(function (b, i) { if (Math.abs(b.x - pt.x) < 7 && Math.abs(b.y - pt.y) < 4.5) target = { pt: { x: b.x, y: b.y + 4.5 }, then: { bed: i } }; });
+    (s.beds || []).forEach(function (b, i) { var hw = b.w ? b.w / 2 : 7, hh = b.w ? b.w * 0.21 : 4.5; if (Math.abs(b.x - pt.x) < hw && Math.abs(b.y - pt.y) < hh) target = { pt: W.bedStand(b), then: { bed: i } }; });
     s.doors.forEach(function (dr) { if (W.inRect(pt, [dr.rect[0] - 2, dr.rect[1] - 6, dr.rect[2] + 2, dr.rect[3] + 2])) target = { pt: { x: (dr.rect[0] + dr.rect[2]) / 2, y: (dr.rect[1] + dr.rect[3]) / 2 }, then: null }; });
     walkTo(target ? target.pt : pt, target ? target.then : null);
     if (els.app) els.app.classList.add('moved');
@@ -138,6 +139,11 @@
     var sp = t.spot;
     if (kinds[sp.kind]) { try { kinds[sp.kind](sp, api); } catch (e) { console.error(e); } return; }
     if (sp.kind === 'panel') { var pn = panels.filter(function (p) { return p.id === sp.panel; })[0]; if (pn) pn.open(api); else toast('Nothing here yet'); return; }
+    if (sp.kind === 'tea') { /* a warm cup: a small pause, nothing to log */
+      me.view = 'back'; work('none', 1600, 'back');
+      setTimeout(function () { toast('The kettle sings. A warm cup, held with both hands, and one slow breath.', 3600); if (root.EbbLife) root.EbbLife.react('heart', 1800); }, 900);
+      return;
+    }
     if (sp.kind === 'shed') {
       var got = F.takeSeeds(st.farm, today()); S.save(); updateHud();
       toast(got ? 'A ' + F.CROPS[got].name.toLowerCase() + ' seed. ' + st.farm.seedsLeft + ' more today.' : 'That’s today’s seeds. More tomorrow.');

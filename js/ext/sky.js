@@ -13,20 +13,28 @@
   var DAY = 1440;
   /* phase start times in minutes after midnight; night runs from 20:00 until dawn. Close to Singapore's sun all year
    * (sunrise about 07:00, sunset about 19:10) and gentle enough anywhere else. */
-  var BOUNDS = [[375, 'dawn'], [465, 'day'], [1050, 'golden'], [1140, 'dusk'], [1200, 'night']];
-  var PHASES = ['dawn', 'day', 'golden', 'dusk', 'night'];
+  /* six looks across the day: sunrise 05:30, morning 07:30, noon 11:30, afternoon 15:00, sunset 17:30, night 19:30 */
+  var BOUNDS = [[330, 'sunrise'], [450, 'morning'], [690, 'noon'], [900, 'afternoon'], [1050, 'sunset'], [1170, 'night']];
+  var PHASES = ['sunrise', 'morning', 'noon', 'afternoon', 'sunset', 'night'];
+  var LABELS = { sunrise: 'Sunrise', morning: 'Morning', noon: 'Midday', afternoon: 'Afternoon', sunset: 'Sunset', night: 'Night' };
   var EASE = 20; /* each change of phase fades over 40 minutes, centred on its start time */
   /* shade: what the plate is multiplied by (white = untouched). glow: soft light from the sky, screened, rgb + alpha.
    * pool: the warm light around her outdoors. lamp: how much indoor lamps are on. */
   var LOOKS = {
     night: { shade: [112, 126, 180], glow: [120, 140, 220, 0], pool: 1, lamp: 1 },
-    dawn: { shade: [255, 224, 228], glow: [255, 198, 172, 0.24], pool: 0, lamp: 0 },
-    day: { shade: [255, 255, 255], glow: [255, 236, 210, 0], pool: 0, lamp: 0 },
-    golden: { shade: [255, 222, 180], glow: [255, 174, 98, 0.2], pool: 0, lamp: 0 },
-    dusk: { shade: [186, 166, 210], glow: [255, 152, 126, 0.16], pool: 0.6, lamp: 0.6 }
+    sunrise: { shade: [255, 218, 214], glow: [255, 190, 160, 0.3], pool: 0.2, lamp: 0.3 },
+    morning: { shade: [255, 250, 240], glow: [255, 244, 214, 0.1], pool: 0, lamp: 0 },
+    noon: { shade: [255, 255, 255], glow: [255, 255, 255, 0], pool: 0, lamp: 0 },
+    afternoon: { shade: [255, 246, 226], glow: [255, 226, 170, 0.08], pool: 0, lamp: 0 },
+    sunset: { shade: [255, 204, 168], glow: [255, 150, 100, 0.28], pool: 0.4, lamp: 0.5 },
+    /* older names some code may still ask for */
+    dawn: { shade: [255, 218, 214], glow: [255, 190, 160, 0.3], pool: 0.2, lamp: 0.3 },
+    day: { shade: [255, 255, 255], glow: [255, 255, 255, 0], pool: 0, lamp: 0 },
+    golden: { shade: [255, 246, 226], glow: [255, 226, 170, 0.08], pool: 0, lamp: 0 },
+    dusk: { shade: [255, 204, 168], glow: [255, 150, 100, 0.28], pool: 0.4, lamp: 0.5 }
   };
   var RAIN_SHADE = [214, 220, 230], RAIN_PER_MILLE = 200; /* about one day in five */
-  var INDOOR_IDS = ['bedroom', 'bathroom', 'barn']; /* barn: the world workstream's roofed room, so rain stays outside */
+  var INDOOR_IDS = ['bedroom', 'bathroom', 'living', 'barn']; /* barn: the world workstream's roofed room, so rain stays outside */
 
   function wrap(m) { return ((m % DAY) + DAY) % DAY; }
   function circ(d) { return wrap(d + DAY / 2) - DAY / 2; } /* signed distance in minutes, -720..720 */
@@ -103,7 +111,7 @@
   function parseWeather(search) { var v = param(search, 'weather'); return v === 'rain' || v === 'clear' ? v : null; }
 
   var api = null, lampHooks = {}, current = {};
-  root.EbbSky = { PHASES: PHASES, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
+  root.EbbSky = { PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
     dateKey: dateKey, weatherFor: weatherFor, weatherAt: weatherAt, isIndoor: isIndoor, effects: effects,
     parseTime: parseTime, parseWeather: parseWeather,
     /* other modules: where the lamps are in a room, e.g. from its furniture. fn(api) -> [{ x, y }] in scene percent */

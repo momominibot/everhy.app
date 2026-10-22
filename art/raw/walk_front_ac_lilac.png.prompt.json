@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same big-headed Animal Crossing style girl. Change only her clothes to the outfit in the second reference: a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/walk_front_ac.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_ac_lilac.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 32.0,
+ "bytes": 2292814
+}

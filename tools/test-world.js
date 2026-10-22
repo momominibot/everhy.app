@@ -53,7 +53,7 @@ TOUCHED.forEach(id => {
       check(`${id}/${sp.id} walk from ${e.name} crosses no door`, !!p && legsAvoidDoors(id, e.pt, p, null));
     });
     (s.beds || []).forEach((b, i) => {
-      const p = W.plan(id, e.pt, { x: b.x, y: b.y + 4.5 });
+      const p = W.plan(id, e.pt, W.bedStand(b));
       check(`${id} bed ${i} reachable ${e.name} without a door`, !!p && legsAvoidDoors(id, e.pt, p, null));
     });
     s.doors.forEach(d => {

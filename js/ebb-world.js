@@ -9,9 +9,9 @@
       floor: [[16, 97], [84, 97], [86, 175], [14, 175]],
       solids: [[28, 50, 64, 97], [14, 80, 28, 119], [66, 80, 90, 123], [0, 138, 21, 175], [77, 160, 100, 175]],
       shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
-      shellDoors: [{ id: 'toFarm', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
+      shellDoors: [{ id: 'toLiving', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
-        { id: 'toFarm', rect: [14, 118, 19, 150], to: 'farm', arrive: { x: 21, y: 114 }, label: 'Out to the farm' },
+        { id: 'toLiving', rect: [14, 118, 19, 150], to: 'living', arrive: { x: 9, y: 110 }, label: 'To the kitchen' },
         { id: 'toBathroom', rect: [81, 128, 86, 160], to: 'bathroom', arrive: { x: 72, y: 128 }, label: 'Into the bathroom' }
       ],
       spots: [
@@ -38,23 +38,44 @@
       ],
       start: { x: 45, y: 125 }
     },
-    farm: { /* tall plate (4:7): shed and jars top left, fence across, the yard below, a stone path leaving bottom right */
-      name: 'Farm', plate: 'art/plates/farm-tall.webp', aspect: [4, 7], depth: [104, 0.22, 175, 0.33],
-      floor: [[2, 109], [34, 104], [100, 104], [100, 175], [2, 175]],
-      solids: [[60, 150, 100, 175]],
+    living: { /* kitchen and living room in one dreamy render; left door to the bedroom, right door out to the farm */
+      name: 'Kitchen', plate: 'art/plates/living-dream.webp', aspect: [4, 7], indoor: true, depth: [64, 0.25, 175, 0.33],
+      floor: [[8, 64], [92, 64], [100, 76], [100, 175], [0, 175], [0, 76]],
+      solids: [[40, 50, 62, 72], [66, 56, 86, 70], [8, 58, 46, 87], [12, 80, 24, 101], [16, 84, 32, 102], [10, 102, 30, 122], [10, 120, 20, 129],
+        [64, 68, 92, 100], [66, 92, 82, 118], [83, 90, 94, 112], [82, 108, 100, 126]],
       doors: [
-        { id: 'toHouse', rect: [15, 104, 28, 111], to: 'bedroom', arrive: { x: 22, y: 128 }, label: 'Back inside' },
-        { id: 'toFalls', rect: [88, 140, 100, 150], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
+        { id: 'toBedroom', rect: [0, 78, 6, 104], to: 'bedroom', arrive: { x: 22, y: 128 }, label: 'To the bedroom' },
+        { id: 'toFarm', rect: [95, 76, 100, 104], to: 'farm', arrive: { x: 44, y: 112 }, label: 'Out to the farm' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 46, y: 104 }, stand: { x: 46, y: 112 }, label: 'Seeds from the jars' }],
-      beds: [{ x: 22, y: 128 }, { x: 44, y: 128 }, { x: 66, y: 128 }, { x: 22, y: 150 }, { x: 44, y: 150 }, { x: 36, y: 166 }],
-      start: { x: 40, y: 120 }
+      spots: [
+        { id: 'kettle', kind: 'tea', at: { x: 51, y: 60 }, stand: { x: 51, y: 75 }, label: 'Make a warm cup' },
+        { id: 'fridge', kind: 'log', topic: 'food', at: { x: 32, y: 54 }, stand: { x: 44, y: 89 }, label: 'What did you eat or drink?' },
+        { id: 'table', kind: 'log', topic: 'mood', at: { x: 78, y: 84 }, stand: { x: 56, y: 100 }, label: 'Sit at the table a moment' },
+        { id: 'sofa', kind: 'cushion', at: { x: 27, y: 74 }, stand: { x: 36, y: 90 }, label: 'Curl up on the sofa' },
+        { id: 'floorcushion', kind: 'cushion', at: { x: 91, y: 114 }, stand: { x: 78, y: 128 }, label: 'Sit on the cushion' }
+      ],
+      arriveFix: {}, start: { x: 50, y: 125 }
+    },
+    farm: { /* one painted farm: shed and jars behind the fence, five raised beds in the sandy garden, a stone path leaving bottom right */
+      name: 'Farm', plate: 'art/plates/farm-garden.webp', aspect: [4, 7], depth: [92, 0.22, 175, 0.33],
+      floor: [[2, 92], [72, 92], [72, 112], [100, 118], [100, 175], [2, 175]],
+      solids: [[22, 93, 59, 110], [0, 106, 37, 131], [51, 113, 91, 146], [0, 131, 29, 161], [33, 136, 79, 166], [72, 92, 100, 117]],
+      doorFix: { toBarn: { rect: [0, 163, 6, 175], arrive: { x: 10, y: 170 } } }, arriveFix: { barn: { x: 10, y: 170 }, waterfall: { x: 96, y: 136 } }, /* the world extension's barn door, moved onto this plate's free left edge */
+      doors: [
+        { id: 'toHouse', rect: [60, 92, 71, 95], to: 'living', arrive: { x: 80, y: 121 }, label: 'Back inside' },
+        { id: 'toFalls', rect: [93, 150, 100, 166], to: 'waterfall', arrive: { x: 12, y: 168 }, label: 'Path to the waterfall' }
+      ],
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 52, y: 60 }, stand: { x: 65, y: 99 }, label: 'Seeds from the jars' }],
+      /* bed centres and widths on the painted soil; crops and water show on top of the painting */
+      beds: [{ x: 40, y: 101, w: 30, stand: { x: 40, y: 113 } }, { x: 17, y: 119, w: 30, stand: { x: 44, y: 124 } }, { x: 71, y: 129, w: 32, stand: { x: 45, y: 132 } },
+        { x: 14, y: 146, w: 26, stand: { x: 14, y: 166 } }, { x: 54, y: 151, w: 40, stand: { x: 54, y: 170 } }],
+      start: { x: 44, y: 120 }
     },
     waterfall: { /* tall plate: the falls and pond across the top, the meadow below, a sandy path from the bottom left */
       name: 'Waterfall', plate: 'art/plates/waterfall-tall.webp', aspect: [4, 7], depth: [106, 0.22, 175, 0.33],
       floor: [[2, 108], [98, 108], [98, 175], [2, 175]],
       solids: [[38, 140, 56, 150]],
-      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 80, y: 134 }, label: 'Back to the farm' }],
+      doors: [{ id: 'toFarm', rect: [0, 155, 8, 175], to: 'farm', arrive: { x: 96, y: 136 }, label: 'Back to the farm' }],
       spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 94 }, stand: { x: 50, y: 110 }, label: 'Offer to the pond' }],
       fall: { x: 44, y0: 42, x1: 54, y1: 86 },
       start: { x: 14, y: 165 }
@@ -73,6 +94,8 @@
   /* a scene's plate may be taller than wide: x runs 0..100 across the plate and y runs 0..units(scene) down it, in the
    * same unit, so walking speed and figure size mean the same thing in every direction */
   function units(scene) { var s = typeof scene === 'string' ? SCENES[scene] : scene, a = s && s.aspect; return a ? 100 * a[1] / a[0] : 100; }
+  /* where she stands to work a bed: just below it (painted beds carry their width, flat tiles are 12 wide) */
+  function bedStand(b) { return b.stand || { x: b.x, y: b.y + (b.w ? b.w * 0.21 + 3 : 4.5) }; }
   function inFloor(scene, pt) { var s = typeof scene === 'string' ? SCENES[scene] : scene; return !!s && inPoly(pt, s.floor); }
   function walkable(scene, pt) {
     var s = typeof scene === 'string' ? SCENES[scene] : scene;
@@ -151,15 +174,20 @@
   function register(id, scene) {
     if (!id || SCENES[id]) return false;
     scene.solids = scene.solids || []; scene.doors = scene.doors || []; scene.spots = scene.spots || [];
+    scene.doors.forEach(function (d) { var t = SCENES[d.to]; if (t && t.arriveFix && t.arriveFix[id]) d.arrive = t.arriveFix[id]; }); /* a repainted target moves where its visitors land */
     SCENES[id] = scene; return true;
   }
-  function addDoor(sceneId, door) { var s = SCENES[sceneId]; if (!s) return false; s.doors.push(door); return true; }
+  function addDoor(sceneId, door) {
+    var s = SCENES[sceneId]; if (!s) return false;
+    var fix = s.doorFix && s.doorFix[door.id]; if (fix) door = Object.assign({}, door, fix); /* a repainted plate can move an extension's door */
+    s.doors.push(door); return true;
+  }
   /* the shell (empty room) has its doors on the walls where the painted room has them by its furniture; same targets */
   function shellDoors(s) {
     if (!s.shellDoors) return s.doors;
     return s.doors.map(function (d) { var sd = s.shellDoors.filter(function (x) { return x.id === d.id; })[0]; return sd ? Object.assign({}, d, { rect: sd.rect }) : d; });
   }
 
-  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, shellDoors: shellDoors, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
+  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, shellDoors: shellDoors, bedStand: bedStand, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
     doorAt: doorAt, inRect: inRect, scaleAt: scaleAt };
 })(typeof window !== 'undefined' ? window : globalThis);

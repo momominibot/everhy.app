@@ -27,7 +27,7 @@
   }
 
   /* clay outfits: each shipped sprite set is one complete outfit, shown as a card with its standing front view */
-  var OUTFIT_NAMES = { default: 'Everyday', ac: 'Everyday', lilac: 'Lilac sundress', ac_lilac: 'Lilac sundress', tudung: 'Tudung and baju kurung', ac_tudung: 'Tudung and baju kurung' };
+  var OUTFIT_NAMES = { genz: 'Hoodie and jeans', default: 'Classic tee', ac: 'Everyday', lilac: 'Lilac sundress', ac_lilac: 'Lilac sundress', tudung: 'Tudung and baju kurung', ac_tudung: 'Tudung and baju kurung' };
   function openClayWardrobe(current, done) {
     var C = root.EbbClay, CS = root.EbbClaySets, chosen = C.setFor(current), body = doc.createElement('div');
     body.className = 'outfits';

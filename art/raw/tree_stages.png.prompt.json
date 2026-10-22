@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Three growth stages of a round peach tree in one row, left to right, evenly spaced, same base line, nothing touching: a leafy young tree with no fruit, a full tree with pink blossom, a full tree heavy with ripe peaches. Seen from the front and slightly above. Solid flat pure bright magenta #FF00FF background. No text, no shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 52.3,
+ "bytes": 1823160
+}

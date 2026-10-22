@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Three seats in one row, evenly spaced, same base line, not touching, seen from the front and slightly above: a small wooden garden bench with a pink cushion, a flat mossy grey rock, a round woven straw floor cushion. Solid flat pure bright magenta #FF00FF background. No text, no shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 57.7,
+ "bytes": 1061936
+}

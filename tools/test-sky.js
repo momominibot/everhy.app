@@ -20,18 +20,18 @@ check('every minute of the day has a phase', phases.every(p => S.PHASES.indexOf(
 check('all five phases happen every day', S.PHASES.every(p => phases.indexOf(p) >= 0));
 let changes = [];
 for (let m = 0; m < 1440; m++) { const a = phases[(m + 1439) % 1440], b = phases[m]; if (a !== b) changes.push([a, b]); }
-check('the phase changes exactly five times a day, midnight included', changes.length === 5);
-const NEXT = { dawn: 'day', day: 'golden', golden: 'dusk', dusk: 'night', night: 'dawn' };
-check('phases run in order: dawn, day, golden hour, dusk, night', changes.every(([a, b]) => NEXT[a] === b));
+check('the phase changes exactly six times a day, midnight included', changes.length === 6);
+const NEXT = { sunrise: 'morning', morning: 'noon', noon: 'afternoon', afternoon: 'sunset', sunset: 'night', night: 'sunrise' };
+check('phases run in order: sunrise, morning, noon, afternoon, sunset, night', changes.every(([a, b]) => NEXT[a] === b));
 check('each phase is one unbroken stretch', S.PHASES.every(p => changes.filter(c => c[1] === p).length === 1));
-[['00:00', 'night'], ['05:00', 'night'], ['06:30', 'dawn'], ['07:00', 'dawn'], ['09:00', 'day'], ['13:00', 'day'],
-  ['17:45', 'golden'], ['18:30', 'golden'], ['19:30', 'dusk'], ['20:00', 'night'], ['22:00', 'night'], ['23:59', 'night']]
+[['00:00', 'night'], ['05:00', 'night'], ['06:30', 'sunrise'], ['07:00', 'sunrise'], ['09:00', 'morning'], ['13:00', 'noon'], ['16:00', 'afternoon'],
+  ['17:45', 'sunset'], ['18:30', 'sunset'], ['19:20', 'sunset'], ['20:00', 'night'], ['22:00', 'night'], ['23:59', 'night']]
   .forEach(([t, p]) => check(`${t} is ${p}`, S.phaseAt(hm(t)) === p));
-check('minutes wrap around the day', S.phaseAt(1440 + hm('13:00')) === 'day' && S.phaseAt(-60) === 'night');
+check('minutes wrap around the day', S.phaseAt(1440 + hm('13:00')) === 'noon' && S.phaseAt(-60) === 'night');
 check('minuteOf reads the local clock', S.minuteOf(new Date(2026, 9, 22, 18, 30, 30)) === 18 * 60 + 30.5);
 const durations = {};
 S.PHASES.forEach(p => { durations[p] = phases.filter(q => q === p).length; });
-check('day is the longest stretch of light, dusk the shortest', durations.day > durations.golden && durations.dusk <= durations.dawn && durations.night > 360);
+check('noon is the longest stretch of light, sunrise the shortest', durations.noon >= durations.afternoon && durations.sunrise <= durations.morning && durations.night > 360);
 
 /* ---------- minute to look ---------- */
 const inBox = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
@@ -71,7 +71,7 @@ for (let m = 0; m < 1440; m++) {
   const p = S.paint(m, { indoor: true, weather: m % 2 ? 'rain' : 'clear' }), ph = S.phaseAt(m);
   if (!p.shade.every(v => v === 255) || p.glow[3] !== 0 || p.pool !== 0) indoorOk = false;
   const settled = S.phaseAt(m - 21) === ph && S.phaseAt(m + 21) === ph; /* outside the fade at either end */
-  if ((ph === 'day' || ph === 'golden' || ph === 'dawn') && settled && p.lamp > 0) lampByDay++;
+  if ((ph === 'morning' || ph === 'noon' || ph === 'afternoon') && settled && p.lamp > 0) lampByDay++;
 }
 check('indoors never gets the outdoor tint, rain or shine', indoorOk);
 check('indoor lamps are off through dawn, day and golden hour', lampByDay === 0);
@@ -104,8 +104,8 @@ check('dateKey is the local calendar date', S.dateKey(new Date(2026, 0, 5, 23, 3
 const fx = o => S.effects(Object.assign({ phase: 'night', indoor: false, weather: 'clear', fireflies: true, reduced: false }, o));
 check('fireflies at night where a place has them', fx({}).flies === true);
 check('no fireflies by day, at dusk, indoors, in rain, or where a place has none',
-  !fx({ phase: 'day' }).flies && !fx({ phase: 'dusk' }).flies && !fx({ indoor: true }).flies && !fx({ weather: 'rain' }).flies && !fx({ fireflies: false }).flies);
-check('rain falls outdoors on rainy days, day or night', fx({ weather: 'rain' }).rain && fx({ weather: 'rain', phase: 'day' }).rain && !fx({}).rain);
+  !fx({ phase: 'noon' }).flies && !fx({ phase: 'sunset' }).flies && !fx({ indoor: true }).flies && !fx({ weather: 'rain' }).flies && !fx({ fireflies: false }).flies);
+check('rain falls outdoors on rainy days, day or night', fx({ weather: 'rain' }).rain && fx({ weather: 'rain', phase: 'noon' }).rain && !fx({}).rain);
 check('rain stays outside', !fx({ weather: 'rain', indoor: true }).rain);
 check('reduced motion: no falling rain or drifting fireflies', !fx({ reduced: true, weather: 'rain' }).rain && !fx({ reduced: true }).flies);
 

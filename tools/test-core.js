@@ -36,7 +36,7 @@ Object.keys(CS).forEach(set => Object.keys(CS[set]).forEach(strip => {
   const w = b && b.toString('ascii', 12, 16) === 'VP8X' ? 1 + (b[24] | b[25] << 8 | b[26] << 16) : -1;
   check(`clay ${set}/${strip} width = frames x cell`, w === m.frames * m.w);
 }));
-check('clay base set is the original girl', C.has('default') && C.setFor({}) === 'default' && C.setFor({ set: 'nope' }) === 'default' && C.setFor({ set: 'ac' }) === 'default' && C.sets().join() === 'default,lilac,tudung');
+check('clay base set is the original girl in her hoodie', C.has('genz') && C.setFor({}) === 'genz' && C.setFor({ set: 'nope' }) === 'genz' && C.setFor({ set: 'ac' }) === 'genz' && C.sets().join() === 'genz,default,lilac,tudung');
 check('clay walk uses 8 frames', [0, 0.13, 0.5, 0.99].map(ph => C.pick({ action: 'walk', view: 'front', phase: ph }).frame).join() === '0,1,4,7');
 check('clay walking left flips the side strip', C.pick({ action: 'walk', view: 'side', flip: true }).flip && !C.pick({ action: 'walk', view: 'front', flip: true }).flip);
 check('clay idle views', ['front', 'side', 'back'].map(v => C.pick({ view: v }).frame).join() === '0,1,2');
@@ -84,7 +84,7 @@ Object.keys(W.SCENES).forEach(id => {
     check(`${id}/${sp.id} stand walkable`, W.walkable(id, sp.stand));
     check(`${id}/${sp.id} reachable`, !!W.plan(id, s.start, sp.stand));
   });
-  (s.beds || []).forEach((b, i) => check(`${id} bed ${i} reachable`, !!W.plan(id, s.start, { x: b.x, y: b.y + 4.5 })));
+  (s.beds || []).forEach((b, i) => check(`${id} bed ${i} reachable`, W.walkable(id, W.bedStand(b)) && !!W.plan(id, s.start, W.bedStand(b))));
   s.doors.forEach(d => {
     check(`${id}/${d.id} target exists`, !!W.SCENES[d.to]);
     check(`${id}/${d.id} arrival walkable`, W.walkable(d.to, d.arrive));

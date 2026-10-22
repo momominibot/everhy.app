@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Redraw the first reference sitting poses sheet exactly: same poses, same layout, same number of frames, same positions and sizes, same girl. Change only her clothes to the outfit in the second reference: an oversized cream cropped hoodie with a tiny embroidered sun, high-waisted light-wash wide-leg jeans with a cuff, chunky white sneakers, a small pastel claw clip holding back one side of her hair, and tiny gold hoop earrings. Same face in every frame. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/pose_sit.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 30.1,
+ "bytes": 1927564
+}

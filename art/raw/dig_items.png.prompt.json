@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Nine small cosy game items in a 3x3 grid, evenly spaced, same size, not touching: a little mound of dark soil with a star-shaped crack, a wooden-handled shovel, a smooth pink seashell, a tiny glowing fossil bone, a clay acorn, a wild daisy, a honey jar, a woven bag, a brass bell. Solid flat pure bright magenta #FF00FF background. No text, no shadow. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, warm light, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 61.2,
+ "bytes": 1850860
+}

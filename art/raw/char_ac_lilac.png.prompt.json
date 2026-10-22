@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Character turnaround of the same Animal Crossing style girl as the reference (huge round head, tiny body, big oval eyes, same face and skin), now wearing a lilac short-sleeved sundress with a cream cardigan tied at the waist and cream sandals. Three views side by side, evenly spaced, same size, not touching: front, side facing right, back. Full body standing, arms relaxed. Solid flat pure bright green #00FF00 background. No text, no floor, no shadow.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_ac.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 28.0,
+ "bytes": 1750743
+}

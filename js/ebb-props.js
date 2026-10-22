@@ -29,6 +29,18 @@
   }
   var STAGE_FRAME = { 0: 0, 1: 1, 2: 2, 3: 3, ripe: 4 };
 
+  /* a bed painted into the farm plate: only what changes is drawn over it (grass tufts, wet soil, the crops) */
+  function paintedBed(b, x, y, w, today, near) {
+    var out = '', wet = b.state === 'planted' && F.wateredToday(b, today), h = w * 0.42;
+    if (b.state === 'grass') for (var i = 0; i < 6; i++) out += '<path d="M' + (x - w * 0.36 + i * w * 0.145) + ' ' + (y + 1.5) + ' l0.9 -3.2 l0.9 3.2 M' + (x - w * 0.33 + i * w * 0.145) + ' ' + (y + 2) + ' l0.7 -2.4 l0.7 2.4" fill="#8fb46f"/>';
+    if (wet) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (w * 0.4) + '" ry="' + (h * 0.38) + '" fill="rgba(70,40,25,0.42)"/>';
+    if (b.state === 'planted' && SP[b.crop]) {
+      var m = SP[b.crop], ch = w * 0.34;
+      [-0.26, 0, 0.26].forEach(function (k, i) { out += sprite(b.crop, STAGE_FRAME[F.stage(b, today)] || 0, x + k * w, y + 2 + (i === 1 ? 1.5 : 0), ch * m.w / m.h); });
+    }
+    if (near) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (w / 2 + 1) + '" ry="' + (h / 2 + 1) + '" fill="none" stroke="#fff6e8" stroke-width="0.5" stroke-dasharray="1.2 0.9"/>';
+    return '<g class="bed">' + out + '</g>';
+  }
   function bed(b, x, y, today, near) {
     var w = 12, h = 6.4, x0 = x - w / 2, y0 = y - h / 2, out = '';
     var wet = b.state === 'planted' && F.wateredToday(b, today);
@@ -102,5 +114,5 @@
     return out;
   }
 
-  root.EbbProps = { bed: bed, crop: crop, cushion: cushion, shimmer: shimmer, goddess: goddess, sparkles: sparkles, sprite: sprite, furniture: furniture, furnitureBox: furnitureBox };
+  root.EbbProps = { bed: bed, paintedBed: paintedBed, crop: crop, cushion: cushion, shimmer: shimmer, goddess: goddess, sparkles: sparkles, sprite: sprite, furniture: furniture, furnitureBox: furnitureBox };
 })(typeof window !== 'undefined' ? window : globalThis);

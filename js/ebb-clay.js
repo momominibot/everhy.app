@@ -10,7 +10,7 @@
 
   function has(set) { return !!SETS[set]; }
   /* the original girl (Aung's character redrawn smooth in clay) and her outfits; the big-headed 'ac' sets stay on disk, unused */
-  var BASE = 'default', FAMILY = ['default', 'lilac', 'tudung'];
+  var BASE = SETS.genz ? 'genz' : 'default', FAMILY = ['genz', 'default', 'lilac', 'tudung'];
   function setFor(outfit) { var s = outfit && outfit.set; return has(s) && FAMILY.indexOf(s) >= 0 ? s : BASE; }
   function sets() { return FAMILY.filter(has); }
 
