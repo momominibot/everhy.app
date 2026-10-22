@@ -1,7 +1,7 @@
 # Ebb safety layer: contract for other workstreams
 
 Entry `js/ext/safety.js` exposes `window.EbbSafety`. Modules live in `js/safety/` (rules, crisis, consent, ui).
-Tests: `node tools/test-safety.js` (177 checks). Nothing here is generated: every message and action is pre-written.
+Tests: `node tools/test-safety.js` (187 checks). Nothing here is generated: every message and action is pre-written.
 
 ## Calling it from logging
 ```js
@@ -10,7 +10,8 @@ EbbSafety.showAlerts(alerts);  // crisis: the help card only; the other alerts w
 ```
 - `check` runs the crisis language check on each new observation's `text`, `note`, `notes`, `raw` or `said`.
   If it fires, the list holds only `{ ruleId: 'C-CRISIS', crisis: true, deferred: [...] }`.
-- `EbbSafety.crisis(text)` for free text before it becomes an observation (for example a chat turn).
+- `EbbSafety.crisis(text)` for free text before it becomes an observation (for example a chat turn). A hit also opens the help card (once), because the log shows nothing for crisis messages; pass `{ silent: true }` to only test.
+- Ignored by every rule: `negated: true`, `retracted`, `confirmed === false`. Bleeding value `period` (no flow given) is a period day, not heavy. Pain side may sit in `location` (left or right).
 - Medium alerts with the same `key` are not shown again for 30 days; urgent and high always show.
 - Every shown alert is logged on the device under `state.safety.shown` (rule id, version, key, time).
 

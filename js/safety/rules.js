@@ -29,10 +29,13 @@
   function num(v) { var n = typeof v === 'number' ? v : parseFloat(v); return isFinite(n) ? n : null; }
   function field(o, k) { return o[k] !== undefined ? o[k] : (o.value && typeof o.value === 'object' ? o.value[k] : undefined); }
 
-  function loose(o) { return o && o.confirmed !== false; }
-  function strict(o) { return o && (o.confirmed === true || (o.confirmed == null && (o.confidence == null || o.confidence >= 0.7))); }
+  /* negated: she said she does NOT have it ("no cramps"); retracted: undone. Neither is ever used. */
+  function live(o) { return o && o.confirmed !== false && o.negated !== true && !o.retracted; }
+  function loose(o) { return live(o); }
+  function strict(o) { return live(o) && (o.confirmed === true || (o.confirmed == null && (o.confidence == null || o.confidence >= 0.7))); }
 
-  var FLOW = { spotting: 0.5, light: 1, medium: 2, moderate: 2, heavy: 3, very_heavy: 4, soaking: 4, flooding: 4 };
+  /* 'period' = she said her period came but gave no flow: a period day, not heavy */
+  var FLOW = { spotting: 0.5, light: 1, medium: 2, moderate: 2, period: 2, heavy: 3, very_heavy: 4, soaking: 4, flooding: 4 };
   function flow(o) { var v = o.value && typeof o.value === 'object' ? o.value.flow : o.value; var n = num(v); return n != null ? n : (FLOW[low(v)] || 0); }
   function bleedContext(o) { return low(field(o, 'context')); }
   function isBleed(o) { return o.type === 'bleeding' || o.type === 'period'; }
@@ -41,10 +44,14 @@
   function heavyBleed(o) { return isBleed(o) && (flow(o) >= 3 || soaking(o)); }
 
   var FAINTED = ['fainted', 'fainting', 'passed_out', 'blacked_out', 'collapsed', 'collapse'];
-  var FEEL_FAINT = ['faint', 'feeling_faint', 'feel_faint', 'dizzy', 'very_dizzy', 'lightheaded', 'light_headed'];
+  var FEEL_FAINT = ['faint', 'feeling_faint', 'feel_faint', 'faintness', 'dizzy', 'dizziness', 'very_dizzy', 'lightheaded', 'light_headed', 'lightheadedness'];
   function symptom(o, list) { return o.type === 'symptom' && list.indexOf(low(o.value)) >= 0; }
   function painScore(o) { return o.type === 'pain' ? num(o.value && typeof o.value === 'object' ? o.value.score : o.value) : null; }
-  function oneSided(o) { var s = low(field(o, 'side')); return field(o, 'oneSided') === true || s === 'left' || s === 'right' || s === 'one_side' || s === 'one_sided'; }
+  function oneSided(o) {
+    var s = low(field(o, 'side')); if (field(o, 'oneSided') === true || s === 'left' || s === 'right' || s === 'one_side' || s === 'one_sided') return true;
+    var loc = [].concat(field(o, 'location') || []).join(' ').toLowerCase(); /* the log keeps side inside location */
+    return /\b(left|right)\b/.test(loc) && !(/\bleft\b/.test(loc) && /\bright\b/.test(loc)) || /\bone[\s-]sided?\b/.test(loc);
+  }
   function disrupts(o) { return field(o, 'disrupts') === true || field(o, 'stoppedActivities') === true; }
   function moodSevere(o) { if (o.type !== 'mood') return false; var n = num(field(o, 'severity')); if (n == null) n = num(o.value); return n != null ? n >= 7 : low(o.value) === 'severe' || low(field(o, 'severity')) === 'severe'; }
 

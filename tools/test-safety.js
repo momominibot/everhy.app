@@ -194,6 +194,21 @@ check('crisis: empty and odd input is quiet', S.crisis('') === false && S.crisis
   check('help numbers cite their sources', /sos\.org\.sg/.test(ui) && /scdf\.gov\.sg/.test(ui) && /moh\.gov\.sg/.test(ui) && /22 Oct 2026/.test(ui));
 })();
 
+/* ---------- the log session's observation shapes (side-session note log-session-contract.md) ---------- */
+(() => {
+  check('log: negated items are ignored', !has(run([ob('pain', 9, 0, { location: ['left side'], negated: true })]), 'R-PREG-EMERG'));
+  check('log: retracted items are ignored', !has(run([ob('symptom', 'fainted', 0, { retracted: true })]), 'R-PREG-EMERG'));
+  check('log: side inside location counts as one-sided', has(run([ob('pain', 8, 0, { unit: '/10', location: ['lower belly', 'right side'] })]), 'R-PREG-EMERG'));
+  check('log: pain on both sides in location is not one-sided', !has(run([ob('pain', 8, 0, { location: ['left', 'right'] })]), 'R-PREG-EMERG'));
+  check('log: dizziness while pregnant is urgent', has(run([ob('symptom', 'dizziness')], [], { pregnant: true }), 'R-PREG-EMERG'));
+  const days = bleedDays(-7, 8, 'period');
+  check('log: bleeding value "period" counts as a period day', has(run([days[7]], days.slice(0, 7)), 'R-LONG-PERIOD'));
+  check('log: "period" alone is not heavy bleeding', !has(run([ob('bleeding', 'period')], [], { pregnant: true }), 'R-PREG-EMERG'));
+  check('log: date-only starts work', has(run([Object.assign(ob('pain', 8, 0, { location: ['left'] }), { start: '2026-10-22' })]), 'R-PREG-EMERG'));
+  check('log: crisis text in sourceText is caught by check()', run([ob('mood', 'low', 0, { sourceText: 'feeling low, want to die already' })])[0].crisis === true);
+  check('facade: crisis(text, { silent }) still answers', S.crisis('I want to die', { silent: true }) === true && S.crisis('die die must try', { silent: true }) === false);
+})();
+
 /* ---------- consent ---------- */
 (() => {
   const st = {};

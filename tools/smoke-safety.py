@@ -65,6 +65,9 @@ with sync_playwright() as p:
     # reload: onboarding does not come back
     pg.reload(); pg.wait_for_timeout(800)
     ok('onboarding not repeated after reload', pg.locator('.sf-onboard').count() == 0)
+    ok('crisis(text) from the log opens the help card once', pg.evaluate("EbbSafety.crisis('honestly I want to die') && EbbSafety.crisis('I want to die')") and pg.locator('.sf-crisis').count() == 1)
+    ok('silent crisis check opens nothing extra', pg.evaluate("EbbSafety.crisis('kill myself', {silent:true})") and pg.locator('.sheet-wrap').count() == 1)
+    pg.locator('.sf-crisis button', has_text='I’m safe for now').click()
     # skip path in a fresh context
     c2 = b.new_context(viewport={'width': 390, 'height': 844}); p2 = c2.new_page()
     p2.goto(f'http://127.0.0.1:{port}/index.html'); p2.wait_for_selector('.sf-onboard')
