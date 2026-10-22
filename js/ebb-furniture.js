@@ -5,29 +5,30 @@
 (function (root) {
   'use strict';
 
-  /* sheet + frame name the sprite strip in art/furn/; w is the drawn cell width in scene units; foot is the footprint
+  /* sheet + frame name the sprite strip in art/furn/ (or art/<dir>/); size is the width of the piece itself in scene
+   * units (each strip's json has the piece's own pixel box, so pieces drawn at one size on the sheet get real sizes); foot is the footprint
    * [width, depth] in scene units behind the front edge (0 depth = flat, walk over it); spot is what she can do there,
    * with the stand point relative to (x, y). */
   var CATALOG = {
-    bed: { sheet: 'furn_bedroom', frame: 0, name: 'Bed', w: 30, foot: [24, 13], spot: { kind: 'log', topic: 'sleep', label: 'How did you sleep?', dx: 0, dy: 3 } },
-    bedside: { sheet: 'furn_bedroom', frame: 1, name: 'Bedside table', w: 30, foot: [9, 6], spot: { kind: 'log', topic: 'temperature', label: 'Waking temperature', dx: 0, dy: 3 } },
-    desk: { sheet: 'furn_bedroom', frame: 2, name: 'Writing desk', w: 30, foot: [17, 8], spot: { kind: 'log', topic: 'mood', label: 'Write in the journal', dx: 0, dy: 3 } },
-    drawers: { sheet: 'furn_bedroom', frame: 3, name: 'Chest of drawers', w: 30, foot: [15, 7], spot: { kind: 'wardrobe', label: 'Change clothes', dx: 0, dy: 3 } },
-    bookshelf: { sheet: 'furn_bedroom', frame: 4, name: 'Bookshelf', w: 30, foot: [12, 6], spot: { kind: 'panel', panel: 'course', label: 'Mindfulness course', dx: 0, dy: 3 } },
-    plant: { sheet: 'furn_bedroom', frame: 5, name: 'Plant', w: 30, foot: [7, 5] },
-    rug: { sheet: 'furn_bedroom', frame: 6, name: 'Round rug', w: 30, foot: [0, 0], flat: true },
-    armchair: { sheet: 'furn_bedroom', frame: 7, name: 'Armchair', w: 30, foot: [11, 7] },
-    lamp: { sheet: 'furn_bedroom', frame: 8, name: 'Floor lamp', w: 30, foot: [5, 4] },
-    cushion: { sheet: 'misc', strip: 'props', frame: 0, name: 'Meditation cushion', w: 10.5, foot: [0, 0], flat: true, spot: { kind: 'cushion', label: 'Sit for a practice', dx: 0, dy: 0.6, sit: true } },
-    bathtub: { sheet: 'furn_bathroom', frame: 0, name: 'Bathtub', w: 30, foot: [24, 11] },
-    toilet: { sheet: 'furn_bathroom', frame: 1, name: 'Toilet', w: 30, foot: [9, 8], spot: { kind: 'log', topic: 'bleeding', label: 'Log bleeding or mucus', dx: 0, dy: 3 } },
-    sink: { sheet: 'furn_bathroom', frame: 2, name: 'Sink and mirror', w: 30, foot: [10, 6], spot: { kind: 'log', topic: 'body', label: 'How does your body feel?', dx: 0, dy: 3 } },
-    towels: { sheet: 'furn_bathroom', frame: 3, name: 'Towel rail', w: 30, foot: [10, 4] },
-    cabinet: { sheet: 'furn_bathroom', frame: 4, name: 'Cabinet and calendar', w: 30, foot: [10, 6], spot: { kind: 'log', topic: 'cycle', label: 'Check your cycle', dx: 0, dy: 3 } },
-    bathmat: { sheet: 'furn_bathroom', frame: 5, name: 'Bath mat', w: 30, foot: [0, 0], flat: true },
-    bathplant: { sheet: 'furn_bathroom', frame: 6, name: 'Plant', w: 30, foot: [7, 5] },
-    basket: { sheet: 'furn_bathroom', frame: 7, name: 'Laundry basket', w: 30, foot: [8, 5] },
-    stool: { sheet: 'furn_bathroom', frame: 8, name: 'Stool', w: 30, foot: [6, 4] }
+    bed: { sheet: 'furn_bedroom', frame: 0, name: 'Bed', size: 30, foot: [25, 13], spot: { kind: 'log', topic: 'sleep', label: 'How did you sleep?', dx: 0, dy: 3 } },
+    bedside: { sheet: 'furn_bedroom', frame: 1, name: 'Bedside table', size: 10, foot: [8, 5], spot: { kind: 'log', topic: 'temperature', label: 'Waking temperature', dx: 0, dy: 3 } },
+    desk: { sheet: 'furn_bedroom', frame: 2, name: 'Writing desk', size: 18, foot: [16, 7], spot: { kind: 'log', topic: 'mood', label: 'Write in the journal', dx: 0, dy: 3 } },
+    drawers: { sheet: 'furn_bedroom', frame: 3, name: 'Chest of drawers', size: 13, foot: [12, 5], spot: { kind: 'wardrobe', label: 'Change clothes', dx: 0, dy: 3 } },
+    bookshelf: { sheet: 'furn_bedroom', frame: 4, name: 'Bookshelf', size: 14, foot: [12, 5], spot: { kind: 'panel', panel: 'course', label: 'Mindfulness course', dx: 0, dy: 3 } },
+    plant: { sheet: 'furn_bedroom', frame: 5, name: 'Plant', size: 9, foot: [6, 4] },
+    rug: { sheet: 'furn_bedroom', frame: 6, name: 'Round rug', size: 26, foot: [0, 0], flat: true },
+    armchair: { sheet: 'furn_bedroom', frame: 7, name: 'Armchair', size: 14, foot: [12, 7] },
+    lamp: { sheet: 'furn_bedroom', frame: 8, name: 'Floor lamp', size: 6, foot: [4, 3] },
+    cushion: { sheet: 'misc', dir: 'props', frame: 0, name: 'Meditation cushion', size: 10.5, foot: [0, 0], flat: true, spot: { kind: 'cushion', label: 'Sit for a practice', dx: 0, dy: 0.6, sit: true } },
+    bathtub: { sheet: 'furn_bathroom', frame: 0, name: 'Bathtub', size: 27, foot: [24, 10] },
+    toilet: { sheet: 'furn_bathroom', frame: 1, name: 'Toilet', size: 10, foot: [8, 7], spot: { kind: 'log', topic: 'bleeding', label: 'Log bleeding or mucus', dx: 0, dy: 3 } },
+    sink: { sheet: 'furn_bathroom', frame: 2, name: 'Sink and mirror', size: 10, foot: [8, 4], spot: { kind: 'log', topic: 'body', label: 'How does your body feel?', dx: 0, dy: 3 } },
+    towels: { sheet: 'furn_bathroom', frame: 3, name: 'Towel rail', size: 11, foot: [10, 3] },
+    cabinet: { sheet: 'furn_bathroom', frame: 4, name: 'Cabinet and calendar', size: 11, foot: [10, 5], spot: { kind: 'log', topic: 'cycle', label: 'Check your cycle', dx: 0, dy: 3 } },
+    bathmat: { sheet: 'furn_bathroom', frame: 5, name: 'Bath mat', size: 17, foot: [0, 0], flat: true },
+    bathplant: { sheet: 'furn_bathroom', frame: 6, name: 'Plant', size: 9, foot: [7, 5] },
+    basket: { sheet: 'furn_bathroom', frame: 7, name: 'Laundry basket', size: 9, foot: [7, 5] },
+    stool: { sheet: 'furn_bathroom', frame: 8, name: 'Stool', size: 7, foot: [5, 4] }
   };
 
   /* starting rooms; she can move everything */

@@ -1,0 +1,7 @@
+{
+ "item": "map_world",
+ "rc": 5,
+ "stdout": "",
+ "stderr": "connection error (RemoteDisconnected): Remote end closed connection without response; attempt 1/1 after 61.3s\n",
+ "at": "Thu Oct 22 22:50:38 2026"
+}

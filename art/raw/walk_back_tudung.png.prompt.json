@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Redraw the first reference walk cycle sheet exactly: same poses, same layout, same number of frames, same positions and sizes. Change only her clothes to the outfit in the second reference: a soft cream tudung that fully covers her hair, ears and neck, a sage green baju kurung with a long tunic and long skirt, and cream flats; no hair is visible at all. Same face in every frame. No text, no shadow. Solid flat pure bright green #00FF00 background. Cosy Animal Crossing New Horizons inspired soft 3D clay, smooth matte materials, gentle even lighting.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/walk_back.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_tudung.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 32.5,
+ "bytes": 1995775
+}

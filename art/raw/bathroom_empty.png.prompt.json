@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "An empty cosy bathroom seen from a high bird's-eye view looking down at about 55 degrees, like the Animal Crossing New Horizons room camera: back wall and side walls visible, front wall removed, a wide open floor filling the middle and front of the frame. Soft pastel tiled walls with a small round window on the back wall and a door in the right wall. No furniture, no fixtures, the tiled floor completely clear. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 50.6,
+ "bytes": 1763292
+}

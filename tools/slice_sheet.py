@@ -11,7 +11,7 @@ Usage: slice_sheet.py sheet.png out_prefix --count N [--ref ref.webp --match hei
   --match head makes the median head width (widest row in the top 35%) equal the reference's (sit and work poses);
   with no --ref the median frame height becomes --height;
 - every frame's feet sit on the cell's bottom edge, centred on its box or on its head;
-- writes out_prefix.webp (frames side by side) and out_prefix.json {frames, w, h}.
+- writes out_prefix.webp (frames side by side) and out_prefix.json {frames, w, h, boxes: [[w, h] per frame]}.
 Nothing leaves the machine."""
 import argparse, json
 import numpy as np
@@ -132,7 +132,7 @@ def main():
         x = max(k * W, min(k * W + W - im.width, x))
         strip.alpha_composite(im, (x, H - im.height))
     strip.save(a.out + '.webp', quality=90, method=6)
-    json.dump({'frames': len(imgs), 'w': W, 'h': H}, open(a.out + '.json', 'w'))
+    json.dump({'frames': len(imgs), 'w': W, 'h': H, 'boxes': [[i.width, i.height] for i in imgs]}, open(a.out + '.json', 'w'))
     print({'out': a.out, 'frames': len(imgs), 'cell': [W, H], 'scale': round(scale, 3)})
 
 

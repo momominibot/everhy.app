@@ -1,0 +1,32 @@
+[
+ {
+  "id": "map_world",
+  "size": "1024x1024",
+  "prompt": "A cosy illustrated island map seen from straight above like a game world map: a little cottage with a pink roof, a fenced farm field with neat plots, a waterfall falling into a round pond, a red wooden barn with a paddock, a steaming hot spring among rocks, a wooden fishing pier on the shore, winding sandy paths joining them, trees, flowers and soft sea around the island. No text, no labels, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "bathroom_diorama",
+  "size": "1024x1024",
+  "prompt": "An empty cosy bathroom as a small isometric dollhouse diorama floating on a plain cream background, seen from a high bird's-eye view looking down at about 55 degrees: only the back wall and the left wall, no ceiling, no front wall, a wide clear tiled floor. Soft pastel tiles, a small round window on the back wall, an arched door in the right edge of the back wall. No furniture, no fixtures, no plants. No people, no animals, no text, no user interface. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "course_icons_1",
+  "size": "1024x1024",
+  "prompt": "Three round cream clay medallion tiles in one row, same size, evenly spaced, not touching, each with one simple raised motif in muted pastels: a plump floor cushion; a feather on a folded blanket; a small cloud with a curl of breeze. Solid flat pure bright green #00FF00 background. No text, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "course_icons_2",
+  "size": "1024x1024",
+  "prompt": "Three round cream clay medallion tiles in one row, same size, evenly spaced, not touching, each with one simple raised motif in muted pastels: a rolled yoga mat; a steaming cup of tea; three stacked smooth pebbles. Solid flat pure bright green #00FF00 background. No text, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "course_icons_3",
+  "size": "1024x1024",
+  "prompt": "Three round cream clay medallion tiles in one row, same size, evenly spaced, not touching, each with one simple raised motif in muted pastels: a soft heart with two small leaves; a glowing lantern; a little brass bell. Solid flat pure bright green #00FF00 background. No text, no people. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ },
+ {
+  "id": "course_cover",
+  "size": "1024x1024",
+  "prompt": "A calm cosy reading nook by a big round window in soft early morning light: a plump floor cushion, a low wooden tray with a cup of tea, a trailing plant, a folded blanket, gentle light on the floor. Quiet and uncluttered, seen from a high three-quarter view. No people, no animals, no text. Style: cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay materials, gentle warm lighting, pastel pink, cream, sage and honey wood."
+ }
+]
