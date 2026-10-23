@@ -36,7 +36,8 @@
     if (wet) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (w * 0.4) + '" ry="' + (h * 0.38) + '" fill="rgba(70,40,25,0.42)"/>';
     if (b.state === 'planted' && SP[b.crop]) {
       var m = SP[b.crop], ch = w * 0.34;
-      [-0.26, 0, 0.26].forEach(function (k, i) { out += sprite(b.crop, STAGE_FRAME[F.stage(b, today)] || 0, x + k * w, y + 2 + (i === 1 ? 1.5 : 0), ch * m.w / m.h); });
+      /* three plants standing in the soil itself: bases a little above the bed's centre line, the middle one a touch nearer */
+      [-0.27, 0, 0.27].forEach(function (k, i) { out += sprite(b.crop, STAGE_FRAME[F.stage(b, today)] || 0, x + k * w, y - h * 0.12 + (i === 1 ? h * 0.18 : 0), ch * m.w / m.h); });
     }
     if (near) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (w / 2 + 1) + '" ry="' + (h / 2 + 1) + '" fill="none" stroke="#fff6e8" stroke-width="0.5" stroke-dasharray="1.2 0.9"/>';
     return '<g class="bed">' + out + '</g>';

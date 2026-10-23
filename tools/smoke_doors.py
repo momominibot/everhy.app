@@ -37,7 +37,8 @@ with sync_playwright() as p:
             fails += 1; print('FAIL', 'door never opened' if step['kind'] == 'door' else 'walk stalled', step, str(e).split('\n')[0])
     # the live plate: the waterfall's loop plays over the still plate, and stays away under reduced motion
     live = 0
-    pg.evaluate("EbbGame.enter('waterfall')")
+    live_scene = pg.evaluate("() => Object.keys(EbbWorld.SCENES).find(id => EbbWorld.SCENES[id].video) || ''")
+    pg.evaluate("id => EbbGame.enter(id)", live_scene)
     try:
         pg.wait_for_function("() => { const v = document.querySelector('video.live-plate'); return v && !v.hidden && v.currentTime > 0.4 && EbbLive.active(); }", timeout=15000)
         if pg.evaluate("() => document.querySelectorAll('#props .atmo-waterfall').length") != 0: fails += 1; print('FAIL drawn water still shown over the live plate')

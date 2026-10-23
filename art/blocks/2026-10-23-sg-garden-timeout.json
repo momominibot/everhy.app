@@ -1,0 +1,7 @@
+{
+ "item": "sg_garden",
+ "batch": "tools/jobs_singapore.json",
+ "stage": "client timeout",
+ "detail": "gen.py timed out after 150 s on the first Singapore scene; run_batch stopped (sg_hawker, sg_hotspring, sg_beach, sg_map not rendered). sg_guilin rendered later in its own run (89 s).",
+ "at": "Fri Oct 23 09:39:17 2026"
+}

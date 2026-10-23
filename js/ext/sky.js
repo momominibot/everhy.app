@@ -34,7 +34,7 @@
     dusk: { shade: [255, 204, 168], glow: [255, 150, 100, 0.28], pool: 0.4, lamp: 0.5 }
   };
   var RAIN_SHADE = [214, 220, 230], RAIN_PER_MILLE = 200; /* about one day in five */
-  var INDOOR_IDS = ['bedroom', 'bathroom', 'living', 'barn']; /* barn: the world workstream's roofed room, so rain stays outside */
+  var INDOOR_IDS = ['bedroom', 'bathroom', 'living', 'hawker']; /* barn: the world workstream's roofed room, so rain stays outside */
 
   function wrap(m) { return ((m % DAY) + DAY) % DAY; }
   function circ(d) { return wrap(d + DAY / 2) - DAY / 2; } /* signed distance in minutes, -720..720 */

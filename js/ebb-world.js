@@ -57,7 +57,7 @@
       solids: [[25, 44, 43, 61], [43, 38, 57, 47], [64, 42, 72, 50], [59, 44, 71, 58], [61, 56, 85, 81]],
       doors: [
         { id: 'toBedroom', rect: [20, 66, 26, 78], to: 'bedroom', arrive: { x: 44, y: 84 }, label: 'To the bedroom' },
-        { id: 'toFarm', rect: [40, 86, 60, 95], to: 'farm', arrive: { x: 88, y: 84 }, label: 'Out to the farm' } /* the open front edge of the cut-away */
+        { id: 'toFarm', rect: [40, 86, 60, 95], to: 'farm', arrive: { x: 8, y: 125 }, label: 'Out to the garden' } /* the open front edge of the cut-away */
       ],
       spots: [
         { id: 'kettle', kind: 'tea', at: { x: 19, y: 36 }, stand: { x: 22, y: 56 }, label: 'Make a warm cup' },
@@ -68,33 +68,76 @@
       ],
       arriveFix: {}, start: { x: 46, y: 76 }
     },
-    farm: { /* spacious painted farm (23 Oct render): shed and seed jars top left, fence across the back, four raised beds on wide sandy paths, a stone path down the right edge */
-      name: 'Farm', plate: 'art/plates/farm-garden.webp', aspect: [4, 7], depth: [74, 0.22, 175, 0.33],
-      floor: [[2, 74], [98, 74], [98, 175], [2, 175]],
-      /* the shed, then each bed box with a margin above it so she never stands "behind" painted soil */
-      solids: [[5, 55, 33, 76], [24, 80, 57, 101], [55, 91, 91, 116], [6, 97, 41, 124], [36, 110, 78, 143]],
-      arriveFix: { waterfall: { x: 88, y: 150 } },
+    farm: { /* the community garden (23 Oct render): an HDB block with laundry across the back, a rain tree and the mosaic dragon playground on the left, the seed shed on the right, four planter beds in a tight block on the sand. Scene id kept for saves */
+      name: 'Garden', plate: 'art/plates/garden.webp', aspect: [4, 7], depth: [112, 0.24, 175, 0.33], surface: 'soil',
+      floor: [[4, 112], [96, 112], [96, 175], [4, 175]],
+      /* dragon, little bridge, shed, the four beds (each with a margin above), a stone */
+      solids: [[0, 90, 34, 114], [36, 98, 58, 112], [60, 80, 97, 114], [21, 116, 49, 132], [51, 116, 79, 132], [15, 128, 47, 149], [51, 128, 83, 149], [9, 162, 15, 168]],
+      soundSources: { birds: [[14, 78, 60], [66, 96, 36]], hush: [[84, 112, 30]] }, /* the rain tree and the hedge sing, the shed corner is quiet */
+      arriveFix: { waterfall: { x: 78, y: 162 } },
       doors: [
-        { id: 'toHouse', rect: [78, 74, 98, 78], to: 'living', arrive: { x: 56, y: 80 }, label: 'Back inside' },
-        { id: 'toFalls', rect: [92, 140, 100, 160], to: 'waterfall', arrive: { x: 46, y: 166 }, label: 'Path to the waterfall' }
+        { id: 'toHouse', rect: [4, 112, 12, 120], to: 'living', arrive: { x: 56, y: 80 }, label: 'Back inside' },
+        { id: 'toHawker', rect: [4, 168, 24, 175], to: 'hawker', arrive: { x: 50, y: 152 }, label: 'Walk to the hawker centre' },
+        { id: 'toFalls', rect: [60, 170, 96, 175], to: 'waterfall', arrive: { x: 44, y: 166 }, label: 'Path to Little Guilin' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 18, y: 66 }, stand: { x: 18, y: 86 }, label: 'Seeds from the jars' }],
-      /* bed centres and widths on the painted soil; crops and water show on top of the painting. Stand points sit beside
-       * each bed on open sand (the beds zig-zag, so the pocket below the first bed is sealed off) */
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 78, y: 100 }, stand: { x: 84, y: 116 }, label: 'Seeds from the jars' }],
       beds: [
-        { x: 40, y: 93, w: 32, stand: { x: 17, y: 94 } },
-        { x: 73, y: 106, w: 34, stand: { x: 84, y: 121 } },
-        { x: 23, y: 113, w: 35, stand: { x: 22, y: 131 } },
-        { x: 57, y: 129, w: 42, stand: { x: 57, y: 150 } }
+        { x: 35, y: 125, w: 26, stand: { x: 28, y: 115 } },
+        { x: 65, y: 125, w: 26, stand: { x: 72, y: 115 } },
+        { x: 31, y: 139, w: 30, stand: { x: 11, y: 142 } },
+        { x: 67, y: 139, w: 30, stand: { x: 88, y: 142 } }
       ],
       start: { x: 50, y: 160 }
+    },
+    hawker: { /* a small hawker centre (23 Oct render): kopi stall, chicken rice stall and a fruit stall across the back, marble tables on the tiles, the open side at the bottom */
+      name: 'Hawker centre', plate: 'art/plates/hawker.webp', aspect: [4, 7], indoor: true, depth: [114, 0.24, 175, 0.33], surface: 'tile', sound: 'room',
+      lamps: [{ x: 18, y: 86 }, { x: 48, y: 86 }, { x: 78, y: 86 }],
+      floor: [[4, 114], [96, 114], [96, 175], [4, 175]],
+      /* the tables with their stools, the potted plant */
+      solids: [[14, 111, 39, 137], [40, 117, 62, 141], [68, 106, 92, 132], [86, 116, 100, 142], [0, 124, 11, 146]],
+      doors: [
+        { id: 'toGarden', rect: [4, 170, 50, 175], to: 'farm', arrive: { x: 12, y: 160 }, label: 'Back to the garden' },
+        { id: 'toMerlion', rect: [50, 170, 96, 175], to: 'merlion', arrive: { x: 40, y: 136 }, label: 'Walk to Merlion Park' }
+      ],
+      spots: [
+        { id: 'kopi', kind: 'tea', at: { x: 18, y: 100 }, stand: { x: 8, y: 118 }, label: 'Order a kopi' },
+        { id: 'chickenrice', kind: 'log', topic: 'food', at: { x: 47, y: 98 }, stand: { x: 46, y: 116 }, label: 'What did you eat or drink?' },
+        { id: 'table', kind: 'cushion', at: { x: 80, y: 116 }, stand: { x: 66, y: 124 }, label: 'Sit with your kopi a moment' }
+      ],
+      start: { x: 50, y: 152 }
+    },
+    merlion: { /* Merlion Park (23 Oct render): the Merlion spouting into the bay with Marina Bay Sands behind, a railed promenade, a stone bench, a bridge leaving bottom right */
+      name: 'Merlion Park', plate: 'art/plates/merlion.webp', aspect: [4, 7], depth: [108, 0.22, 175, 0.33], surface: 'tile',
+      soundSources: { birds: [[8, 92, 30], [92, 92, 30]], hush: [] },
+      floor: [[6, 108], [94, 108], [94, 146], [46, 146], [46, 175], [22, 175], [22, 146], [6, 146]],
+      /* stone bench, planter and bench on the left, planter and info board and lamp on the right, flower beds, the bridge parapets */
+      solids: [[30, 110, 52, 124], [8, 122, 30, 142], [70, 110, 86, 126], [80, 100, 94, 122], [82, 128, 92, 150], [0, 146, 22, 175], [46, 150, 100, 175]],
+      doors: [
+        { id: 'toHawker', rect: [0, 108, 6, 146], to: 'hawker', arrive: { x: 50, y: 152 }, label: 'Along the bay to the hawker centre' },
+        { id: 'toJetty', rect: [48, 138, 70, 146], to: 'jetty', arrive: { x: 44, y: 165 }, label: 'Over the bridge to Bedok Jetty' }
+      ],
+      spots: [
+        { id: 'pond', kind: 'pond', at: { x: 52, y: 80 }, stand: { x: 54, y: 114 }, label: 'Toss a wish to the Merlion' },
+        { id: 'bench', kind: 'cushion', at: { x: 41, y: 114 }, stand: { x: 41, y: 128 }, label: 'Sit on the stone bench' }
+      ],
+      start: { x: 40, y: 136 }
+    },
+    jetty: { /* Bedok Jetty at East Coast Park (23 Oct render): the sea with ships on the horizon, the lamp-lit jetty reaching out on the right, a beach, the park connector path curving down. The world extension adds the fishing spot on the deck */
+      name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass',
+      soundSources: { birds: [[8, 80, 36], [92, 72, 36]], hush: [] },
+      floor: [[10, 100], [60, 100], [60, 108], [72, 108], [72, 98], [62, 88], [66, 82], [90, 89], [90, 100], [84, 100], [84, 108], [97, 108], [97, 175], [3, 175], [3, 108], [10, 108]],
+      /* left and right palms, the bicycle, bollards */
+      solids: [[2, 96, 14, 120], [86, 96, 98, 150], [66, 120, 92, 144], [24, 118, 28, 123], [38, 116, 42, 121], [54, 116, 58, 121], [6, 133, 10, 138], [38, 148, 42, 153], [58, 158, 62, 163], [70, 168, 74, 173]],
+      doors: [{ id: 'toMerlion', rect: [26, 170, 60, 175], to: 'merlion', arrive: { x: 60, y: 136 }, label: 'Along the coast to Merlion Park' }],
+      spots: [],
+      start: { x: 44, y: 165 }
     },
     waterfall: { /* Little Guilin, Bukit Gombak (23 Oct render): granite cliff mirrored in the jade quarry lake, a wooden viewing deck on the right, a bench on the lawn, a stone path out at the bottom. Scene id kept for saves and extensions */
       name: 'Little Guilin', plate: 'art/plates/guilin.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], surface: 'grass',
       floor: [[18, 110], [56, 112], [60, 118], [60, 102], [98, 102], [98, 175], [18, 175]], /* the lawn and path, plus the deck */
       solids: [[20, 102, 42, 124], [56, 90, 61, 104], [8, 134, 25, 147], [86, 116, 100, 175], [33, 142, 37, 150], [48, 136, 52, 144], [63, 126, 67, 134], [83, 139, 87, 147], [68, 153, 72, 161]], /* bench, deck's left rail, rock, right bushes, bollards */
       soundSources: { birds: [[82, 30, 50], [10, 40, 42]], hush: [] },
-      doors: [{ id: 'toFarm', rect: [30, 170, 55, 175], to: 'farm', arrive: { x: 88, y: 150 }, label: 'Path to the garden' }], /* the world extension adds the hot spring door beside it */
+      doors: [{ id: 'toFarm', rect: [30, 170, 55, 175], to: 'farm', arrive: { x: 78, y: 162 }, label: 'Path to the garden' }], /* the world extension adds the hot spring door beside it */
       spots: [
         { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Offer to the lake' },
         { id: 'bench', kind: 'cushion', at: { x: 31, y: 110 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }

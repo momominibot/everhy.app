@@ -16,7 +16,7 @@ function world() { /* a fresh copy of the core world plus the map module, with n
 /* what the world workstream adds (js/ext/world.js): the hot spring and a fishing spot by the pond */
 function addWorld(W) {
   W.register('spring', { name: 'Hot spring', plate: '', floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]], start: { x: 12, y: 82 } });
-  W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 70, y: 100 }, stand: { x: 70, y: 116 }, label: 'Fish by the pond' });
+  W.SCENES.jetty.spots.push({ id: 'fishing', kind: 'fish', at: { x: 80, y: 88 }, stand: { x: 76, y: 92 }, label: 'Fish from the jetty' });
 }
 /* a stand-in for EbbGame.api that records calls in order */
 function fakeApi(scene, log) {
@@ -27,7 +27,7 @@ function fakeApi(scene, log) {
   const { EbbMap: M, EbbWorld: W } = world();
   const ids = M.PINS.map(p => p.id);
   check('pin ids are unique', new Set(ids).size === ids.length);
-  check('the five places are on the map', ['home', 'farm', 'waterfall', 'spring', 'pier'].every(id => ids.includes(id)));
+  check('the seven places are on the map', ['home', 'farm', 'hawker', 'waterfall', 'spring', 'merlion', 'pier'].every(id => ids.includes(id)));
   M.PINS.forEach(p => {
     check(`${p.id} has a label and a scene id`, typeof p.label === 'string' && p.label.length > 0 && typeof p.scene === 'string' && p.scene.length > 0);
     check(`${p.id} sits on the map`, p.x >= 4 && p.x <= 96 && p.y >= 8 && p.y <= 94);
@@ -80,10 +80,10 @@ function fakeApi(scene, log) {
   log = [];
   M.travel(M.pin('pier'), fakeApi('farm', log), close);
   const arr = log[1] && log[1][0] === 'enter' ? log[1][2] : null;
-  const fishSpot = W.SCENES.waterfall.spots.filter(sp => sp.id === 'fishing')[0];
-  check('pier arrives at the fishing stand point', !!arr && !!fishSpot && log[1][1] === 'waterfall' && arr.x === fishSpot.stand.x && arr.y === fishSpot.stand.y);
+  const fishSpot = W.SCENES.jetty.spots.filter(sp => sp.id === 'fishing')[0];
+  check('pier arrives at the fishing stand point', !!arr && !!fishSpot && log[1][1] === 'jetty' && arr.x === fishSpot.stand.x && arr.y === fishSpot.stand.y);
   if (arr) arr.x = 0;
-  check('arrival is a copy, not the spot itself', W.SCENES.waterfall.spots.filter(s => s.id === 'fishing')[0].stand.x === 70);
+  check('arrival is a copy, not the spot itself', W.SCENES.jetty.spots.filter(s => s.id === 'fishing')[0].stand.x === 76);
   check('travel reads the world at tap time', M.status(M.pin('spring'), W.SCENES, 'spring') === 'here');
 })();
 

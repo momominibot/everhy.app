@@ -8,20 +8,23 @@
   if (!W) return;
 
   /* ---------- places ---------- */
-  W.register('spring', { /* 23 Oct render: bathing hut top left, the stone pool in the upper middle, a wooden deck below, stepping stones out at the bottom */
-    name: 'Hot spring', plate: 'art/plates/spring_ac.webp', video: 'art/plates/spring-live.mp4', aspect: [4, 7], depth: [76, 0.2, 175, 0.33], water: '#a9dbe8', /* sampled from the pool; the video: steam and ripples, the cherry tree swaying */
-    floor: [[4, 76], [88, 76], [88, 175], [4, 175]],
-    solids: [[10, 68, 86, 112], [16, 106, 30, 118], [60, 108, 82, 128], [8, 116, 30, 152], [80, 116, 92, 150], [78, 145, 100, 165]], /* pool and rocks, table, bonsai, well, pink lamp, boulder */
-    doors: [{ id: 'toFalls', rect: [36, 171, 62, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
-    spots: [{ id: 'soak', kind: 'soak', at: { x: 48, y: 92 }, stand: { x: 46, y: 116 }, label: 'Slip into the warm water' }],
-    start: { x: 48, y: 160 }
+  W.register('spring', { /* Sembawang hot spring park (23 Oct render): the two-tier stone foot bath steaming in the upper middle, the egg-cooking station with pails on the left, benches, a pinwheel and a notice board on the right, the plaza below */
+    name: 'Hot spring', plate: 'art/plates/hotspring.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], water: '#9fd0e0', surface: 'tile',
+    floor: [[4, 100], [20, 100], [20, 106], [84, 106], [84, 100], [96, 100], [96, 175], [4, 175]],
+    solids: [[20, 66, 84, 106], [4, 80, 33, 118], [84, 86, 100, 110], [78, 106, 92, 126], [10, 120, 28, 136], [84, 122, 92, 136]], /* pool and rim, egg station, pinwheel, notice board, bench, stone */
+    doors: [{ id: 'toFalls', rect: [34, 170, 64, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
+    spots: [{ id: 'soak', kind: 'soak', at: { x: 52, y: 93 }, stand: { x: 52, y: 110 }, label: 'Slip into the warm water' }],
+    start: { x: 50, y: 160 }
   });
   W.addDoor('waterfall', { id: 'toSpring', rect: [57, 170, 78, 175], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Path to the hot spring' }); /* the right half of the stone path */
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
-  if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
-    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 80, y: 103 }, stand: { x: 80, y: 109 }, float: { x: 66, y: 88 }, label: 'Fish from the deck' });
+  var FISH_SCENE = W.SCENES.jetty ? 'jetty' : 'waterfall'; /* Bedok Jetty when the core has it, else the lake deck */
+  if (W.SCENES[FISH_SCENE] && !W.SCENES[FISH_SCENE].spots.some(function (s) { return s.id === 'fishing'; })) {
+    W.SCENES[FISH_SCENE].spots.push(FISH_SCENE === 'jetty'
+      ? { id: 'fishing', kind: 'fish', at: { x: 80, y: 88 }, stand: { x: 76, y: 92 }, float: { x: 66, y: 98 }, label: 'Fish from the jetty' }
+      : { id: 'fishing', kind: 'fish', at: { x: 80, y: 103 }, stand: { x: 80, y: 109 }, float: { x: 66, y: 88 }, label: 'Fish from the deck' });
   }
-  var SIT_IN_WATER = { x: 48, y: 92 };
+  var SIT_IN_WATER = { x: 52, y: 93 }; /* in the lower pool, the water drawn over her legs */
 
   var doc = root.document;
   if (!doc || !root.EbbGame) return; /* the node harness stops here */
@@ -146,7 +149,7 @@
     }, out);
   });
   root.EbbGame.registerProps('waterfall', function (api, near) {
-    var sp = W.SCENES.waterfall.spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(80, 162, 'Hot spring');
+    var sp = W.SCENES[FISH_SCENE].spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(80, 162, 'Hot spring');
     if (!sp) return out;
     /* a little rod resting at the pond edge */
     out += '<g class="world-rod"><path d="M' + (sp.at.x - 2) + ' ' + (sp.at.y + 3) + ' L' + (sp.at.x + 5) + ' ' + (sp.at.y - 5) + '" stroke="#9a7552" stroke-width="0.6" stroke-linecap="round"/>' +

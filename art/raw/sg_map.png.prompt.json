@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cute stylised clay map of Singapore island for a cosy phone game, seen from above: the island in soft green with pastel districts, calm turquoise sea around it, tiny rounded clay landmarks: HDB blocks, a hawker centre roof, a steaming hot spring in the north, a granite quarry lake in the west, a long jetty on the east coast, the Merlion and Marina Bay Sands in the south, rain trees, small boats. Soft paper-like background. No readable text. Dreamy cosy Animal Crossing style soft 3D clay, pastel colours.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 148.7,
+ "bytes": 2211159
+}

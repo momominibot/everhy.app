@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. Merlion Park in Singapore, cute version: the white Merlion statue spouting a gentle arc of water into Marina Bay in the upper middle on its stone plinth, the bay's calm water behind it with a rounded clay version of the Marina Bay Sands three-tower hotel and the lotus-shaped museum on the far shore, a few bumboats. Lower part an open paved waterfront promenade with low railings, palm trees, benches and a bridge leaving at the bottom right. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 57.4,
+ "bytes": 1692301
+}

@@ -13,11 +13,11 @@ let pass = 0, fail = 0;
 function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', name); } }
 
 /* ---------- places: every door and stand point is walkable and reachable from the start and from every arrival ---------- */
-const NEW = ['spring'], TOUCHED = ['farm', 'waterfall', 'spring'];
+const NEW = ['spring'], TOUCHED = ['farm', 'waterfall', 'spring', 'jetty'];
 NEW.forEach(id => check(`${id} registered`, !!W.SCENES[id]));
 check('waterfall has a door to the hot spring', W.SCENES.waterfall.doors.some(d => d.to === 'spring'));
 check('hot spring has a door to the waterfall', W.SCENES.spring.doors.some(d => d.to === 'waterfall'));
-check('fishing spot at the pond edge', W.SCENES.waterfall.spots.some(s => s.kind === 'fish'));
+check('fishing spot on the jetty', W.SCENES.jetty.spots.some(s => s.kind === 'fish'));
 check('engine spot order kept (pond first)', W.SCENES.waterfall.spots[0].id === 'pond');
 check('register refuses a second spring', W.register('spring', { floor: [] }) === false);
 

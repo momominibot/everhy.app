@@ -28,7 +28,7 @@
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   /* ---------- places: which ambience and which floor ---------- */
-  var PLACES = { bedroom: 'room', bathroom: 'bath', farm: 'meadow', waterfall: 'meadow', spring: 'spring' }; /* Little Guilin is a lakeside park: breeze and birds */
+  var PLACES = { bedroom: 'room', bathroom: 'bath', living: 'room', farm: 'meadow', waterfall: 'meadow', spring: 'spring', hawker: 'room', merlion: 'meadow', jetty: 'meadow' }; /* parks are breeze and birds */
   var FLOORS = { room: 'wood', bath: 'tile', meadow: 'soil', falls: 'grass', spring: 'grass' };
   var INDOOR = { room: true, bath: true };
   function placeSound(id, scene) {

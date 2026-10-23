@@ -130,8 +130,8 @@ for (let i = 0; i <= 20; i++) { const p = { x: fall.start.x + (pond.stand.x - fa
 check('waterfall: grows steadily as she walks to the pond', mono);
 check('waterfall: heard from the right when it is to her right', wm({ x: 10, y: 140 }).pan > 0 && wm({ x: 90, y: 140 }).pan < 0);
 const farm = W.SCENES.farm, bm = p => S.mixFor('meadow', 'farm', farm, p).birds;
-check(`farm: birds louder by the tree than by the shed (${bm({ x: 47, y: 106 }).toFixed(2)} vs ${bm({ x: 17, y: 108 }).toFixed(2)})`, bm({ x: 47, y: 106 }) > bm({ x: 17, y: 108 }) + 0.3);
-check(`farm: birds louder at the top than at the bottom (${bm({ x: 70, y: 106 }).toFixed(2)} vs ${bm({ x: 70, y: 172 }).toFixed(2)})`, bm({ x: 70, y: 106 }) > bm({ x: 70, y: 172 }) + 0.2);
+check(`garden: birds louder by the rain tree than by the shed (${bm({ x: 14, y: 118 }).toFixed(2)} vs ${bm({ x: 84, y: 116 }).toFixed(2)})`, bm({ x: 14, y: 118 }) > bm({ x: 84, y: 116 }) + 0.3);
+check(`garden: birds louder by the hedge than at the bottom (${bm({ x: 60, y: 114 }).toFixed(2)} vs ${bm({ x: 60, y: 172 }).toFixed(2)})`, bm({ x: 60, y: 114 }) > bm({ x: 60, y: 172 }) + 0.2);
 check('farm: birds never vanish', [[17, 108], [70, 172], [95, 172], [5, 172]].every(([x, y]) => bm({ x, y }) >= 0.1));
 check('a meadow with no sources still has birds, more at the top', S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 52 }).birds > S.mixFor('meadow', 'orchard', { floor: [[0, 50], [100, 50], [100, 100], [0, 100]] }, { x: 50, y: 98 }).birds);
 const painted = W.SCENES.bathroom, pm = p => S.mixFor('bath', 'bathroom', painted, p).drips, tubAt = S.SOURCES.bathroom.tub;

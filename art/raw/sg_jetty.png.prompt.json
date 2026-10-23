@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. Bedok Jetty at East Coast Park, Singapore: calm turquoise sea across the upper half with a few container ships on the horizon, a long wooden fishing jetty with lamp posts reaching into the sea from the right, coconut palms and casuarina trees at the sides, a sandy beach in the middle with gentle wavelets, a paved park connector path curving across the lower part and leaving at the bottom left, a bicycle leaning on a tree. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 50.6,
+ "bytes": 1771886
+}

@@ -7,16 +7,18 @@
   var W = root.EbbWorld;
   if (!W) return;
 
-  var ART = 'art/map/world.webp'; /* Seedream clay island (art/raw/map_world.png); the drawn island shows if it fails to load */
+  var ART = 'art/map/world.webp'; /* the clay Singapore island (art/raw/sg_map.png, 23 Oct); the drawn island shows if it fails to load */
 
   /* scene: where travel goes; spot: arrive at that spot's stand point instead of the scene start;
    * here: scenes that count as being at this place (home holds the bedroom and the bathroom) */
   var PINS = [
-    { id: 'home', label: 'Home', note: 'Bedroom and bathroom', scene: 'bedroom', here: ['bedroom', 'bathroom'], icon: 'home', x: 32, y: 27 },
-    { id: 'farm', label: 'Garden', note: 'Planter beds and the seed shed', scene: 'farm', icon: 'farm', x: 53, y: 52 },
-    { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 80, y: 27 },
-    { id: 'spring', label: 'Hot spring', note: 'Sembawang foot bath', scene: 'spring', icon: 'spring', x: 84, y: 51 },
-    { id: 'pier', label: 'Fishing deck', note: 'Cast a quiet line over the lake', scene: 'waterfall', spot: 'fishing', icon: 'fish', x: 72, y: 82 }
+    { id: 'home', label: 'Home', note: 'Bedroom, bathroom and kitchen', scene: 'bedroom', here: ['bedroom', 'bathroom', 'living'], icon: 'home', x: 33, y: 37 },
+    { id: 'farm', label: 'Garden', note: 'Planter beds by the HDB block', scene: 'farm', icon: 'farm', x: 61, y: 38 },
+    { id: 'hawker', label: 'Hawker centre', note: 'Kopi, chicken rice and a quiet table', scene: 'hawker', icon: 'hawker', x: 45, y: 51 },
+    { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 24, y: 49 },
+    { id: 'spring', label: 'Hot spring', note: 'Sembawang foot bath', scene: 'spring', icon: 'spring', x: 47, y: 31 },
+    { id: 'merlion', label: 'Merlion Park', note: 'The bay and the Merlion', scene: 'merlion', icon: 'merlion', x: 40, y: 69 },
+    { id: 'pier', label: 'Bedok Jetty', note: 'Cast a quiet line into the sea', scene: 'jetty', spot: 'fishing', icon: 'fish', x: 88, y: 46 }
   ];
 
   function spotIn(scene, id) {
@@ -55,6 +57,8 @@
   /* ---------- drawn bits: small line icons and the placeholder island ---------- */
   var ICONS = {
     home: '<path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9.5h11V10"/><path d="M10.5 19.5v-5h3v5"/>',
+    hawker: '<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 6c0-2 2-2 2 0M13 6c0-2 2-2 2 0"/>',
+    merlion: '<path d="M12 4c3 0 5 2 5 5s-2 4-2 7h-6c0-3-2-4-2-7s2-5 5-5Z"/><path d="M9 19h6"/><path d="M17 9c2 0 3 1 3 3"/>',
     farm: '<path d="M12 20v-8"/><path d="M12 13c-4 0-6-2.5-6-6 3.5 0 6 2 6 6Z"/><path d="M12 11c0-3.5 2.5-5.5 6-5.5 0 3.5-2 5.5-6 5.5Z"/><path d="M6 20h12"/>',
     falls: '<path d="M12 3.5c3.2 4.6 5.2 7.5 5.2 10.2a5.2 5.2 0 0 1-10.4 0c0-2.7 2-5.6 5.2-10.2Z"/><path d="M9.6 14.2a2.5 2.5 0 0 0 2.4 2.3"/>',
     spring: '<path d="M8.5 9c-1.5-1.5 1.5-3 0-5M12 9c-1.5-1.5 1.5-3 0-5M15.5 9c-1.5-1.5 1.5-3 0-5"/><path d="M4 13h16c0 4-3.5 6.5-8 6.5S4 17 4 13Z"/>',

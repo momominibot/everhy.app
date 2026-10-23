@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. A small Singapore hawker centre: three pastel stalls under a zinc roof with ceiling fans across the back, a kopi and toast stall with cups and a kettle, a chicken rice stall with a glass display, a fruit and drinks stall with cut watermelon; signboards with no text, warm hanging lamps. Lower floor: a few round marble-top tables with wooden stools on tiles, a potted plant, the open side at the bottom edge. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 67.3,
+ "bytes": 1791984
+}

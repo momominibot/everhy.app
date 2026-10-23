@@ -55,9 +55,12 @@
     bedroom: function () { return glow(37, 24, 12) + ring(37, 24, 8.5, 12, 'life-twinkle') + glow(38, 33, 4) + glow(76, 56, 6) + motes(20, 45, 90, 88, 10); },
     bathroom: function () { return steam(36, 44, 4) + glow(36, 21, 10) + glow(8, 37, 2.5) + glow(26, 38, 2) + glow(46, 80, 2) + motes(10, 50, 90, 86, 7); },
     living: function () { return glow(28, 25, 9) + ring(28, 25, 8, 10, 'life-twinkle') + glow(65, 25, 6) + glow(33, 22, 4) + glow(73, 64, 4) + motes(20, 48, 92, 90, 9); },
-    farm: function () { return petals(44, 62, 8) + motes(5, 95, 95, 170, 8, 'life-pollen'); },
+    farm: function () { return petals(16, 60, 6) + motes(5, 112, 95, 170, 8, 'life-pollen'); }, /* the rain tree sheds a little */
+    hawker: function () { return glow(18, 86, 5) + glow(48, 86, 5) + glow(78, 86, 5) + motes(6, 114, 94, 170, 6); },
+    merlion: function () { return motes(40, 84, 64, 104, 10, 'life-mist') + motes(6, 108, 94, 170, 6, 'life-pollen'); }, /* spray at the spout */
+    jetty: function () { return motes(10, 90, 90, 104, 10, 'life-mist'); },
     waterfall: function () { return motes(4, 74, 96, 92, 16, 'life-mist'); }, /* Little Guilin: mist over the lake */
-    spring: function () { return sinkPetals(58, 92, 48, [48, 90, 38, 20], 9); } /* steam and ripples come from the living plate */
+    spring: function () { return sinkPetals(2, 24, 56, [52, 88, 30, 14], 7) + steam(52, 78, 5); } /* frangipani petals onto the foot bath */
   };
   var layer = doc.getElementById('layer'), meG = doc.getElementById('me');
   var amb = doc.createElementNS('http://www.w3.org/2000/svg', 'g'); amb.setAttribute('id', 'life');
