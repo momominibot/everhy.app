@@ -39,19 +39,26 @@
     var s = SETS[set], c = g._clay;
     if (!c || c.set !== set) {
       preload(set);
-      g.innerHTML = '<ellipse cx="0" cy="-1" rx="17" ry="4.6" fill="rgba(40,30,30,0.18)"/><g><svg preserveAspectRatio="none"><image/></svg></g>';
-      var body = g.lastChild;
-      c = g._clay = { set: set, body: body, cel: body.firstChild, img: body.firstChild.firstChild, key: '', tf: '' };
+      g.innerHTML = '<ellipse cx="0" cy="-1" rx="17" ry="4.6" fill="rgba(40,30,30,0.18)"/><g><svg preserveAspectRatio="none"></svg></g>';
+      var body = g.lastChild, cel = body.firstChild, imgs = {}, NS = 'http://www.w3.org/2000/svg', d = g.ownerDocument;
+      /* one <image> per strip, made once and never resized or re-pointed: a frame change only moves the viewBox and
+       * swaps which strip is opaque, so the old bitmap is never shown stretched to a new strip's width */
+      Object.keys(s).forEach(function (strip) {
+        var im = d.createElementNS(NS, 'image'), ms = s[strip];
+        im.setAttribute('href', url(set, strip)); im.setAttribute('x', 0); im.setAttribute('y', 0);
+        im.setAttribute('width', ms.w * ms.frames); im.setAttribute('height', ms.h); im.setAttribute('opacity', '0');
+        cel.appendChild(im); imgs[strip] = im;
+      });
+      c = g._clay = { set: set, body: body, cel: cel, imgs: imgs, strip: '', key: '', tf: '' };
     }
-    var k = pick(pose), m = s[k.strip] || s.idle, key = k.strip + ':' + k.frame;
+    var k = pick(pose), m = s[k.strip] || s.idle, stripId = s[k.strip] ? k.strip : 'idle', key = stripId + ':' + k.frame;
     if (key !== c.key) {
       c.key = key;
       var cw = m.w * UNIT, ch = m.h * UNIT;
       c.cel.setAttribute('x', (-cw / 2).toFixed(2)); c.cel.setAttribute('y', (-ch).toFixed(2));
       c.cel.setAttribute('width', cw.toFixed(2)); c.cel.setAttribute('height', ch.toFixed(2));
       c.cel.setAttribute('viewBox', (k.frame * m.w) + ' 0 ' + m.w + ' ' + m.h);
-      c.img.setAttribute('href', url(set, k.strip));
-      c.img.setAttribute('width', m.w * m.frames); c.img.setAttribute('height', m.h);
+      if (stripId !== c.strip) { if (c.imgs[c.strip]) c.imgs[c.strip].setAttribute('opacity', '0'); c.imgs[stripId].setAttribute('opacity', '1'); c.strip = stripId; }
     }
     var tf = 'translate(0,' + (-k.bob).toFixed(2) + ') scale(' + (k.flip ? -1 : 1) + ' ' + (1 + k.breathe * 0.012).toFixed(4) + ')';
     if (tf !== c.tf) { c.tf = tf; c.body.setAttribute('transform', tf); }

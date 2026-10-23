@@ -14,7 +14,8 @@
       lamps: [{ x: 38, y: 33 }, { x: 76, y: 56 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
       floor: [[50, 42], [97, 68], [50, 93], [2, 67]],
       /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp and plant, dresser, laundry basket, pouf, little table */
-      solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [23, 46, 35, 85], [56, 42, 75, 61], [72, 42, 78, 60], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
+      solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [25, 76, 37, 84], [56, 42, 75, 61], [72, 42, 78, 60], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
+      fronts: [{ src: 'art/occluders/bedroom-arch-door.webp', rect: [25.5, 51.5, 36.5, 83.5] }], /* the free-standing arch door, cut from the plate: she walks behind it, only its foot is solid */
       shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
       shellDoors: [{ id: 'toLiving', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
