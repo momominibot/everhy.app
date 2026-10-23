@@ -13,10 +13,10 @@
    * here: scenes that count as being at this place (home holds the bedroom and the bathroom) */
   var PINS = [
     { id: 'home', label: 'Home', note: 'Bedroom and bathroom', scene: 'bedroom', here: ['bedroom', 'bathroom'], icon: 'home', x: 32, y: 27 },
-    { id: 'farm', label: 'Farm', note: 'Beds and the seed shed', scene: 'farm', icon: 'farm', x: 53, y: 52 },
-    { id: 'waterfall', label: 'Waterfall', note: 'The pond and the Goddess', scene: 'waterfall', icon: 'falls', x: 80, y: 27 },
-    { id: 'spring', label: 'Hot spring', note: 'Warm water past the trees', scene: 'spring', icon: 'spring', x: 84, y: 51 },
-    { id: 'pier', label: 'Fishing spot', note: 'Cast a quiet line by the pond', scene: 'waterfall', spot: 'fishing', icon: 'fish', x: 72, y: 82 }
+    { id: 'farm', label: 'Garden', note: 'Planter beds and the seed shed', scene: 'farm', icon: 'farm', x: 53, y: 52 },
+    { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 80, y: 27 },
+    { id: 'spring', label: 'Hot spring', note: 'Sembawang foot bath', scene: 'spring', icon: 'spring', x: 84, y: 51 },
+    { id: 'pier', label: 'Fishing deck', note: 'Cast a quiet line over the lake', scene: 'waterfall', spot: 'fishing', icon: 'fish', x: 72, y: 82 }
   ];
 
   function spotIn(scene, id) {

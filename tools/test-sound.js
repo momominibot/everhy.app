@@ -26,7 +26,7 @@ check('loads in node without a page', !!S && typeof S.events === 'function');
 /* ---------- places ---------- */
 check('bedroom is room tone', S.placeSound('bedroom', W.SCENES.bedroom) === 'room');
 check('farm is birds and breeze', S.placeSound('farm', W.SCENES.farm) === 'meadow');
-check('waterfall is running water', S.placeSound('waterfall', W.SCENES.waterfall) === 'falls');
+check('Little Guilin is a lakeside park', S.placeSound('waterfall', W.SCENES.waterfall) === 'meadow');
 check('bathroom is room tone with drips', S.placeSound('bathroom', W.SCENES.bathroom) === 'bath');
 check('an indoor scene reads as a room', S.placeSound('library', { name: 'Library', indoor: true }) === 'room');
 check('hot spring is lapping water', S.placeSound('spring', { name: 'Hot spring' }) === 'spring');

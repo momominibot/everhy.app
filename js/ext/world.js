@@ -1,4 +1,4 @@
-/* Ebb world extension: a hidden hot spring past the waterfall, and fishing at the pond
+/* Ebb world extension: the hot spring, and fishing from the Little Guilin deck
  * edge. Places register with EbbWorld (pure, so the node harness checks every door and stand point); the page part
  * below only runs in a browser. Rules live in js/world/rules.js. Floors and spots were read from each plate on a 10%
  * grid (tall 4:7 plates: x 0..100 across, y 0..175 down). Nothing here gets sick, wilts or dies, and nothing asks about health. */
@@ -12,14 +12,14 @@
     name: 'Hot spring', plate: 'art/plates/spring_ac.webp', video: 'art/plates/spring-live.mp4', aspect: [4, 7], depth: [76, 0.2, 175, 0.33], water: '#a9dbe8', /* sampled from the pool; the video: steam and ripples, the cherry tree swaying */
     floor: [[4, 76], [88, 76], [88, 175], [4, 175]],
     solids: [[10, 68, 86, 112], [16, 106, 30, 118], [60, 108, 82, 128], [8, 116, 30, 152], [80, 116, 92, 150], [78, 145, 100, 165]], /* pool and rocks, table, bonsai, well, pink lamp, boulder */
-    doors: [{ id: 'toFalls', rect: [36, 171, 62, 175], to: 'waterfall', arrive: { x: 88, y: 102 }, label: 'Back to the waterfall' }],
+    doors: [{ id: 'toFalls', rect: [36, 171, 62, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
     spots: [{ id: 'soak', kind: 'soak', at: { x: 48, y: 92 }, stand: { x: 46, y: 116 }, label: 'Slip into the warm water' }],
     start: { x: 48, y: 160 }
   });
-  W.addDoor('waterfall', { id: 'toSpring', rect: [94, 99, 100, 105], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Over the little bridge' }); /* the far end of the bridge deck */
+  W.addDoor('waterfall', { id: 'toSpring', rect: [57, 170, 78, 175], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Path to the hot spring' }); /* the right half of the stone path */
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
   if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
-    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 70, y: 100 }, stand: { x: 70, y: 116 }, float: { x: 62, y: 102 }, label: 'Fish by the pond' });
+    W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 80, y: 103 }, stand: { x: 80, y: 109 }, float: { x: 66, y: 88 }, label: 'Fish from the deck' });
   }
   var SIT_IN_WATER = { x: 48, y: 92 };
 
@@ -146,7 +146,7 @@
     }, out);
   });
   root.EbbGame.registerProps('waterfall', function (api, near) {
-    var sp = W.SCENES.waterfall.spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(64, 112, 'Hot spring');
+    var sp = W.SCENES.waterfall.spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(80, 162, 'Hot spring');
     if (!sp) return out;
     /* a little rod resting at the pond edge */
     out += '<g class="world-rod"><path d="M' + (sp.at.x - 2) + ' ' + (sp.at.y + 3) + ' L' + (sp.at.x + 5) + ' ' + (sp.at.y - 5) + '" stroke="#9a7552" stroke-width="0.6" stroke-linecap="round"/>' +

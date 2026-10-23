@@ -81,7 +81,7 @@
   function drawProps() {
     var s = scene(), near = nearest(), out = '', front = '';
     if (s.beds) s.beds.forEach(function (b, i) { if (!st.farm.beds[i]) return; out += b.w ? PR.paintedBed(st.farm.beds[i], b.x, b.y, b.w, today(), near && near.bed === i) : PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
-    if (st.scene === 'waterfall' && !(root.EbbLive && root.EbbLive.active())) out += PR.shimmer(s.fall); /* the live plate has real water */
+    if (s.fall && !(root.EbbLive && root.EbbLive.active())) out += PR.shimmer(s.fall); /* the live plate has real water */
     if (s.layout) { /* furniture: pieces whose front edge is above her feet go behind her, the rest in front */
       s.layout.slice().sort(function (a, b) { return (Fu.CATALOG[a.item].flat ? -1 : 0) - (Fu.CATALOG[b.item].flat ? -1 : 0) || a.y - b.y; }).forEach(function (p) {
         var cat = Fu.CATALOG[p.item], d = deco.drag && deco.drag.uid === p.uid ? deco.drag : null, q = d ? { uid: p.uid, item: p.item, x: d.x, y: d.y, flip: p.flip } : p;

@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge, seen from the front and above like a side-on game stage, with a wide open flat walkable ground area filling the lower two-thirds. Little Guilin at Bukit Gombak in Singapore, a former granite quarry: across the upper half a tall pale grey granite cliff with rounded weathered rock faces and tufts of green shrubs rising straight out of a calm jade-green quarry lake that mirrors it, a few egrets' feathers on the still water, lush tropical trees and a big rain tree framing the sides. In the lower part a lakeside lawn with a wooden viewing deck and railing reaching to the water's edge on the right, a park bench, a paved path curving down and leaving at the bottom, soft morning mist on the water. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm tropical morning light, pastel colours. No people, no readable text.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 86.1,
+ "bytes": 1924610
+}

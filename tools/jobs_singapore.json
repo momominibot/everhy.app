@@ -1,0 +1,32 @@
+[
+ {
+  "id": "sg_garden",
+  "size": "768x1344",
+  "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. A Singapore community garden allotment: pastel HDB block with colourful corridors and laundry poles across the top, a big rain tree on the left, a mosaic dragon playground at the left edge, a small shed with glass seed jars at the right. In the lower part exactly four square raised planter beds with low wooden edges in a neat tight two-by-two block, empty dark soil, concrete and sand paths all around, a path leaving at the bottom right. No plants in the beds. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "sg_hawker",
+  "size": "768x1344",
+  "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. A small Singapore hawker centre: three pastel stalls under a zinc roof with ceiling fans across the back, a kopi and toast stall with cups and a kettle, a chicken rice stall with a glass display, a fruit and drinks stall with cut watermelon; signboards with no text, warm hanging lamps. Lower floor: a few round marble-top tables with wooden stools on tiles, a potted plant, the open side at the bottom edge. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "sg_hotspring",
+  "size": "768x1344",
+  "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. Sembawang hot spring park in Singapore: a wide shallow stone-edged cascading foot bath pool with steaming water in two tiers in the upper middle, wooden benches along it, a small egg-cooking station with little pails on the left, frangipani and palm trees, a pitched-roof pavilion at the back. Lower part an open paved plaza with a sandy path leaving at the bottom. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "sg_jetty",
+  "size": "768x1344",
+  "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. Bedok Jetty at East Coast Park, Singapore: calm turquoise sea across the upper half with a few container ships on the horizon, a long wooden fishing jetty with lamp posts reaching into the sea from the right, coconut palms and casuarina trees at the sides, a sandy beach in the middle with gentle wavelets, a paved park connector path curving across the lower part and leaving at the bottom left, a bicycle leaning on a tree. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "sg_merlion",
+  "size": "768x1344",
+  "prompt": "Tall 9:16 phone game background filling the frame, seen from the front and above like a side-on game stage, open flat walkable ground across the lower two-thirds. Merlion Park in Singapore, cute version: the white Merlion statue spouting a gentle arc of water into Marina Bay in the upper middle on its stone plinth, the bay's calm water behind it with a rounded clay version of the Marina Bay Sands three-tower hotel and the lotus-shaped museum on the far shore, a few bumboats. Lower part an open paved waterfront promenade with low railings, palm trees, benches and a bridge leaving at the bottom right. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm tropical light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "sg_map",
+  "size": "1024x1024",
+  "prompt": "A cute stylised clay map of Singapore island for a cosy phone game, seen from above: the island in soft green with pastel districts, calm turquoise sea around it, tiny rounded clay landmarks: HDB blocks, a hawker centre roof, a steaming hot spring in the north, a granite quarry lake in the west, a long jetty on the east coast, the Merlion and Marina Bay Sands in the south, rain trees, small boats. Soft paper-like background. No readable text. Dreamy cosy Animal Crossing style soft 3D clay, pastel colours."
+ }
+]

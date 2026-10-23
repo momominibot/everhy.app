@@ -89,15 +89,17 @@
       ],
       start: { x: 50, y: 160 }
     },
-    waterfall: { /* 23 Oct render: cherry trees on the cliff, the falls into a round pond, a wishing well on the left, a little bridge over the stream on the right, the path out at the bottom */
-      name: 'Waterfall', plate: 'art/plates/waterfall_ac.webp', video: 'art/plates/waterfall-live.mp4', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], /* the video: the same plate with only the falls, pond and cherry trees moving */
-      fronts: [{ src: 'art/occluders/waterfall-bridge-rail.webp', rect: [75, 98, 100, 111] }], /* the bridge's near railing and deck face, cut from the plate, so she crosses behind it */
-      floor: [[2, 109], [68, 109], [68, 100], [98, 100], [98, 175], [2, 175]], /* the meadow plus the bridge deck */
-      solids: [[17, 86, 72, 109], [10, 96, 27, 118], [80, 104, 100, 126]], /* pond, well, the stream under and below the bridge: on the bridge she keeps to the deck, y 100 to 104 */
-      doors: [{ id: 'toFarm', rect: [34, 171, 58, 175], to: 'farm', arrive: { x: 88, y: 150 }, label: 'Back to the farm' }],
-      spots: [{ id: 'pond', kind: 'pond', at: { x: 50, y: 96 }, stand: { x: 50, y: 114 }, label: 'Offer to the pond' }],
-      fall: { x: 42, y0: 56, x1: 58, y1: 90 },
-      start: { x: 46, y: 165 }
+    waterfall: { /* Little Guilin, Bukit Gombak (23 Oct render): granite cliff mirrored in the jade quarry lake, a wooden viewing deck on the right, a bench on the lawn, a stone path out at the bottom. Scene id kept for saves and extensions */
+      name: 'Little Guilin', plate: 'art/plates/guilin.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], surface: 'grass',
+      floor: [[18, 110], [56, 112], [60, 118], [60, 102], [98, 102], [98, 175], [18, 175]], /* the lawn and path, plus the deck */
+      solids: [[20, 102, 42, 124], [56, 90, 61, 104], [8, 134, 25, 147], [86, 116, 100, 175], [33, 142, 37, 150], [48, 136, 52, 144], [63, 126, 67, 134], [83, 139, 87, 147], [68, 153, 72, 161]], /* bench, deck's left rail, rock, right bushes, bollards */
+      soundSources: { birds: [[82, 30, 50], [10, 40, 42]], hush: [] },
+      doors: [{ id: 'toFarm', rect: [30, 170, 55, 175], to: 'farm', arrive: { x: 88, y: 150 }, label: 'Path to the garden' }], /* the world extension adds the hot spring door beside it */
+      spots: [
+        { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Offer to the lake' },
+        { id: 'bench', kind: 'cushion', at: { x: 31, y: 110 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }
+      ],
+      start: { x: 44, y: 165 }
     }
   };
 
