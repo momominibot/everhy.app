@@ -39,17 +39,29 @@ seed-garden panel (a parallel economy beside the farm), a full-scene video plate
 - ebb-trees, ebb-title, ebb-seats: no commits beyond main (their sessions hit the limit); art/raw/seats.png,
   tree_stages.png, dig_items.png are rendered and unsliced.
 
-## Direction change (Jamie, 23 Oct 09:40): Singapore environment first
-The outdoors become Singapore places in the same dreamy clay look, mechanics unchanged: HDB community garden (the
-farm: four planter beds, shed with seed jars, dragon playground), a hawker centre (food log and kopi instead of the
-kitchen kettle outdoors), Sembawang hot spring foot bath (the soak), East Coast Park beach with a jetty (the sea
-takes the pond's offerings, fishing from the jetty), and a Singapore island map. Renders queued in
-tools/jobs_singapore.json; map each on a 5 percent grid as before, then re-point scenes and the map pins.
+## Singapore world (Jamie, 23 Oct 09:40 onward): what is on main
+Places, all one Seedream render each, mapped on 5 percent grids, every door and stand walked by tools/smoke_doors.py:
+home (bedroom, bathroom, kitchen-living isometric rooms), Garden (scene id `farm`: planter beds by an HDB block, seed
+shed, dragon playground), Hawker centre (kopi, chicken rice food log, a table), Little Guilin (scene id `waterfall`:
+quarry lake, offerings, bench, viewing deck), Sembawang hot spring (`spring`: she soaks in the lower pool), Merlion
+Park (`merlion`: wishes to the Merlion, stone bench; living plate: spout and bay move), Bedok Jetty (`jetty`: fishing
+from the jetty). Map: the clay Singapore island with seven pins. Travel loop by doors: garden, hawker, Merlion Park,
+jetty, Little Guilin, hot spring. No barn, no Decorate mode (being removed), no villagers.
+Living plates (Seedance through masks, tools/live_all.py with tools/jobs_live_sg.json): merlion done; hot spring, jetty,
+Little Guilin, garden and hawker queued in one guarded chain. Set each scene's `video` once its loop exists.
+Bedroom: Miffy lamp moved off the bathroom door; tapping the bed tucks her in (js/ext/sleep.js). Merged from the
+ebb-bedroom-sleep session.
 
-Parked until after the Singapore pass (rendered, on disk, unmapped): art/raw/farm_big.png (bigger farm with a barn
-and a chicken house to enter, tidy 2x2 beds), coop_interior.png, bedroom_shift.png (Miffy lamp moved off the
-bathroom door) and bedroom_sleep.png (her tucked in bed, for a sleep overlay). Crop sprites on the painted beds still
-need per-bed soil quads so they sit inside the soil.
+## Side sessions in flight (each on its own branch under .claude/worktrees; merge with keep-both on index.html)
+ebb-ui-fixes (remove Decorate, icon-chip HUD, phone frame status bar, Codex findings), ebb-routines (personalisable
+morning and evening home routines), ebb-transit (train or bus rides with on-board mindfulness or skip), ebb-flower-dome
+(Flower Dome seed stall, points for logging), ebb-seats (seated actions on benches and the hawker table).
+Jamie's product direction: mindfulness is anytime and everywhere; focus on home first (morning and evening routines),
+then generic neighbourhood places (parks, MRT, bus stops, malls), later real-world nudges such as breathing while
+waiting for the green man.
+
+Parked renders on disk: art/raw/farm_big.png, coop_interior.png (the barn and chicken house idea was dropped),
+art/raw/sg_train.png, sg_bus.png (ebb-transit), sg_flowerdome.png (ebb-flower-dome).
 
 ## Next
 1. Jamie's verdict on the isometric rooms (screenshots sent 23 Oct, about 03:50).
