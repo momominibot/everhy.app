@@ -9,7 +9,7 @@
 
   /* ---------- places ---------- */
   W.register('spring', { /* Sembawang hot spring park (23 Oct render): the two-tier stone foot bath steaming in the upper middle, the egg-cooking station with pails on the left, benches, a pinwheel and a notice board on the right, the plaza below */
-    name: 'Hot spring', plate: 'art/plates/hotspring.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], water: '#9fd0e0', surface: 'tile',
+    name: 'Hot spring', plate: 'art/plates/hotspring.webp', video: 'art/plates/hotspring-live.mp4', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], water: '#9fd0e0', surface: 'tile',
     floor: [[4, 100], [20, 100], [20, 106], [84, 106], [84, 100], [96, 100], [96, 175], [4, 175]],
     solids: [[20, 66, 84, 106], [4, 80, 33, 118], [84, 86, 100, 110], [78, 106, 92, 126], [10, 120, 28, 136], [84, 122, 92, 136]], /* pool and rim, egg station, pinwheel, notice board, bench, stone */
     doors: [{ id: 'toFalls', rect: [34, 170, 64, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],

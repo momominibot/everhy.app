@@ -116,7 +116,7 @@
       start: { x: 40, y: 136 }
     },
     jetty: { /* Bedok Jetty at East Coast Park (23 Oct render): the sea with ships on the horizon, the lamp-lit jetty reaching out on the right, a beach, the park connector path curving down. The world extension adds the fishing spot on the deck */
-      name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass',
+      name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', video: 'art/plates/jetty-live.mp4', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass', /* the video: waves and palms */
       soundSources: { birds: [[8, 80, 36], [92, 72, 36]], hush: [] },
       floor: [[10, 100], [60, 100], [60, 108], [72, 108], [72, 98], [62, 88], [66, 82], [90, 89], [90, 100], [84, 100], [84, 108], [97, 108], [97, 175], [3, 175], [3, 108], [10, 108]],
       /* left and right palms, the bicycle, bollards */
