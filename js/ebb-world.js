@@ -11,23 +11,23 @@
     bedroom: {
       name: 'Bedroom', plate: 'art/plates/bedroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 93, 0.17],
       shell: 'art/plates/bedroom-tall.webp', shellAspect: [4, 7], shellDepth: [95, 0.25, 175, 0.33], shellStart: { x: 47, y: 145 },
-      lamps: [{ x: 38, y: 33 }, { x: 76, y: 56 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
+      lamps: [{ x: 38, y: 33 }, { x: 66.5, y: 59 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
       floor: [[50, 42], [97, 68], [50, 93], [2, 67]],
-      /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp and plant, dresser, laundry basket, pouf, little table */
-      solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [25, 76, 37, 84], [56, 42, 75, 61], [72, 42, 78, 60], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
+      /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp (moved left of the wooden door, 23 Oct), dresser, laundry basket, pouf, little table */
+      solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [25, 76, 37, 84], [56, 42, 75, 61], [62, 45, 70.5, 64], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
       fronts: [{ src: 'art/occluders/bedroom-arch-door.webp', rect: [25.5, 51.5, 36.5, 83.5] }], /* the free-standing arch door, cut from the plate: she walks behind it, only its foot is solid */
       shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
       shellDoors: [{ id: 'toLiving', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
         { id: 'toLiving', rect: [35, 76, 41, 86], to: 'living', arrive: { x: 28, y: 70 }, label: 'To the kitchen' },
-        { id: 'toBathroom', rect: [75, 60, 79, 65], to: 'bathroom', arrive: { x: 60, y: 68 }, label: 'Into the bathroom' }
+        { id: 'toBathroom', rect: [72.4, 61.2, 78.8, 65.8], to: 'bathroom', arrive: { x: 60, y: 68 }, label: 'Into the bathroom' } /* the floor in front of the wooden door now the lamp has moved off it: below the desk solid, left of the dresser */
       ],
       spots: [
-        { id: 'bed', kind: 'log', topic: 'sleep', at: { x: 40, y: 52 }, stand: { x: 42, y: 70 }, label: 'How did you sleep?' },
+        { id: 'bed', kind: 'sleep', topic: 'sleep', at: { x: 40, y: 52 }, stand: { x: 42, y: 70 }, label: 'How did you sleep?' }, /* js/ext/sleep.js: she tucks in, then logs or gets up */
         { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 38, y: 34 }, stand: { x: 46, y: 68 }, label: 'Waking temperature' },
         { id: 'desk', kind: 'log', topic: 'mood', at: { x: 66, y: 50 }, stand: { x: 68, y: 66 }, label: 'Write in the journal' },
         { id: 'drawers', kind: 'wardrobe', at: { x: 88, y: 58 }, stand: { x: 74, y: 66 }, label: 'Change clothes' },
-        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 48, y: 30 }, stand: { x: 64, y: 64 }, label: 'Mindfulness course' },
+        { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 48, y: 30 }, stand: { x: 71.2, y: 65.2 }, label: 'Mindfulness course' }, /* between the bunny lamp and the bathroom door */
         { id: 'cushion', kind: 'cushion', at: { x: 56, y: 64 }, stand: { x: 56, y: 74 }, label: 'Sit for a practice' }
       ],
       start: { x: 50, y: 80 }
