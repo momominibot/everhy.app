@@ -2,6 +2,8 @@
   --bg: #f6efe6; --card: #fffaf3; --ink: #2f2a2d; --soft: #75696b; --line: #e6d8c8;
   --accent: #e8836f; --teal: #3f7c79; --scrim: rgba(40, 30, 30, 0.38);
   --font: "Nunito", "Avenir Next", system-ui, sans-serif;
+  --round: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
+  --cream: #fff8ef; --pink: #f6bfd0; --pink-deep: #e58fae; --pink-ink: #7a3550; --chip: #fdf1e7; --chip-line: #f3dccb; --bar-ink: #3b2d33;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root { --bg: #1f1b1d; --card: #2a2427; --ink: #f4ece6; --soft: #b8aaa6; --line: #3c3336; --scrim: rgba(0, 0, 0, 0.55); color-scheme: dark; } }
@@ -10,12 +12,19 @@
 html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); }
 /* full screen: the scene fills the phone, the top bar and the action button float over it */
 .app { position: fixed; inset: 0; overflow: hidden; }
+/* the top bar: a soft cream pill with a pink edge; the place as a pink badge, the counts as icon chips, all on one row at 390px */
 .top { position: absolute; z-index: 6; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); right: max(10px, env(safe-area-inset-right));
-  display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; padding: 7px 8px 7px 14px; border-radius: 20px;
-  background: color-mix(in srgb, var(--card) 84%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 4px 16px rgba(40, 30, 30, 0.14); }
-.place { font-weight: 700; font-size: 17px; }
-.counts { display: flex; flex-wrap: wrap; gap: 2px 10px; flex: 1 1 0; min-width: 0; color: var(--soft); font-size: 13px; margin-right: auto; font-variant-numeric: tabular-nums; } /* five counts wrap among themselves on a narrow phone; the More button keeps its corner */
-.counts b { color: var(--ink); }
+  display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; padding: 5px 5px 5px 5px; border-radius: 999px; font-family: var(--round); color: var(--bar-ink);
+  background: var(--cream); border: 2px solid var(--pink); box-shadow: 0 6px 18px rgba(140, 80, 100, 0.18), inset 0 1px 0 #fff; }
+.place { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; font-size: 13px; line-height: 1; letter-spacing: 0.01em;
+  padding: 8px 10px; border-radius: 999px; background: var(--pink); color: var(--pink-ink); }
+.counts { display: flex; flex-wrap: nowrap; gap: 3px; flex: 1 1 auto; min-width: 0; margin-right: auto; font-variant-numeric: tabular-nums; }
+.chip { display: inline-flex; align-items: center; gap: 1px; padding: 2px 7px 2px 3px; border-radius: 999px; background: var(--chip); border: 1.5px solid var(--chip-line); font-size: 13px; font-weight: 800; line-height: 1; white-space: nowrap; }
+.chip b { color: var(--bar-ink); font-weight: 800; }
+.chip .ico { flex: none; width: 22px; height: 22px; background: url("../art/ui/icons.webp") no-repeat; background-size: 198px auto; background-position-y: center; } /* 9 frames of 187x184 drawn 22px wide */
+.chip .ico-seeds { background-position-x: 0; } .chip .ico-basket { background-position-x: -22px; } .chip .ico-pond { background-position-x: -44px; }
+.chip svg { flex: none; width: 20px; height: 20px; margin: 1px; }
+.sr { font-style: normal; position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .scene { position: absolute; inset: 0; overflow: hidden; background: #efe2cf; touch-action: none; /* the game handles taps and the pinch zoom itself */ user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: opacity 0.3s ease; }
 .backdrop { position: absolute; inset: -40px; background-size: cover; background-position: center; filter: blur(28px) saturate(1.1) brightness(1.04); transform: scale(1.1); pointer-events: none; }
 .stage { position: absolute; left: 0; top: 0; width: 100vmax; height: 100vmax; transform-origin: 0 0; will-change: transform; } /* sized per scene by the camera */
@@ -36,7 +45,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .menu-item { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 10px; font: 600 15px var(--font); color: var(--ink); cursor: pointer; }
 .menu-item:hover, .menu-item:focus-visible { background: var(--bg); }
 .btn.small { min-height: 36px; padding: 6px 14px; }
-.top .btn.small { min-height: 34px; padding: 5px 13px; }
+.top .btn.small { min-height: 32px; padding: 5px 10px; flex: none; font-family: var(--round); font-weight: 800; border-color: var(--pink); background: #fff; color: var(--pink-ink); }
 .sheet-wrap { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
 .sheet { width: min(560px, 100%); max-height: 88vh; overflow: auto; background: var(--card); border-radius: 22px 22px 0 0; padding: 18px max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 12px; }
 .sheet h2 { margin: 0; font-size: 19px; }
@@ -82,5 +91,5 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 @keyframes rise { 0% { opacity: 0; transform: translateY(4px); } 20%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; } }
 .spark { animation: spark 1.6s ease-out both; }
 @keyframes spark { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-14px); } }
-@media (max-width: 420px) { .wardrobe { grid-template-columns: 1fr; } .wardrobe .preview { margin: 0 auto; } .counts { font-size: 12px; gap: 2px 8px; } .place { font-size: 16px; } }
+@media (max-width: 420px) { .wardrobe { grid-template-columns: 1fr; } .wardrobe .preview { margin: 0 auto; } .chip { font-size: 12px; } }
 @media (prefers-reduced-motion: reduce) { .fall, .goddess, .spark, .life-twinkle, .life-glow, .life-mote, .life-pollen, .life-mist, .life-petal, .life-steam, .life-sakura, .life-pop { animation: none; } .scene { transition: none; } }
