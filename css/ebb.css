@@ -16,9 +16,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .top { position: absolute; z-index: 6; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); right: max(10px, env(safe-area-inset-right));
   display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; padding: 5px 5px 5px 5px; border-radius: 999px; font-family: var(--round); color: var(--bar-ink);
   background: var(--cream); border: 2px solid var(--pink); box-shadow: 0 6px 18px rgba(140, 80, 100, 0.18), inset 0 1px 0 #fff; }
-.place { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; font-size: 13px; line-height: 1; letter-spacing: 0.01em;
+.place { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; font-size: 13px; line-height: 1; letter-spacing: 0.01em;
   padding: 8px 10px; border-radius: 999px; background: var(--pink); color: var(--pink-ink); }
-.counts { display: flex; flex-wrap: nowrap; gap: 3px; flex: 1 1 auto; min-width: 0; margin-right: auto; font-variant-numeric: tabular-nums; }
+.counts { display: flex; flex-wrap: nowrap; gap: 3px; flex: 0 0 auto; min-width: 0; font-variant-numeric: tabular-nums; }
 .chip { display: inline-flex; align-items: center; gap: 1px; padding: 2px 7px 2px 3px; border-radius: 999px; background: var(--chip); border: 1.5px solid var(--chip-line); font-size: 13px; font-weight: 800; line-height: 1; white-space: nowrap; }
 .chip b { color: var(--bar-ink); font-weight: 800; }
 .chip .ico { flex: none; width: 22px; height: 22px; background: url("../art/ui/icons.webp") no-repeat; background-size: 198px auto; background-position-y: center; } /* 9 frames of 187x184 drawn 22px wide */
@@ -105,3 +105,4 @@ body:has(.seat-choice) .hint { visibility: hidden; } /* the walking hint steps a
 @keyframes sparkle { 0%, 100% { transform: scale(0.75) rotate(0deg); opacity: 0.7; } 50% { transform: scale(1.12) rotate(12deg); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .sparkle-star { animation: none; opacity: 0.95; } }
 html[data-motion="reduce"] .sparkle-star { animation: none; opacity: 0.95; }
+.chip[role="button"] { cursor: pointer; }

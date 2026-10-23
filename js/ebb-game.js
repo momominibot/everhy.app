@@ -237,7 +237,7 @@
   function updateHud() {
     var basket = Object.keys(st.farm.basket).reduce(function (n, k) { return n + st.farm.basket[k]; }, 0);
     var seeds = Object.keys(st.farm.seeds).reduce(function (n, k) { return n + st.farm.seeds[k]; }, 0);
-    els.hudSeeds.textContent = seeds; els.hudBasket.textContent = basket; els.hudPond.textContent = st.pond.offerings;
+    if (els.hudSeeds) els.hudSeeds.textContent = seeds; if (els.hudBasket) els.hudBasket.textContent = basket; if (els.hudPond) els.hudPond.textContent = st.pond.offerings;
     hudItems.forEach(function (h) { try { h.el.textContent = h.value(api); } catch (e) { } });
   }
 
@@ -293,6 +293,11 @@
   function registerHud(label, value, icon) { /* a small counter in the top bar: an icon and the number, the word kept for screen readers */
     var span = doc.createElement('span'); span.className = 'chip'; span.title = label; span.setAttribute('aria-label', label);
     span.innerHTML = (icon || HEART) + '<em class="sr"></em> <b>0</b>'; span.querySelector('.sr').textContent = label;
+    if (label === 'Hearts') { /* what hearts are for, on a tap */
+      span.setAttribute('role', 'button'); span.tabIndex = 0;
+      var why = function (e) { e.stopPropagation(); toast('Hearts: you earn them by logging how you are, finishing a practice and Today’s invitations. Spend them on seeds and plants at the Flower Dome.', 5200); };
+      span.addEventListener('click', why); span.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') why(e); });
+    }
     $('counts').appendChild(span);
     hudItems.push({ el: span.querySelector('b'), value: value }); updateHud();
   }

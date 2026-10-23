@@ -40,7 +40,9 @@ def main():
     beds = [{"state": "grass", "crop": None, "watered": []} for _ in range(6)]
     save = {"v": 1, "scene": "dome", "pos": None, "outfit": None, "observations": practices, "pond": {"offerings": 0, "gift": False},
             "safety": {"onboardSkippedAt": "2026-10-22T08:00:00Z"}, "log": {"v": 1, "obs": obs, "thread": [], "batches": []},
-            "farm": {"beds": beds, "seedDay": None, "seedsLeft": 0, "basket": {}, "seeds": {}}}
+            "farm": {"beds": beds, "seedDay": None, "seedsLeft": 0, "basket": {}, "seeds": {}},
+            # Today's invitations also pay hearts; these are marked as already counted (0) so the sums here stay fixed
+            "points": {"entries": [{"id": f"today:{today}:{k}", "date": today, "source": "today", "n": 0} for k in ("water", "sit", "pond", "walk", "journal", "bonus")]}}
     srv, port = serve()
     errors, checks = [], []
 
@@ -69,10 +71,9 @@ def main():
             return page.locator('#counts span', has_text=label).locator('b').inner_text()
         check('she opens in the Flower Dome', page.evaluate("() => EbbGame.api.scene()") == 'dome' and page.locator('#place').inner_text() == 'Flower Dome')
         check('she stands on the paving', page.evaluate("() => EbbWorld.walkable('dome', EbbGame.me())"))
-        check('Points in the top bar beside Hearts: 105 from nine entries and one finished practice', page.locator('#counts span', has_text='Points').count() == 1 and hud('Points') == '105' and page.locator('#counts span', has_text='Hearts').count() == 1)
-        check('the ledger has ten entries and nothing for the draft or the partial practice', page.evaluate("() => { const p = EbbGame.state().points; return p.entries.length === 10 && p.total === 105 && p.spent === 0; }"))
+        check('one Hearts counter in the top bar: 105 from nine entries and one finished practice', page.locator('#counts span').count() == 1 and hud('Hearts') == '105')
+        check('the ledger has ten entries and nothing for the draft or the partial practice', page.evaluate("() => { const p = EbbGame.state().points; return p.entries.filter(e => e.source !== 'today').length === 10 && p.total === 105 && p.spent === 0; }"))
         check('the keeper stands beside the stall as a still prop', page.evaluate("() => { const k = document.querySelector('#props .dome-keeper'); return !!k && document.querySelectorAll('#props .dome-keeper').length === 1 && !document.querySelector('#props .dome-bubble'); }"))
-        hearts0 = hud('Hearts')
         page.wait_for_timeout(900)
         shot(page, 'dome-01-in-the-dome')
 
@@ -88,7 +89,7 @@ def main():
         # the Plants shelf: buy an orchid for the bedroom window seat through the picker
         page.click('#tab-plants')
         prow = page.evaluate("() => [...document.querySelectorAll('.dome-item')].map(li => [li.dataset.plant, li.querySelector('b').textContent, li.querySelector('small').textContent, li.querySelector('button').disabled])")
-        check('six plants with prices, all affordable at 105', prow == [['orchid', 'Orchid', '60 points', False], ['monstera', 'Monstera', '70 points', False], ['bonsai', 'Bonsai', '80 points', False], ['tulips', 'Tulips', '40 points', False], ['pothos', 'Pothos', '50 points', False], ['cactus', 'Cactus', '40 points', False]], str(prow))
+        check('six plants with prices, all affordable at 105', prow == [['orchid', 'Orchid', '60 hearts', False], ['monstera', 'Monstera', '70 hearts', False], ['bonsai', 'Bonsai', '80 hearts', False], ['tulips', 'Tulips', '40 hearts', False], ['pothos', 'Pothos', '50 hearts', False], ['cactus', 'Cactus', '40 hearts', False]], str(prow))
         check('plant icons come from the keyed strip', page.evaluate("() => [...document.querySelectorAll('.dome-plant-icon image')].every(i => i.getAttribute('href') === 'art/dome/plants.webp')"))
         page.click('#buy-orchid')
         page.wait_for_selector('.dome-pick')
@@ -96,34 +97,32 @@ def main():
         check('the picker lists the four places, all free, and keep for later', pick == [['spot-bedroom-window', 'Free'], ['spot-living-cabinet', 'Free'], ['spot-living-sill', 'Free'], ['spot-bathroom-shelf', 'Free'], ['spot-away', 'It waits in the Plants shelf under Your plants']], str(pick))
         page.click('#spot-bedroom-window')
         page.wait_for_function("() => (EbbGame.state().homePlants || { plants: [] }).plants.length === 1")
-        check('the orchid stands at the bedroom window seat and 60 points are spent', page.evaluate("() => { const h = EbbGame.state().homePlants; return h.plants[0].plant === 'orchid' && h.plants[0].spot === 'bedroom.window'; }") and page.locator('#domePoints').inner_text() == '45' and hud('Points') == '45')
+        check('the orchid stands at the bedroom window seat and 60 points are spent', page.evaluate("() => { const h = EbbGame.state().homePlants; return h.plants[0].plant === 'orchid' && h.plants[0].spot === 'bedroom.window'; }") and page.locator('#domePoints').inner_text() == '45' and hud('Hearts') == '45')
         check('the stall says where it went', 'window seat' in page.locator('.dome-said').inner_text())
         check('Your plants lists it with a Move button', page.locator('.dome-mine .dome-item').count() == 1 and page.locator('.dome-mine .dome-move').inner_text() == 'Move')
         check('the bonsai at 80 now waits', page.locator('#buy-bonsai').is_disabled())
-        check('hearts untouched by the plant', hud('Hearts') == hearts0)
         shot(page, 'dome-04-plants-shelf')
         page.click('#tab-seeds')
         check('back on the Seeds shelf with 45', page.locator('#tab-seeds').get_attribute('aria-selected') == 'true' and page.locator('#domePoints').inner_text() == '45')
         rows = page.evaluate("() => [...document.querySelectorAll('.dome-item')].map(li => [li.dataset.crop, li.querySelector('b').textContent, li.querySelector('small').textContent, li.querySelector('button').disabled, li.querySelector('button').textContent])")
-        check('one row per crop with its price, all affordable at 45', rows == [['turnip', 'Turnip seed', '20 points', False, 'Buy'], ['carrot', 'Carrot seed', '30 points', False, 'Buy'], ['sunflower', 'Sunflower seed', '40 points', False, 'Buy']], str(rows))
-        check('the sheet says logging earns points', 'Logging earns points' in page.locator('.dome-earn').inner_text() and 'three free seeds' in page.locator('.dome-shed').inner_text())
+        check('one row per crop with its price, all affordable at 45', rows == [['turnip', 'Turnip seed', '20 hearts', False, 'Buy'], ['carrot', 'Carrot seed', '30 hearts', False, 'Buy'], ['sunflower', 'Sunflower seed', '40 hearts', False, 'Buy']], str(rows))
+        check('the sheet says logging earns hearts', 'Hearts: 10 for each entry' in page.locator('.dome-earn').inner_text() and 'three free seeds' in page.locator('.dome-shed').inner_text())
         box = page.locator('.sheet.dome').bounding_box()
         check('sheet fits the phone', box['width'] <= 390 and box['x'] >= 0)
 
         page.click('#buy-turnip')
         page.wait_for_function("() => (EbbGame.state().farm.seeds.turnip || 0) === 1")
         check('a turnip seed is in the farm', page.evaluate("() => EbbGame.state().farm.seeds.turnip") == 1)
-        check('20 points spent: 25 left in the sheet and the top bar', page.locator('#domePoints').inner_text() == '25' and hud('Points') == '25')
-        check('the Seeds count in the top bar rises to 1', hud('Seeds') == '1')
+        check('20 points spent: 25 left in the sheet and the top bar', page.locator('#domePoints').inner_text() == '25' and hud('Hearts') == '25')
+        check('the seed is in her seed box (shown in the Bag)', page.evaluate("() => EbbGame.state().farm.seeds.turnip") == 1)
         check('the stall says so', 'turnip seed' in page.locator('.dome-said').inner_text())
-        check('the sunflower at 40 is now out of reach with a kind line', page.locator('#buy-sunflower').is_disabled() and page.locator('#buy-sunflower').inner_text() == 'Not yet' and '15 more points' in page.locator('.dome-item[data-crop="sunflower"] .dome-short').inner_text())
+        check('the sunflower at 40 is now out of reach with a kind line', page.locator('#buy-sunflower').is_disabled() and page.locator('#buy-sunflower').inner_text() == 'Not yet' and '15 more hearts' in page.locator('.dome-item[data-crop="sunflower"] .dome-short').inner_text())
         check('the carrot at 30 is refused by the rules too', page.evaluate("() => { const r = EbbDomeRules.buy(EbbGame.state(), 'sunflower', EbbStore.today(), EbbFarm.CROPS); return !r.ok && r.reason === 'short'; }"))
         check('the row remembers she has one', 'you have 1' in page.locator('.dome-item[data-crop="turnip"] small').first.inner_text())
         shot(page, 'dome-02-stall-sheet')
         page.click('#buy-turnip')
         page.wait_for_function("() => (EbbGame.state().farm.seeds.turnip || 0) === 2")
         check('a second turnip: 5 left, every button waits', page.locator('#domePoints').inner_text() == '5' and page.locator('.dome-buy:disabled').count() == 3)
-        check('hearts never moved', hud('Hearts') == hearts0 and page.evaluate("() => JSON.stringify((EbbGame.state().daily || {}).total || 0)") in ('0', hearts0))
         page.keyboard.press('Escape')
         check('Escape closes the stall', page.locator('.dome-wrap').count() == 0)
 
@@ -134,7 +133,7 @@ def main():
         page.wait_for_function('window.EbbGame && window.EbbGame._ready && window.EbbDome')
         page.wait_for_timeout(700)
         page.evaluate("document.querySelectorAll('.sheet-wrap').forEach(w => w.remove())")
-        check('after a reload the points and seeds stay', hud('Points') == '5' and hud('Seeds') == '2' and page.evaluate("() => EbbGame.state().points.entries.length") == 13)
+        check('after a reload the points and seeds stay', hud('Hearts') == '5' and page.evaluate("() => EbbGame.state().farm.seeds.turnip") == 2 and page.evaluate("() => EbbGame.state().points.entries.filter(e => e.source !== 'today').length") == 13)
 
         # home: the orchid is drawn at the window seat; move it to the bathroom shelf and back through the stall
         page.evaluate("EbbGame.enter('bedroom')"); page.wait_for_timeout(500)
@@ -154,13 +153,13 @@ def main():
 
         # a new confirmed entry raises the points without any event: the ledger follows the data
         page.evaluate("() => { const st = EbbGame.state(); st.log.obs.push({ id: 'oNew', type: 'mood', value: 'bright', start: EbbStore.today(), end: EbbStore.today(), created: new Date().toISOString(), confirmed: true }); EbbStore.save(); }")
-        page.wait_for_function("() => [...document.querySelectorAll('#counts span')].some(s => /Points/.test(s.textContent) && s.querySelector('b').textContent === '15')", timeout=6000)
-        check('a new confirmed entry adds 10 after the save', hud('Points') == '15')
-        page.wait_for_function("() => { const t = document.getElementById('toast'); return !t.hidden && /points/.test(t.textContent); }", timeout=6000)
-        check('a quiet toast says so', 'points' in page.locator('#toast').inner_text())
+        page.wait_for_function("() => [...document.querySelectorAll('#counts span')].some(s => /Hearts/.test(s.textContent) && s.querySelector('b').textContent === '15')", timeout=6000)
+        check('a new confirmed entry adds 10 after the save', hud('Hearts') == '15')
+        page.wait_for_function("() => { const t = document.getElementById('toast'); return !t.hidden && /hearts/.test(t.textContent); }", timeout=6000)
+        check('a quiet toast says so', 'hearts' in page.locator('#toast').inner_text())
         page.evaluate("() => { const st = EbbGame.state(); for (let i = 0; i < 9; i++) st.log.obs.push({ id: 'oCap' + i, type: 'mood', value: 'x', start: EbbStore.today(), end: EbbStore.today(), created: new Date().toISOString(), confirmed: true }); EbbStore.save(); }")
         page.wait_for_timeout(400)
-        check('the day caps at 60 earned', page.evaluate("() => EbbGame.state().points.total") == 120 and hud('Points') == '20')
+        check('the day caps at 60 earned', page.evaluate("() => EbbGame.state().points.total") == 120 and hud('Hearts') == '20')
 
         # out through the glass doors to Merlion Park, and back through the new door
         door = page.evaluate("() => { const d = EbbWorld.SCENES.dome.doors[0]; return { x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 }; }")

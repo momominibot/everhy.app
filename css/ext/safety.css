@@ -33,6 +33,13 @@ a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 /* first-run chat */
 .sf-onboard { max-height: 92vh; }
 .sf-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sf-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sf-ovia { flex: none; width: 52px; height: 52px; animation: sf-ovia-bob 2.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes sf-ovia-bob { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-3px) scale(0.98, 1.02); } }
+/* Ovia's face beside the first of her messages in a row */
+.sf-msg.ebb, .lg-msg.ebb { position: relative; margin-left: 36px; }
+.sf-msg.ebb::before, .lg-msg.ebb::before { content: ''; position: absolute; left: -36px; bottom: -2px; width: 30px; height: 30px; background: url('../../art/ovia/ovia.svg') center / contain no-repeat; }
+.sf-msg.ebb + .sf-msg.ebb::before, .lg-msg.ebb + .lg-msg.ebb::before { content: none; }
 .sf-chat { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 52vh; padding: 2px; }
 .sf-msg { max-width: 88%; padding: 10px 13px; border-radius: 16px; line-height: 1.4; }
 .sf-msg p { margin: 0; }
@@ -51,7 +58,7 @@ a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 .sf-consent .sf-why { grid-column: 1 / -1; }
 .sf-rules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--soft); }
 .sf-rules b { color: var(--ink); }
-@media (prefers-reduced-motion: reduce) { .sf-msg { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { .sf-msg { scroll-behavior: auto; } .sf-ovia { animation: none; } }
 /* Guard for the engine menu: `.menu { display: flex }` in css/ebb.css overrides [hidden], so the More menu showed over
  * the scene once a panel was registered. Belongs in css/ebb.css; the integrator can move it there. */
 .menu[hidden] { display: none; }

@@ -8,7 +8,7 @@
 (function (root) {
   'use strict';
 
-  var EARN = { log: 10, practice: 15 }, CAP_PER_DAY = 60;
+  var EARN = { log: 10, practice: 15, today: 10 }, CAP_PER_DAY = 60;
   var PRICES = { turnip: 20, carrot: 30, sunflower: 40 }, DEFAULT_PRICE = 30;
 
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -48,6 +48,14 @@
     pr.forEach(function (o) {
       if (!o || typeof o !== 'object' || o.type !== 'mindfulness' || o.status !== 'finished' || typeof o.id !== 'string' || !o.id) return;
       out.push({ id: 'practice:' + o.id, date: localDate(o.date) || localDate(o.end) || today, source: 'practice', n: EARN.practice, at: typeof o.end === 'string' ? o.end : '' });
+    });
+    /* Today's invitations (js/today/rules.js keeps which were done each day): each one and the all-three bonus pay too,
+     * so there is one currency, hearts, for everything she does */
+    var days = st && st.daily && st.daily.days && typeof st.daily.days === 'object' ? st.daily.days : {};
+    Object.keys(days).forEach(function (date) {
+      var day = days[date]; if (!day || typeof day !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      Object.keys(day.done || {}).sort().forEach(function (id) { if (day.done[id]) out.push({ id: 'today:' + date + ':' + id, date: date, source: 'today', n: EARN.today, at: '' }); });
+      if (day.bonus) out.push({ id: 'today:' + date + ':bonus', date: date, source: 'today', n: EARN.today, at: '~' });
     });
     return out.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : a.at < b.at ? -1 : a.at > b.at ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
   }
@@ -169,8 +177,8 @@
   function keeperLine(date) { var n = 0; String(date || '').split('').forEach(function (c) { n += c.charCodeAt(0); }); return KEEPER_LINES[n % KEEPER_LINES.length]; }
 
   /* words */
-  function shortLine(need) { return need === 1 ? 'One more point and this is yours.' : need + ' more points and this is yours.'; }
-  var EARN_LINE = 'Logging earns points: 10 for each entry you confirm, 15 for a practice that runs to the end, up to 60 a day.';
+  function shortLine(need) { return need === 1 ? 'One more heart and this is yours.' : need + ' more hearts and this is yours.'; }
+  var EARN_LINE = 'Hearts: 10 for each entry you confirm, 15 for a practice that runs to the end, 10 for each of Today’s invitations, up to 60 a day.';
 
   root.EbbDomeRules = { EARN: EARN, CAP_PER_DAY: CAP_PER_DAY, PRICES: PRICES, DEFAULT_PRICE: DEFAULT_PRICE, EARN_LINE: EARN_LINE,
     ensure: ensure, balance: balance, earnable: earnable, recompute: recompute, spend: spend, price: price, catalog: catalog, buy: buy,

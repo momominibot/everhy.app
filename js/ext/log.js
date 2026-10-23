@@ -47,8 +47,13 @@
       { label: 'Sore breasts', item: item('symptom', 'breast tenderness') }, { label: 'Breakout', item: item('symptom', 'acne') }, { label: 'Dry skin', item: item('symptom', 'dry skin') },
       { label: 'Back ache', item: item('pain', null, { unit: '/10', location: ['back'] }) }, { label: 'Pain level', pick: 'pain' },
       { label: 'All good', icon: 'sun', say: 'all good' }, { label: 'Not sure', icon: 'unsure', say: 'not sure' }] },
-    cycle: { title: 'Cycle', ring: true, tabs: true, line: 'Here is your cycle so far. Did a period start, or would you like to look back?', chips: [
+    /* flow and cycle are one chat (the bathroom's toilet; 'bleeding' opens the same one): today's flow, a period
+     * starting, and looking back, all in one place */
+    cycle: { title: 'Flow and cycle', ring: true, tabs: true, line: 'How is your flow today? Did a period start? You can also look back at your cycle. Nothing here is required.', chips: [
       { label: 'Period started today', icon: 'drop', item: item('bleeding', 'period') }, { label: 'Started yesterday', item: function () { var it = item('bleeding', 'period')(); it.start = it.end = yesterday(); return it; } },
+      { label: 'No bleeding', item: item('bleeding', 'none') }, { label: 'Spotting', icon: 'drop', item: item('bleeding', 'spotting') },
+      { label: 'Light', item: item('bleeding', 'light') }, { label: 'Medium', item: item('bleeding', 'medium') }, { label: 'Heavy', item: item('bleeding', 'heavy') },
+      { label: 'Mucus', pick: 'mucus' }, { label: 'How it feels', pick: 'sensation' },
       { label: 'Calendar', view: 'calendar' }, { label: 'My cycle lengths', say: 'how long were my last 6 cycles?' }, { label: 'Next period', say: 'when is my next period?' },
       { label: 'Not sure', icon: 'unsure', say: 'not sure' }] },
     temperature: { title: 'Waking temperature', line: 'If you take your temperature when you wake, you can note it here. Skip any day you like.', chips: [
@@ -56,6 +61,10 @@
     sleep: { title: 'Sleep', line: 'How did you sleep? A tap is enough, or tell me more.', chips: [
       { label: 'Slept well', icon: 'sun', item: item('sleepQuality', 'good') }, { label: 'Slept badly', item: item('sleepQuality', 'poor') },
       { label: 'Hours', pick: 'hours' }, { label: 'Woke up tired', item: item('energy', 'low') }, { label: 'Not sure', icon: 'unsure', say: 'not sure' }] },
+    /* the fridge: food and drink only, in her own words */
+    food: { title: 'Food and drink', food: true, line: 'What did you eat or drink? A few words is plenty. Nothing is saved until you tap Save.', chips: [
+      { label: 'A proper meal', item: item('food', 'a proper meal') }, { label: 'A snack', item: item('food', 'a snack') }, { label: 'Water', item: item('food', 'water') },
+      { label: 'Kopi or teh', item: item('food', 'kopi or teh') }, { label: 'A sweet drink', item: item('food', 'a sweet drink') }, { label: 'Skipped a meal', item: item('food', 'skipped a meal') }] },
     mood: { title: 'Journal', journal: true, line: 'How are you feeling? Write as much or as little as you like. Nothing is saved until you tap Save.', chips: [
       { label: 'Good', icon: 'sun', item: item('mood', 'good') }, { label: 'Low', item: item('mood', 'low') }, { label: 'Anxious', item: item('mood', 'anxious') },
       { label: 'Stressed', item: item('mood', 'stressed') }, { label: 'Irritable', item: item('mood', 'irritable') },
@@ -63,6 +72,7 @@
   };
 
   /* ---------- labels ---------- */
+  TOPICS.bleeding = TOPICS.cycle;
   var BLEED_NAMES = { none: 'No bleeding', spotting: 'Spotting', light: 'Light flow', medium: 'Medium flow', heavy: 'Heavy flow', period: 'Period (flow not given)', unsure: 'Bleeding (not sure which)', unknown: 'Cleared' };
   var MUCUS_NAMES = { dry: 'dry or none', sticky: 'sticky', creamy: 'creamy', watery: 'watery', eggwhite: 'clear and stretchy (egg-white-like)' };
   function dayName(d) { return d === today() ? 'today' : d === yesterday() ? 'yesterday' : C.fmt(d); }
@@ -81,6 +91,7 @@
       case 'mucus': return 'Mucus: ' + (MUCUS_NAMES[v] || v) + maybe;
       case 'sensation': return 'Feels ' + v + maybe;
       case 'temperature': return 'Waking temperature ' + v + ' °' + (it.unit || 'C') + maybe;
+      case 'food': var fd = String(v || ''); return 'Food or drink: ' + (fd.length > 80 ? fd.slice(0, 78) + '…' : fd);
       case 'note': var t = String(v || ''); return 'Journal note: “' + (t.length > 80 ? t.slice(0, 78) + '…' : t) + '”';
       case 'checkin': return v === 'all-good' ? 'All good, nothing new' : 'Not sure today';
       default: return it.type + ': ' + v;
@@ -103,6 +114,7 @@
   /* ---------- writing ---------- */
   function save(items, source, text) {
     var made = M.confirm(st(), items, { source: source, text: text });
+    if (topic && topic !== 'general') made.forEach(function (o) { if (o) o.topic = topic; }); /* which spot it came from: its sparkle rests once today's entry is paid (js/ext/sparkles.js) */
     M.say(st(), 'ebb', 'Saved ' + made.length + ' entr' + (made.length === 1 ? 'y' : 'ies') + '. Say “undo” within 24 hours to take it back.');
     api.save();
     safetyAfter(made);
@@ -124,7 +136,7 @@
     if (crisis(raw)) { reset(); render(); return; } /* Safety owns the response: nothing from logging */
     M.say(st(), 'me', raw); api.save();
     var r = LP.parse(raw, today(), { topic: topic });
-    var journal = TOPICS[topic] && TOPICS[topic].journal;
+    var journal = TOPICS[topic] && TOPICS[topic].journal, food = TOPICS[topic] && TOPICS[topic].food;
     reset();
     if (r.intent === 'undo') {
       var u = M.undo(st()); api.save();
@@ -136,6 +148,8 @@
       var items = M.sameAsYesterday(st(), today(), yesterday());
       if (items.length) pending = { items: items, source: source || 'chip', text: raw, note: 'Same as yesterday. Check it still fits:' };
       else reply('Nothing was logged yesterday to copy. Tell me in your own words, or tap All good.');
+    } else if (food) { /* what she ate, in her words: no symptom or flow guessing from a meal */
+      pending = { items: [{ type: 'food', value: raw, start: today(), end: today(), confidence: 1, clause: raw }], source: source || 'chat', text: raw, note: 'Save this to your food and drink?' };
     } else if (r.intent === 'log' || journal) {
       /* at most one question: the first unclear bleeding asks, any others stay "not sure which" on the card */
       var amb = null;

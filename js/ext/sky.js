@@ -176,6 +176,8 @@
     var sky = el('div', 'sky'); sky.setAttribute('aria-hidden', 'true');
     els = { sky: sky, shade: el('div', 'sky-shade', sky), glow: el('div', 'sky-glow', sky), vignette: el('div', 'sky-vignette', sky),
       windows: el('div', 'sky-windows', sky), lights: el('div', 'sky-lights', sky), flies: el('div', 'sky-flies', sky) };
+    /* a room's night layer (tools/night_rooms.py): night sky in its window glass and around the room, over the tint */
+    els.night = el('img', 'sky-night', sky); els.night.alt = ''; els.night.hidden = true;
     /* between the plate and the SVG layer, wherever the engine keeps them */
     var layer = stage.querySelector('svg'), plate = doc.getElementById('plate');
     stage.insertBefore(sky, layer && layer.parentNode === stage ? layer : plate && plate.parentNode === stage ? plate.nextSibling : stage.firstChild);
@@ -222,11 +224,15 @@
     list = list || sc.lamps || hints(sc).lamps || [{ x: 50, y: 30, r: 46 }]; /* a room with no lamps known: one soft light */
     return list.filter(function (l) { return l && isFinite(l.x) && isFinite(l.y); });
   }
+  var NIGHT_ROOMS = { 'bedroom-dream-wide': 1, 'bathroom-dream-wide': 1, 'living-dream-wide': 1, kitchen: 1 };
+  function nightFor(sc) { var m = /art\/plates\/([\w-]+)\.webp$/.exec(sc && sc.plate || ''); return m && NIGHT_ROOMS[m[1]] ? 'art/night/' + m[1] + '.webp' : null; }
   function rebuild(id, sc, indoor) {
+    var nsrc = indoor ? nightFor(sc) : null; els.night.dataset.src = nsrc || '';
+    if (nsrc && els.night.getAttribute('src') !== nsrc) els.night.src = nsrc;
     els.windows.innerHTML = els.lights.innerHTML = els.flies.innerHTML = ''; her = null; herAt = { x: -1, y: -1, s: -1 };
     if (indoor) {
       lampsFor(id, sc).forEach(function (l) { var r = l.r || 32; pct(el('i', 'sky-light lamp', els.lights), l.x, l.y, r, r); });
-      (sc.windows || hints(sc).windows || []).forEach(function (w) { pct(el('i', 'sky-window', els.windows), w.x, w.y, w.rx * 2, w.ry * 2); });
+      /* windows go dark through the room's night layer (real glass shapes), never a soft blob over the wall */
     } else {
       her = el('i', 'sky-light her', els.lights);
       (sc.fireflies || FLIES[id] || []).forEach(function (f, i) {
@@ -260,6 +266,7 @@
     var light = indoor ? p.lamp : p.pool;
     els.vignette.hidden = !indoor || p.lamp < 0.004; els.vignette.style.opacity = p.lamp.toFixed(3);
     els.windows.hidden = !indoor || p.lamp < 0.004; els.windows.style.setProperty('--sky-lamp', p.lamp.toFixed(3));
+    els.night.hidden = !indoor || !els.night.dataset.src || p.lamp < 0.004; els.night.style.opacity = p.lamp.toFixed(3);
     els.lights.hidden = light < 0.004; els.lights.style.setProperty('--sky-lamp', light.toFixed(3));
     els.flies.hidden = !fx.flies; els.rain.hidden = !fx.rain;
     els.sky.dataset.phase = p.phase; els.sky.dataset.place = indoor ? 'in' : 'out'; els.sky.dataset.weather = weather;

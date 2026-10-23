@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Ovia, a round pink friend with an orchid on her head">
+  <title>Ovia</title>
+  <defs>
+    <radialGradient id="ov-body" cx="42%" cy="34%" r="72%">
+      <stop offset="0" stop-color="#fff1f2"/>
+      <stop offset="0.38" stop-color="#ffcfdc"/>
+      <stop offset="0.8" stop-color="#f5a3bd"/>
+      <stop offset="1" stop-color="#e3869f"/>
+    </radialGradient>
+    <radialGradient id="ov-cheek" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ff7fa3" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ff7fa3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ov-petal" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#fbeaff"/>
+      <stop offset="1" stop-color="#d6a6ec"/>
+    </radialGradient>
+    <radialGradient id="ov-lip" cx="45%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#e48ad6"/>
+      <stop offset="1" stop-color="#a7409a"/>
+    </radialGradient>
+    <radialGradient id="ov-arm" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#ffd9e3"/>
+      <stop offset="1" stop-color="#ec98b2"/>
+    </radialGradient>
+  </defs>
+  <!-- soft ground shadow -->
+  <ellipse cx="60" cy="110" rx="30" ry="5.5" fill="#6b3a4a" opacity="0.16"/>
+  <!-- little feet -->
+  <ellipse cx="47" cy="105" rx="9" ry="5.5" fill="url(#ov-arm)"/>
+  <ellipse cx="73" cy="105" rx="9" ry="5.5" fill="url(#ov-arm)"/>
+  <!-- the round mochi body -->
+  <path d="M60 30 C84 30 98 50 98 73 C98 94 82 106 60 106 C38 106 22 94 22 73 C22 50 36 30 60 30 Z" fill="url(#ov-body)" stroke="#d9789a" stroke-width="1.6"/>
+  <!-- a waving arm and a resting arm -->
+  <ellipse cx="25" cy="80" rx="7" ry="9.5" transform="rotate(25 25 80)" fill="url(#ov-arm)" stroke="#d9789a" stroke-width="1.2"/>
+  <g class="ov-wave"><ellipse cx="96" cy="64" rx="7" ry="10" transform="rotate(-35 96 64)" fill="url(#ov-arm)" stroke="#d9789a" stroke-width="1.2"/></g>
+  <!-- a clay highlight -->
+  <ellipse cx="44" cy="46" rx="10" ry="6" transform="rotate(-28 44 46)" fill="#fff" opacity="0.6"/>
+  <!-- face -->
+  <ellipse cx="38" cy="80" rx="9" ry="6" fill="url(#ov-cheek)"/>
+  <ellipse cx="82" cy="80" rx="9" ry="6" fill="url(#ov-cheek)"/>
+  <ellipse cx="46" cy="70" rx="5.2" ry="6.6" fill="#4a2b35"/>
+  <ellipse cx="74" cy="70" rx="5.2" ry="6.6" fill="#4a2b35"/>
+  <circle cx="47.8" cy="67.4" r="2.1" fill="#fff"/>
+  <circle cx="75.8" cy="67.4" r="2.1" fill="#fff"/>
+  <circle cx="44.6" cy="72.6" r="0.9" fill="#fff" opacity="0.8"/>
+  <circle cx="72.6" cy="72.6" r="0.9" fill="#fff" opacity="0.8"/>
+  <path d="M54.5 79 Q60 85 65.5 79" fill="none" stroke="#4a2b35" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- a Vanda Miss Joaquim orchid on her head, with two leaves -->
+  <path d="M60 32 C55 22 46 20 40 22 C46 26 52 30 58 33 Z" fill="#9cc58a" stroke="#6e9c60" stroke-width="1"/>
+  <path d="M61 32 C67 24 76 23 81 26 C75 29 68 31 62 33 Z" fill="#a9d196" stroke="#6e9c60" stroke-width="1"/>
+  <g transform="translate(66 22) rotate(12)">
+    <ellipse cx="0" cy="-9" rx="5" ry="8" fill="url(#ov-petal)" stroke="#c48fdc" stroke-width="0.8"/>
+    <ellipse cx="-9" cy="-3" rx="5" ry="7.5" transform="rotate(-62 -9 -3)" fill="url(#ov-petal)" stroke="#c48fdc" stroke-width="0.8"/>
+    <ellipse cx="9" cy="-3" rx="5" ry="7.5" transform="rotate(62 9 -3)" fill="url(#ov-petal)" stroke="#c48fdc" stroke-width="0.8"/>
+    <ellipse cx="-6" cy="6" rx="4.2" ry="6.5" transform="rotate(-150 -6 6)" fill="url(#ov-petal)" stroke="#c48fdc" stroke-width="0.8"/>
+    <ellipse cx="6" cy="6" rx="4.2" ry="6.5" transform="rotate(150 6 6)" fill="url(#ov-petal)" stroke="#c48fdc" stroke-width="0.8"/>
+    <path d="M-6 2 C-7 10 7 10 6 2 C4 -1 -4 -1 -6 2 Z" fill="url(#ov-lip)"/>
+    <circle cx="-2" cy="4.5" r="0.8" fill="#7a2a70"/><circle cx="2" cy="5.5" r="0.8" fill="#7a2a70"/>
+    <circle cx="0" cy="0.5" r="2.2" fill="#ffc94a"/>
+  </g>
+</svg>

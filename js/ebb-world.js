@@ -22,7 +22,7 @@
         { id: 'bed', kind: 'sleep', topic: 'sleep', at: { x: 40, y: 52 }, stand: { x: 42, y: 70 }, label: 'How did you sleep?' }, /* js/ext/sleep.js: she tucks in, then logs or gets up */
         { id: 'bedside', kind: 'log', topic: 'temperature', at: { x: 38, y: 34 }, stand: { x: 46, y: 68 }, label: 'Waking temperature' },
         { id: 'desk', kind: 'log', topic: 'mood', at: { x: 66, y: 50 }, stand: { x: 68, y: 66 }, label: 'Write in the journal' },
-        { id: 'drawers', kind: 'wardrobe', at: { x: 88, y: 58 }, stand: { x: 74, y: 66 }, label: 'Change clothes' },
+        { id: 'wardrobe', kind: 'wardrobe', at: { x: 18, y: 50 }, stand: { x: 28, y: 68.5 }, label: 'Change clothes' }, /* the flowered wardrobe beside the bed (not the dresser by the bathroom door), 24 Oct: she stands at its door, behind the arch door and above the doorway to the kitchen */
         { id: 'bookshelf', kind: 'panel', panel: 'course', at: { x: 48, y: 30 }, stand: { x: 71.2, y: 65.2 }, label: 'Mindfulness course' }, /* between the bunny lamp and the bathroom door */
         { id: 'cushion', kind: 'cushion', at: { x: 56, y: 64 }, stand: { x: 56, y: 74 }, label: 'Sit for a practice' }
       ],
@@ -36,9 +36,8 @@
       solids: [[23, 34, 50, 57], [3, 44, 20, 60], [8, 52, 29, 73], [22, 58, 41, 82], [54, 34, 78, 59], [43, 76, 50, 87], [70, 60, 94, 81]],
       doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 75.5, y: 67 }, label: 'Back to the bedroom' }], /* clear of the moved lamp */
       spots: [
-        { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Log bleeding or mucus' },
-        { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' },
-        { id: 'cabinet', kind: 'log', topic: 'cycle', at: { x: 86, y: 64 }, stand: { x: 66, y: 74 }, label: 'Check your cycle' }
+        { id: 'toilet', kind: 'log', topic: 'cycle', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Flow and cycle' }, /* one chat for flow and the cycle (24 Oct); the cabinet no longer opens a second one */
+        { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' }
       ],
       start: { x: 52, y: 78 }
     },
@@ -166,11 +165,14 @@
     for (var i = 0; i < s.solids.length; i++) if (inRect(pt, s.solids[i])) return false;
     return true;
   }
-  function segClear(scene, a, b) {
+  /* avoid: door rects the leg must not cross (a door fires when she steps on it, so a walk to somewhere else in the
+   * room must go round every doorway but the one she was sent to) */
+  function inAny(pt, rects) { for (var i = 0; rects && i < rects.length; i++) if (inRect(pt, rects[i])) return true; return false; }
+  function segClear(scene, a, b, avoid) {
     var steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 0.5) || 1;
     for (var i = 0; i <= steps; i++) {
-      var t = i / steps;
-      if (!walkable(scene, { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t })) return false;
+      var t = i / steps, q = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+      if (!walkable(scene, q) || (i > 0 && inAny(q, avoid))) return false;
     }
     return true;
   }
@@ -188,7 +190,9 @@
   /* A* on a 1-unit grid, then a string-pulled path of straight legs that each pass segClear */
   function plan(scene, from, to) {
     var goal = nearestWalkable(scene, to); if (!goal) return null;
-    if (segClear(scene, from, goal)) return [goal];
+    var sc = typeof scene === 'string' ? SCENES[scene] : scene, avoid = [];
+    ((sc && sc.doors) || []).forEach(function (d) { if (!inRect(goal, d.rect) && !inRect(from, d.rect)) avoid.push(d.rect); });
+    if (segClear(scene, from, goal, avoid)) return [goal];
     var key = function (x, y) { return x + ',' + y; };
     var sx = Math.round(from.x), sy = Math.round(from.y), gx = Math.round(goal.x), gy = Math.round(goal.y);
     var open = [{ x: sx, y: sy, g: 0, f: 0 }], came = {}, cost = {}, seen = {};
@@ -205,14 +209,14 @@
         var path = [], at = from, i = 0;
         while (i < cells.length) { /* farthest cell still in a straight clear line */
           var j = cells.length - 1;
-          while (j > i && !segClear(scene, at, cells[j])) j--;
+          while (j > i && !segClear(scene, at, cells[j], avoid)) j--;
           path.push(cells[j]); at = cells[j]; i = j + 1;
         }
         return path;
       }
       for (var d = 0; d < dirs.length; d++) {
         var nx = cur.x + dirs[d][0], ny = cur.y + dirs[d][1], nk = key(nx, ny);
-        if (seen[nk] || !walkable(scene, { x: nx, y: ny })) continue;
+        if (seen[nk] || !walkable(scene, { x: nx, y: ny }) || inAny({ x: nx, y: ny }, avoid)) continue;
         var g = cur.g + (dirs[d][0] && dirs[d][1] ? 1.414 : 1);
         if (cost[nk] !== undefined && cost[nk] <= g) continue;
         cost[nk] = g; came[nk] = ck;

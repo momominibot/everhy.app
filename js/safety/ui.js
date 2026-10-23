@@ -135,7 +135,9 @@
     var steps = [];
     openSheet(function (box, close) {
       box.classList.add('sf-onboard'); box.setAttribute('aria-label', 'Getting started with EveRhy');
-      var head = el('div', 'sf-head'); head.appendChild(el('h2', null, opts.redo ? 'Your answers' : 'Welcome to EveRhy'));
+      var head = el('div', 'sf-head'), title = el('div', 'sf-title');
+      var ovia = el('img', 'sf-ovia'); ovia.src = 'art/ovia/ovia.svg'; ovia.alt = ''; title.appendChild(ovia); /* Ovia herself; her name is in the first line */
+      title.appendChild(el('h2', null, opts.redo ? 'Your answers' : 'Welcome to EveRhy')); head.appendChild(title);
       head.appendChild(button('Skip all', 'btn small', function () { finish(true); })); box.appendChild(head);
       var log = el('div', 'sf-chat'); log.setAttribute('aria-live', 'polite'); box.appendChild(log);
       var reply = el('div', 'sf-reply'); box.appendChild(reply);

@@ -13,13 +13,13 @@
   function R() { return root.EbbTodayRules; }
 
   var DONE_WORDS = {
-    water: 'The garden is watered. A heart for you.',
-    sit: 'You sat for a while. A heart for you.',
-    pond: 'You visited the pond. A heart for you.',
-    walk: 'A slow walk to the waterfall. A heart for you.',
-    journal: 'A line in the journal. A heart for you.'
+    water: 'The garden is watered. 10 hearts for you.',
+    sit: 'You sat for a while. 10 hearts for you.',
+    pond: 'You visited the pond. 10 hearts for you.',
+    walk: 'A slow walk to the waterfall. 10 hearts for you.',
+    journal: 'A line in the journal. 10 hearts for you.'
   };
-  var BONUS_WORDS = 'All three today. One more heart, with thanks.';
+  var BONUS_WORDS = 'All three today. 10 more hearts, with thanks.';
   var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.6" fill="#f2c14e"/>' +
     '<g stroke="#f2c14e" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></g></svg>';
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.2 4.2L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -47,7 +47,7 @@
       var r = R().apply(d, st, today);
       if (r.fresh.length || r.bonus) {
         changed = true;
-        r.fresh.forEach(function (id) { queue.push(DONE_WORDS[id] || 'A heart for you.'); });
+        r.fresh.forEach(function (id) { queue.push(DONE_WORDS[id] || '10 hearts for you.'); });
         if (r.bonus) queue.push(BONUS_WORDS);
         schedule();
         api.refresh();
@@ -107,8 +107,13 @@
         list.appendChild(li);
       });
       body.appendChild(list);
-      var hearts = el('p', 'today-hearts'); hearts.innerHTML = 'Hearts today <b id="todayHearts"></b><span class="muted"> and <b id="todayTotal"></b> altogether</span>';
-      hearts.querySelector('#todayHearts').textContent = String(day.hearts); hearts.querySelector('#todayTotal').textContent = String(d.total);
+      var hearts = el('p', 'today-hearts'); hearts.innerHTML = 'Hearts earned today <b id="todayHearts"></b><span class="muted">, <b id="todayTotal"></b> to spend at the Flower Dome</span>';
+      /* the one heart ledger (the Flower Dome keeps it): everything earned today, and what she has to spend */
+      if (root.EbbDome) root.EbbDome.sync();
+      var pts = st.points && Array.isArray(st.points.entries) ? st.points.entries : [], todayN = 0;
+      pts.forEach(function (e) { if (e && e.n > 0 && e.date === today) todayN += e.n; });
+      var have = root.EbbDomeRules ? root.EbbDomeRules.balance(st.points) : 0;
+      hearts.querySelector('#todayHearts').textContent = String(todayN); hearts.querySelector('#todayTotal').textContent = String(have);
       body.appendChild(hearts);
       body.appendChild(el('p', 'today-line', R().line(d, today)));
       body.appendChild(el('p', 'muted today-run', R().runLine(d)));
@@ -119,7 +124,6 @@
   function start(a) {
     api = a;
     root.EbbGame.registerPanel({ id: 'today', label: 'Today', open: function () { openToday(); } });
-    root.EbbGame.registerHud('Hearts', function () { return R() ? data().total : 0; });
     var app = doc.querySelector('.app');
     if (app && !doc.getElementById('todayBtn')) {
       var b = doc.createElement('button'); b.type = 'button'; b.className = 'btn today-sun'; b.id = 'todayBtn';

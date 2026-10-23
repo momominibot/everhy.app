@@ -56,7 +56,7 @@
     if (noteTimer) return;
     noteTimer = setTimeout(function () {
       noteTimer = 0; var k = pendingNote; pendingNote = 0;
-      api.toast(k + ' points for logging. Seeds are at the Flower Dome.', 2600);
+      api.toast('+' + k + ' hearts. Spend them on seeds and plants at the Flower Dome.', 2600);
       try { if (root.EbbSound && typeof root.EbbSound.play === 'function') root.EbbSound.play('chime'); } catch (e) { }
     }, 2200);
   }
@@ -136,7 +136,7 @@
   }
   function chime() { try { if (root.EbbSound && typeof root.EbbSound.play === 'function') root.EbbSound.play('chime'); } catch (e) { } }
   function balanceLine(body) {
-    var bal = el('p', 'dome-balance'); bal.innerHTML = 'Your points <b id="domePoints"></b>'; bal.querySelector('b').textContent = String(R().balance(api.state().points));
+    var bal = el('p', 'dome-balance'); bal.innerHTML = 'Your hearts <b id="domePoints"></b>'; bal.querySelector('b').textContent = String(R().balance(api.state().points));
     body.appendChild(bal);
   }
   var tab = 'seeds', focusCrop = null;
@@ -167,9 +167,9 @@
           var icon = el('span', 'dome-icon'); icon.innerHTML = SEED_ICON; icon.style.setProperty('--seed', F.CROPS[row.crop].colour || '#d9b37a'); li.appendChild(icon);
           var text = el('span', 'dome-text'); text.appendChild(el('b', '', row.name + ' seed'));
           var owned = st.farm && st.farm.seeds && st.farm.seeds[row.crop] || 0;
-          text.appendChild(el('small', '', row.price + ' points' + (owned ? ', you have ' + owned : ''))); li.appendChild(text);
+          text.appendChild(el('small', '', row.price + ' hearts' + (owned ? ', you have ' + owned : ''))); li.appendChild(text);
           var short = have < row.price, b = el('button', 'btn dome-buy', short ? 'Not yet' : 'Buy'); b.type = 'button'; b.id = 'buy-' + row.crop;
-          b.setAttribute('aria-label', (short ? 'Not enough points for a ' : 'Buy a ') + row.name.toLowerCase() + ' seed, ' + row.price + ' points');
+          b.setAttribute('aria-label', (short ? 'Not enough hearts for a ' : 'Buy a ') + row.name.toLowerCase() + ' seed, ' + row.price + ' hearts');
           if (short) { b.disabled = true; li.classList.add('short'); li.appendChild(el('small', 'dome-short', R().shortLine(row.price - have))); }
           b.addEventListener('click', function () {
             focusCrop = row.crop;
@@ -197,9 +197,9 @@
         R().plantCatalog().forEach(function (row) {
           var li = el('li', 'dome-item'); li.dataset.plant = row.plant;
           var icon = el('span', 'dome-icon dome-plant-icon'); icon.innerHTML = plantIcon(row.frame); li.appendChild(icon);
-          var text = el('span', 'dome-text'); text.appendChild(el('b', '', row.name)); text.appendChild(el('small', '', row.price + ' points')); li.appendChild(text);
+          var text = el('span', 'dome-text'); text.appendChild(el('b', '', row.name)); text.appendChild(el('small', '', row.price + ' hearts')); li.appendChild(text);
           var short = have < row.price, b = el('button', 'btn dome-buy', short ? 'Not yet' : 'Buy'); b.type = 'button'; b.id = 'buy-' + row.plant;
-          b.setAttribute('aria-label', (short ? 'Not enough points for the ' : 'Buy the ') + row.name.toLowerCase() + ', ' + row.price + ' points');
+          b.setAttribute('aria-label', (short ? 'Not enough hearts for the ' : 'Buy the ') + row.name.toLowerCase() + ', ' + row.price + ' hearts');
           if (short) { b.disabled = true; li.classList.add('short'); li.appendChild(el('small', 'dome-short', R().shortLine(row.price - have))); }
           b.addEventListener('click', function () { picker({ buy: row.plant, title: 'Where should the ' + row.name.toLowerCase() + ' go?' }); });
           li.appendChild(b);
@@ -275,7 +275,7 @@
     var FLOWER = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="#f6c453" stroke="#d99a2b" stroke-width="1.1">' +
       [0, 72, 144, 216, 288].map(function (d) { return '<ellipse cx="12" cy="6.6" rx="3.6" ry="4.6" transform="rotate(' + d + ' 12 12)"/>'; }).join('') +
       '</g><circle cx="12" cy="12" r="3" fill="#fff4d6" stroke="#d99a2b" stroke-width="1.1"/></svg>';
-    root.EbbGame.registerHud('Points', function () { return R() ? R().balance(a.state().points) : 0; }, FLOWER);
+    root.EbbGame.registerHud('Hearts', function () { return R() ? R().balance(a.state().points) : 0; }); /* the one currency: logging, practices and Today's invitations earn hearts, the Flower Dome spends them */
     sync(true); /* what she already saved counts from the first open, with no fanfare */
     pollTimer = setInterval(function () { if (!doc.hidden) sync(); }, 3000);
     doc.addEventListener('visibilitychange', function () { if (!doc.hidden) sync(); });

@@ -108,7 +108,7 @@ with sync_playwright() as pw:
     page.keyboard.press('Escape')
     check('escape closes', page.query_selector('.ebb-log') is None)
     # every room topic opens through the 'log' spot kind as a bottom sheet that fits the phone
-    TOPICS = {'bleeding': 'Flow and discharge', 'body': 'Body', 'cycle': 'Cycle', 'temperature': 'Waking temperature', 'sleep': 'Sleep', 'mood': 'Journal', 'mystery': 'Log'}
+    TOPICS = {'bleeding': 'Flow and cycle', 'body': 'Body', 'cycle': 'Flow and cycle', 'food': 'Food and drink', 'temperature': 'Waking temperature', 'sleep': 'Sleep', 'mood': 'Journal', 'mystery': 'Log'}
     for t, title in TOPICS.items():
         page.evaluate(f"EbbGame.act({{ spot: {{ id: 'test-{t}', kind: 'log', topic: '{t}', label: 'x', at: {{ x: 50, y: 50 }}, stand: {{ x: 50, y: 50 }} }} }})")
         want = t if t != 'mystery' else 'general'

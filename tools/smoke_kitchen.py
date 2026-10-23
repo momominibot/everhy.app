@@ -27,7 +27,7 @@ STATE = """() => ({ scene: EbbGame.api.scene(), action: EbbGame.me().action, vie
   sheet: !!document.querySelector('.kitchen-wrap'), title: (document.querySelector('.kitchen-wrap h2') || {}).textContent || '',
   cooking: !!EbbKitchen.cooking(), glow: !!document.querySelector('#props .kitchen-glow'), ring: !!document.querySelector('#props .kitchen-ring'),
   steam: !!document.querySelector('#fx .kitchen-steam'), basket: Object.assign({}, EbbGame.state().farm.basket),
-  meals: (EbbGame.state().kitchen || { meals: [] }).meals.length, hud: document.getElementById('hudBasket').textContent,
+  meals: (EbbGame.state().kitchen || { meals: [] }).meals.length, hud: String(Object.values(EbbGame.state().farm.basket).reduce((a, b) => a + b, 0)), /* the basket lives in the Bag now, not the top bar */
   prompt: (document.getElementById('prompt') || {}).textContent, promptHidden: (document.getElementById('prompt') || {}).hidden,
   log: !!document.querySelector('.ebb-log'), clock: (document.querySelector('.kitchen-clock') || {}).textContent || '',
   cue: (document.querySelector('.kitchen-cue') || {}).textContent || '' })"""

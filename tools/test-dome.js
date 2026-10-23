@@ -146,9 +146,12 @@ const T = day(5);
 {
   const src = fs.readFileSync(path.join(__dirname, '..', 'js/dome/rules.js'), 'utf8');
   check('rules never read a note\'s value, text or type of log entry', !/\.value\b|sourceText|\.text\b/.test(src));
-  check('rules never read hearts', !/daily|hearts/.test(src));
+  { const st = { daily: { days: { '2026-10-24': { done: { water: true, sit: true, journal: true }, bonus: true } } } };
+    const r = R.recompute(st, '2026-10-24');
+    check('three invitations and the bonus pay 10 hearts each, once', r.gained === 40 && R.recompute(st, '2026-10-24').gained === 0 && st.points.entries.every(e => e.source === 'today')); }
+  check('rules pay Today’s invitations into the one heart ledger', /daily/.test(src) && /'today:'/.test(src));
   [R.EARN_LINE, R.shortLine(1), R.shortLine(12)].forEach((s, i) => check(`copy ${i} has no em dash`, !/—/.test(s)));
-  check('short line counts', R.shortLine(1) === 'One more point and this is yours.' && /^12 more points/.test(R.shortLine(12)));
+  check('short line counts', R.shortLine(1) === 'One more heart and this is yours.' && /^12 more hearts/.test(R.shortLine(12)));
 }
 
 /* ---------- the place: every stand and door reachable, from the start and from every arrival ---------- */
@@ -217,7 +220,7 @@ check('the pin keeps apart from the others', M.PINS.every(p => p.id === 'dome' |
   check('the plate is on disk', fs.existsSync(path.join(__dirname, '..', W.SCENES.dome.plate)));
   ['js/ext/dome.js', 'js/dome/rules.js', 'css/ext/dome.css', 'tools/smoke_dome.py'].forEach(f => check(`${f} has no em dash`, !/—/.test(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'))));
   const ext = fs.readFileSync(path.join(__dirname, '..', 'js/ext/dome.js'), 'utf8');
-  check('the extension never reads hearts or the daily record', !/\.daily\b|hearts/i.test(ext.replace(/\/\*[\s\S]*?\*\//g, '')));
+  check('the extension never reads the daily record itself (the rules do)', !/\.daily\b/.test(ext.replace(/\/\*[\s\S]*?\*\//g, '')));
   check('the map icon exists', /dome: '<path/.test(fs.readFileSync(path.join(__dirname, '..', 'js/ext/map.js'), 'utf8')));
   check('the keeper is a still prop beside the stall, never a walker', /registerProps\('dome'/.test(ext) && !/walkTo|setInterval\([^)]*keeper/i.test(ext.replace(/\/\*[\s\S]*?\*\//g, '').replace(/pollTimer = setInterval[^;]*;/, '')));
   check('plants are drawn in the three rooms', /\['bedroom', 'living', 'bathroom'\]\.forEach/.test(ext));

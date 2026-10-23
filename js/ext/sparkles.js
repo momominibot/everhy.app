@@ -1,8 +1,34 @@
 /* Ebb sparkles: a small twinkling yellow diamond over everything she can tap (every spot of every scene), so players know
- * what to tap. Hidden for the spot she is standing at (its own prompt shows) and still under reduced motion. Arriving at
+ * what to tap, resting on a logging spot once today's entry from it is saved and paid. Hidden for the spot she is standing at (its own prompt shows) and still under reduced motion. Arriving at
  * a place whose best thing is far off (the jetty's fishing end) gives a one-line hint. */
 (function (root) {
   'use strict';
+  /* A logging spot's diamond rests for the day once that day's entry from it is saved (confirmed, not undone) and the
+   * points ledger has paid it (an entry 'log:<id>' in state.points, the dome's own record; past the day's cap it is
+   * still there with 0). Entries saved from the spot carry its topic; ones typed in the general chat count by type. */
+  var TYPES = { sleep: ['sleep', 'sleepQuality'], temperature: ['temperature'], mood: ['mood', 'note'], bleeding: ['bleeding', 'mucus', 'clots'], cycle: ['bleeding', 'mucus', 'clots'],
+    body: ['symptom', 'pain'], food: ['food'] };
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function localDay(v) {
+    if (typeof v !== 'string' || !v) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    var t = Date.parse(v); if (isNaN(t)) return null;
+    var d = new Date(t); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function restsToday(st, topic, today) {
+    if (!st || !topic || !today) return false;
+    var obs = st.log && Array.isArray(st.log.obs) ? st.log.obs : [];
+    var paid = {};
+    (st.points && Array.isArray(st.points.entries) ? st.points.entries : []).forEach(function (e) { if (e && typeof e.id === 'string') paid[e.id] = true; });
+    var types = TYPES[topic] || [];
+    return obs.some(function (o) {
+      if (!o || o.confirmed !== true || o.retracted || typeof o.id !== 'string') return false;
+      if (localDay(o.created) !== today) return false;
+      if (o.topic !== topic && types.indexOf(o.type) < 0) return false;
+      return !!paid['log:' + o.id];
+    });
+  }
+  root.EbbSparkles = { restsToday: restsToday, TYPES: TYPES };
   var doc = root.document, W = root.EbbWorld, G = root.EbbGame;
   if (!doc || !W || !G) return;
   function f(v) { return v.toFixed(2); }
@@ -16,6 +42,7 @@
       var tall = W.units(sc) > 110, s = tall ? 1 : 0.8, lift = tall ? 4.5 : 3.5, out = '';
       sc.spots.forEach(function (sp, i) {
         if (sp.hidden || (near && near.spot === sp)) return;
+        if (sp.topic && restsToday(api.state(), sp.topic, api.today())) return; /* today's entry from here is in and paid */
         out += star(sp.at.x, sp.at.y - lift, s, i);
       });
       return out;

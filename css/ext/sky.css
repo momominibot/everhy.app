@@ -13,6 +13,7 @@
 /* indoors at night: a warm room, darker in the corners, lit by its lamps; daylight in the windows turns to night */
 .sky-vignette { mix-blend-mode: multiply; opacity: 0; transition: opacity 1.6s ease;
   background: radial-gradient(ellipse 72% 66% at 50% 50%, rgb(255 240 222), rgb(252 226 202) 52%, rgb(196 166 172)); }
+.sky-night { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 1.6s ease; }
 .sky-window { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; mix-blend-mode: multiply;
   opacity: var(--sky-lamp, 0); transition: opacity 1.6s ease;
   background: radial-gradient(closest-side, rgb(78 92 150) 0%, rgb(92 106 160) 86%, rgb(255 255 255 / 0) 100%); }
