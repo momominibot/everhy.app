@@ -61,6 +61,7 @@
     jetty: function () { return motes(10, 90, 90, 104, 10, 'life-mist'); },
     waterfall: function () { return motes(4, 74, 96, 92, 16, 'life-mist'); }, /* Little Guilin: mist over the lake */
     spring: function () { return sinkPetals(2, 24, 56, [52, 88, 30, 14], 7) + steam(52, 78, 5); } /* frangipani petals onto the foot bath */
+    , kitchen: function () { return glow(42, 27, 9) + ring(42, 27, 7, 10, 'life-twinkle') + glow(32, 37, 4) + glow(69, 42, 3) + motes(20, 50, 92, 88, 9); } /* the window over the sink, the hood light, the fridge panel (js/ext/kitchen.js) */
   };
   var layer = doc.getElementById('layer'), meG = doc.getElementById('me');
   var amb = doc.createElementNS('http://www.w3.org/2000/svg', 'g'); amb.setAttribute('id', 'life');

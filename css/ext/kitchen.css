@@ -1,0 +1,27 @@
+/* Ebb kitchen (js/ext/kitchen.js): the hob, oven, Thermomix and basin cards float over the room without dimming it,
+ * like the world's cards; dishes are soft list buttons; a warm glow breathes under whatever is cooking; the near
+ * appliance wears a dashed ring. Reduced motion stills the glow. */
+.kitchen-wrap { background: transparent; }
+.kitchen-wrap .sheet { width: min(520px, calc(100% - 20px)); max-height: 62vh; margin-bottom: max(12px, env(safe-area-inset-bottom));
+  border-radius: 22px; padding: 14px 16px 16px; gap: 10px; box-shadow: 0 10px 30px rgba(40, 30, 30, 0.22); }
+.kitchen-wrap .sheet p { margin: 0; }
+.kitchen-wrap .sheet-actions { justify-content: flex-start; }
+.kitchen-wrap .sheet-actions .btn { flex: 1 1 auto; }
+.kitchen-wrap .small { font-size: 13px; }
+.kitchen-list { display: flex; flex-direction: column; gap: 8px; }
+.kitchen-dish { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 9px 12px; min-height: 54px;
+  border: 1px solid var(--line); border-radius: 16px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+.kitchen-dish:disabled { opacity: 0.55; cursor: default; }
+.kitchen-dish:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.kitchen-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8); box-shadow: 0 1px 3px rgba(40, 30, 30, 0.18); }
+.kitchen-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kitchen-text b { font-size: 15px; }
+.kitchen-text small { color: var(--soft); font-size: 12px; }
+.kitchen-cue { font-size: 18px; font-weight: 600; line-height: 1.4; min-height: 2.8em; }
+.kitchen-clock { color: var(--soft); font-variant-numeric: tabular-nums; }
+.kitchen-back { min-height: 1.2em; }
+.kitchen-glow { animation: breathe 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .kitchen-glow { animation: none; } }
+html[data-motion="reduce"] .kitchen-glow { animation: none; }
+html[data-text="large"] .kitchen-text b { font-size: 17px; }
+html[data-text="larger"] .kitchen-text b { font-size: 19px; }
