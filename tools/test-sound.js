@@ -42,7 +42,7 @@ Object.keys(W.SCENES).forEach(id => {
   check(`scene ${id} has a footstep`, !!S.VOICES['step:' + f]);
 });
 check('wooden floors indoors', S.surfaceFor('bedroom', W.SCENES.bedroom) === 'wood' && S.surfaceFor('living', W.SCENES.living) === 'wood');
-check('tiles in the bathroom', S.surfaceFor('bathroom', W.SCENES.bathroom) === 'tile');
+check('planks in the bathroom, as painted', S.surfaceFor('bathroom', W.SCENES.bathroom) === 'wood');
 check('soil on the farm', S.surfaceFor('farm', W.SCENES.farm) === 'soil');
 check('grass at the falls and spring', S.surfaceFor('waterfall', W.SCENES.waterfall) === 'grass' && S.surfaceFor('spring', {}) === 'grass');
 check('a scene can name its floor', S.surfaceFor('farm', { surface: 'wood' }) === 'wood');

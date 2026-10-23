@@ -29,7 +29,7 @@
       start: { x: 50, y: 80 }
     },
     bathroom: {
-      name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [48, 0.125, 91, 0.17],
+      name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, surface: 'wood', /* the painted floor is planks */ depth: [48, 0.125, 91, 0.17],
       lamps: [{ x: 8, y: 37 }, { x: 26, y: 38 }, { x: 46, y: 80 }], windows: [{ x: 36, y: 21, rx: 8, ry: 9 }],
       floor: [[50, 47], [96, 69], [50, 91], [3, 69]],
       /* tub, wall sink and cabinet, towel rail and basket and plant stool, toilet and brush, twin sinks, candle stool, big plant and cabinet and lilac stool */
