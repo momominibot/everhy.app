@@ -22,6 +22,8 @@
   var BONUS_WORDS = 'All three today. 10 more hearts, with thanks.';
   var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.6" fill="#f2c14e"/>' +
     '<g stroke="#f2c14e" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></g></svg>';
+  var MOON = '<svg class="today-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.6 3.4a8.6 8.6 0 1 0 5 13.9 7 7 0 0 1-5-13.9Z" fill="#f6e3a1"/>' +
+    '<circle cx="18.6" cy="5.6" r="0.9" fill="#f6e3a1"/><circle cx="21" cy="9.4" r="0.6" fill="#f6e3a1"/></svg>';
   var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.2 4.2L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   var api = null, lastDay = null, queue = [], queueTimer = 0, openSheet = null, ticking = false;
@@ -127,7 +129,7 @@
     var app = doc.querySelector('.app');
     if (app && !doc.getElementById('todayBtn')) {
       var b = doc.createElement('button'); b.type = 'button'; b.className = 'btn today-sun'; b.id = 'todayBtn';
-      b.setAttribute('aria-label', 'Today'); b.title = 'Today'; b.innerHTML = SUN;
+      b.setAttribute('aria-label', 'Today'); b.title = 'Today'; b.innerHTML = SUN + MOON; /* css shows the moon after dark */
       b.addEventListener('click', function (e) { e.stopPropagation(); openToday(); });
       app.appendChild(b);
     }

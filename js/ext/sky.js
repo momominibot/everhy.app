@@ -206,7 +206,12 @@
     return a[1].map(function (v, i) { return v + (b[1][i] - v) * t; });
   }
   /* what the plate is multiplied by under the cut-outs of this scene, per channel 0..1 */
+  /* how much the night picture dims a cut-out's patch of the painting (measured by tools/night_plates.py's output over
+   * the cut-out's rect), so a cut-out drawn over her matches the relit room around it */
+  var NIGHT_CUT = { 'art/occluders/bedroom-arch-door.webp': [0.576, 0.586, 0.667] };
   function cutFactor(p, indoor, sc) {
+    var fr0 = (sc.fronts || [])[0], nk = indoor && els && els.night && els.night.dataset.src && fr0 && NIGHT_CUT[fr0.src];
+    if (nk) return nk.map(function (c) { return 1 - p.lamp + p.lamp * c; });
     var k = p.shade.map(function (v) { return v / 255; }), fr = sc.fronts || [];
     if (indoor && p.lamp >= 0.004 && fr.length) {
       var units = W && W.units ? W.units(sceneId) : 100, x = 0, y = 0;
@@ -224,10 +229,10 @@
     list = list || sc.lamps || hints(sc).lamps || [{ x: 50, y: 30, r: 46 }]; /* a room with no lamps known: one soft light */
     return list.filter(function (l) { return l && isFinite(l.x) && isFinite(l.y); });
   }
-  /* a room's own night painting (art/plates/night/<plate>.webp, the same room repainted at night from the day plate, one
-   * guarded render run: tools/jobs_night_rooms.json) fades in over the day plate with the lamps. Listed only once the
-   * painting exists; an overlay painted over the day art looked pasted on (Jamie, 24 Oct), so there is none meanwhile. */
-  var NIGHT_ROOMS = {};
+  /* a room's own night picture (art/plates/night/<plate>.webp: the whole painting relit at night by tools/night_plates.py,
+   * lamps and fairy lights glowing, everything else dim and blue) fades in over the day plate with the lamps, and the
+   * tint layers stand down for it. Nothing is laid over part of the day art: Jamie found that looked pasted on (24 Oct). */
+  var NIGHT_ROOMS = { 'bedroom-dream-wide': 1, 'bathroom-dream-wide': 1, 'living-dream-wide': 1, kitchen: 1, hawker: 1, flowerdome: 1 };
   function nightFor(sc) { var m = /art\/plates\/([\w-]+)\.webp$/.exec(sc && sc.plate || ''); return m && NIGHT_ROOMS[m[1]] ? 'art/plates/night/' + m[1] + '.webp' : null; }
   function rebuild(id, sc, indoor) {
     var nsrc = indoor ? nightFor(sc) : null; els.night.dataset.src = nsrc || '';
@@ -267,10 +272,12 @@
     els.glow.hidden = p.glow[3] < 0.004; els.glow.style.opacity = p.glow[3].toFixed(3);
     els.glow.style.setProperty('--sky-glow', p.glow.slice(0, 3).map(Math.round).join(' '));
     var light = indoor ? p.lamp : p.pool;
-    els.vignette.hidden = !indoor || p.lamp < 0.004; els.vignette.style.opacity = p.lamp.toFixed(3);
+    var relit = indoor && !!els.night.dataset.src; /* the night picture carries its own light */
+    els.vignette.hidden = relit || !indoor || p.lamp < 0.004; els.vignette.style.opacity = p.lamp.toFixed(3);
+    if (relit) els.shade.hidden = true;
     els.windows.hidden = !indoor || p.lamp < 0.004; els.windows.style.setProperty('--sky-lamp', p.lamp.toFixed(3));
     els.night.hidden = !indoor || !els.night.dataset.src || p.lamp < 0.004; els.night.style.opacity = p.lamp.toFixed(3);
-    els.lights.hidden = light < 0.004; els.lights.style.setProperty('--sky-lamp', light.toFixed(3));
+    els.lights.hidden = relit || light < 0.004; els.lights.style.setProperty('--sky-lamp', light.toFixed(3));
     els.flies.hidden = !fx.flies; els.rain.hidden = !fx.rain;
     els.sky.dataset.phase = p.phase; els.sky.dataset.place = indoor ? 'in' : 'out'; els.sky.dataset.weather = weather;
     /* the whole interface follows the clock too: a soft warm night palette after dark (css/ext/sky.css) */

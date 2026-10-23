@@ -34,7 +34,7 @@
    * iOS simulator). So the loop plays only while no tint is on (daytime); dusk and night show the still painting. */
   function tinted() {
     var sky = doc.querySelector('.sky'); if (!sky) return false;
-    var on = sky.querySelectorAll('.sky-shade, .sky-vignette');
+    var on = sky.querySelectorAll('.sky-shade, .sky-vignette, .sky-night');
     for (var i = 0; i < on.length; i++) if (!on[i].hidden) return true;
     return false;
   }

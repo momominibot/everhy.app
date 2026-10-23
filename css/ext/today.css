@@ -29,3 +29,8 @@ html[data-motion="reduce"] .today-tick { transition: none; }
 @media (prefers-reduced-motion: reduce) { .today-tick { transition: none; } }
 html[data-text="large"] .today-text b { font-size: 17px; }
 html[data-text="larger"] .today-text b { font-size: 19px; }
+
+/* after dark the Today button shows a moon (the sky module sets html[data-daylight]) */
+.today-sun .today-moon { display: none; }
+html[data-daylight="night"] .today-sun svg:not(.today-moon) { display: none; }
+html[data-daylight="night"] .today-sun .today-moon { display: block; }
