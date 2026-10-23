@@ -168,3 +168,10 @@ Night: Jamie rejected any overlay on the day art ("cover up is obvious"). Plan: 
 Blocked on the Seedream key (401, art/BLOCKED.json) and Jamie's OK to rerun.
 NEXT: journal look-back on the phone (no AI on journal text; Jamie agreed it is personal), bathtub soak with a mindful
 practice, night plates once the key works.
+
+## 24 Oct, later (main 4297b21, ALL GREEN)
+Night is a separate picture per place: tools/night_plates.py relights each indoor plate locally (rooms, hawker, Flower Dome;
+MRT and bus stay lit) into art/plates/night/, swapped in after dark with a fade (js/ext/sky.js NIGHT_ROOMS); a model-painted
+night version can replace these files later (tools/jobs_night_rooms.json) once the image key works. Journal Look back (desk:
+Write / Look back, a week at a time, on the phone only). Bath soak: bathroom:bath seat, tub front cut by tools/cut_front.py.
+NEXT: Erin's voice for the bath practices (one guarded TTS run on his OK), outdoor night pictures if he wants them too.
