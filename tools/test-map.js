@@ -17,6 +17,8 @@ function world() { /* a fresh copy of the core world plus the map module, with n
 function addWorld(W) {
   W.register('spring', { name: 'Hot spring', plate: '', floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]], start: { x: 12, y: 82 } });
   W.SCENES.jetty.spots.push({ id: 'fishing', kind: 'fish', at: { x: 80, y: 88 }, stand: { x: 76, y: 92 }, label: 'Fish from the jetty' });
+  /* and the Flower Dome workstream (js/ext/dome.js): the glasshouse with its seed stall */
+  W.register('dome', { name: 'Flower Dome', plate: '', floor: [[8, 78], [96, 78], [96, 134], [4, 134]], start: { x: 50, y: 118 } });
 }
 /* a stand-in for EbbGame.api that records calls in order */
 function fakeApi(scene, log) {
@@ -27,7 +29,7 @@ function fakeApi(scene, log) {
   const { EbbMap: M, EbbWorld: W } = world();
   const ids = M.PINS.map(p => p.id);
   check('pin ids are unique', new Set(ids).size === ids.length);
-  check('the seven places are on the map', ['home', 'farm', 'hawker', 'waterfall', 'spring', 'merlion', 'pier'].every(id => ids.includes(id)));
+  check('the eight places are on the map', ['home', 'farm', 'hawker', 'waterfall', 'spring', 'merlion', 'pier', 'dome'].every(id => ids.includes(id)));
   M.PINS.forEach(p => {
     check(`${p.id} has a label and a scene id`, typeof p.label === 'string' && p.label.length > 0 && typeof p.scene === 'string' && p.scene.length > 0);
     check(`${p.id} sits on the map`, p.x >= 4 && p.x <= 96 && p.y >= 8 && p.y <= 94);
@@ -43,7 +45,7 @@ function fakeApi(scene, log) {
   const at = id => M.status(M.pin(id), W.SCENES, 'farm');
   check('core places open', at('home') === 'open' && at('waterfall') === 'open');
   check('her place is highlighted', at('farm') === 'here');
-  check('spring and pier are coming soon', at('spring') === 'soon' && at('pier') === 'soon');
+  check('spring, pier and dome are coming soon', at('spring') === 'soon' && at('pier') === 'soon' && at('dome') === 'soon');
 
   /* travel: the sheet closes first, then enter with a known scene */
   let log = [];
@@ -69,6 +71,7 @@ function fakeApi(scene, log) {
   /* once the world workstream registers its places, the same pins open and every arrival is walkable */
   addWorld(W);
   check('spring opens', M.status(M.pin('spring'), W.SCENES, 'farm') === 'open');
+  check('dome opens', M.status(M.pin('dome'), W.SCENES, 'farm') === 'open');
   check('pier opens', M.status(M.pin('pier'), W.SCENES, 'farm') === 'open');
   check('pier is never "here", even by the waterfall', M.status(M.pin('pier'), W.SCENES, 'waterfall') === 'open');
   M.PINS.forEach(p => {
@@ -100,6 +103,8 @@ function fakeApi(scene, log) {
   if (!fs.existsSync(f)) { console.log('note: js/ext/world.js not here, real-world check skipped'); return; }
   const ctx = world();
   vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: 'world.js' });
+  const dome = path.join(__dirname, '..', 'js/ext/dome.js');
+  if (fs.existsSync(dome)) vm.runInContext(fs.readFileSync(dome, 'utf8'), ctx, { filename: 'dome.js' });
   const { EbbMap: M, EbbWorld: W } = ctx;
   M.PINS.forEach(p => {
     check(`${p.id} opens with the real world`, M.status(p, W.SCENES, 'nowhere') === 'open');

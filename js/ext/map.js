@@ -18,7 +18,8 @@
     { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 24, y: 49 },
     { id: 'spring', label: 'Hot spring', note: 'Sembawang foot bath', scene: 'spring', icon: 'spring', x: 47, y: 31 },
     { id: 'merlion', label: 'Merlion Park', note: 'The bay and the Merlion', scene: 'merlion', icon: 'merlion', x: 40, y: 69 },
-    { id: 'pier', label: 'Bedok Jetty', note: 'Cast a quiet line into the sea', scene: 'jetty', spot: 'fishing', icon: 'fish', x: 88, y: 46 }
+    { id: 'pier', label: 'Bedok Jetty', note: 'Cast a quiet line into the sea', scene: 'jetty', spot: 'fishing', icon: 'fish', x: 88, y: 46 },
+    { id: 'dome', label: 'Flower Dome', note: 'Seeds for your garden', scene: 'dome', icon: 'dome', x: 52, y: 60 }
   ];
 
   function spotIn(scene, id) {
@@ -63,6 +64,7 @@
     falls: '<path d="M12 3.5c3.2 4.6 5.2 7.5 5.2 10.2a5.2 5.2 0 0 1-10.4 0c0-2.7 2-5.6 5.2-10.2Z"/><path d="M9.6 14.2a2.5 2.5 0 0 0 2.4 2.3"/>',
     spring: '<path d="M8.5 9c-1.5-1.5 1.5-3 0-5M12 9c-1.5-1.5 1.5-3 0-5M15.5 9c-1.5-1.5 1.5-3 0-5"/><path d="M4 13h16c0 4-3.5 6.5-8 6.5S4 17 4 13Z"/>',
     fish: '<path d="M3.5 12c3-4.5 9-5.5 13 0-4 5.5-10 4.5-13 0Z"/><path d="m16.5 12 4-3.5v7Z"/><circle cx="8" cy="11" r="0.6" fill="currentColor"/>',
+    dome: '<path d="M3.5 13a8.5 8.5 0 0 1 17 0Z"/><path d="M12 4.5V13M7 7.5l5 5.5 5-5.5"/><path d="M3.5 13h17M5 13v6.5h14V13"/><path d="M9.5 19.5v-3.5h5v3.5"/>',
     map: '<path d="M3.5 6.5 9 4.5l6 2 5.5-2v13l-5.5 2-6-2-5.5 2Z"/><path d="M9 4.5v13M15 6.5v13"/>'
   };
   function icon(name) {
