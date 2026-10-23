@@ -1,0 +1,17 @@
+[
+ {
+  "id": "kitchen_wide",
+  "size": "1024x1024",
+  "prompt": "Isometric cut-away room render, two walls and a floor like a dollhouse corner, for a cosy phone game. A big modern Singapore HDB kitchen with lots of open floor to walk on: along the back-left wall a long pastel mint counter with an induction hob and a slim cooker hood above it, a built-in oven, a white Thermomix on the counter, a ceramic basin with a brass tap under a window; along the back-right wall a tall cream double-door fridge, open shelves with jars and bowls, a small dining table with two chairs near the front right, a potted plant, a round rug on light wood floor, an arched doorway in the left wall. Pastel cream, mint, blush pink and honey wood. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, soft warm light, pastel colours. No people, no readable text."
+ },
+ {
+  "id": "dome_keeper",
+  "size": "1024x1024",
+  "prompt": "Character sheet of a friendly Singaporean auntie gardener for a cosy clay phone game, standing, front view, full body, centred, on a flat pure magenta #FF00FF background: short grey hair with a pink flower clip, round glasses, green apron with pockets over a cream shirt, holding a small potted flower, warm smile. Same proportions as a normal adult, slightly chubby, smooth matte clay. Rounded chunky shapes, soft warm light, pastel colours. No text."
+ },
+ {
+  "id": "home_plants",
+  "size": "1024x1024",
+  "prompt": "Sprite sheet of six different potted plants for a cosy clay phone game, in a two by three grid, evenly spaced, each isolated on a flat pure magenta #FF00FF background, front view: a pink orchid in a white pot, a small monstera in a terracotta pot, a bonsai in a blue dish, a bunch of yellow tulips in a glass vase, a trailing pothos in a hanging cream pot, a little cactus in a striped pot. Smooth matte clay, rounded chunky shapes, soft warm light, pastel colours. No text."
+ }
+]

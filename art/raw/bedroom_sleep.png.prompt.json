@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Exactly the same image as the first reference, same isometric cut-away bedroom, same camera, furniture, colours and lighting. The only change: the girl from the second reference (same face, long wavy dark brown hair, warm light-brown skin) is lying asleep in the bed, tucked under the pink floral blanket up to her shoulders, head resting on the lilac heart pillow, eyes closed, peaceful smile, her hair spread on the pillow. Nothing else changes.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/dream_bedroom_wide.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 134.4,
+ "bytes": 1817814
+}

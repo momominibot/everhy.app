@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Exactly the same image as the reference, same isometric cut-away bedroom, same camera, same furniture, colours, lighting and details. The only change: the glowing white bunny lamp standing on the floor in front of the wooden door is moved a little to the left and forward, so it now stands beside the desk chair and the wooden door is completely clear. Everything else stays pixel identical.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/dream_bedroom_wide.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 123.8,
+ "bytes": 1791858
+}

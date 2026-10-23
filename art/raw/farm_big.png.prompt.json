@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge. A big cosy farmyard seen from the front and above like a side-on game stage: soft pink sky and rolling green hills across the top, along the back a red-roofed wooden barn on the left with its wide door open and a small pastel chicken house on the right with a little open door and a tiny ramp, a low wooden fence between them, a small table with glass seed jars beside the barn door. In the middle and lower part a tidy vegetable patch: exactly four square raised soil beds with low wooden edges arranged in a neat tight two-by-two block, close together with narrow sandy paths between them, each bed empty flat dark tilled soil, and wide open sandy and grassy space all around the block so a character can walk everywhere, a stone path along the right edge leading off the bottom. No plants in the beds, no people, no animals outside, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm morning light, pastel pink, cream, sage green and honey wood.",
+ "size_req": "768x1344",
+ "size": "768x1344",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4032,
+  "total_tokens": 4032
+ },
+ "seconds": 82.6,
+ "bytes": 1832572
+}

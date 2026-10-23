@@ -1,0 +1,27 @@
+[
+ {
+  "id": "farm_big",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge. A big cosy farmyard seen from the front and above like a side-on game stage: soft pink sky and rolling green hills across the top, along the back a red-roofed wooden barn on the left with its wide door open and a small pastel chicken house on the right with a little open door and a tiny ramp, a low wooden fence between them, a small table with glass seed jars beside the barn door. In the middle and lower part a tidy vegetable patch: exactly four square raised soil beds with low wooden edges arranged in a neat tight two-by-two block, close together with narrow sandy paths between them, each bed empty flat dark tilled soil, and wide open sandy and grassy space all around the block so a character can walk everywhere, a stone path along the right edge leading off the bottom. No plants in the beds, no people, no animals outside, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm morning light, pastel pink, cream, sage green and honey wood."
+ },
+ {
+  "id": "coop_interior",
+  "size": "768x1344",
+  "prompt": "Tall portrait 9:16 phone game background that fills the whole frame edge to edge. The inside of a small cosy chicken house seen from the front and above like a side-on game stage: pale wooden plank walls, a row of three straw nesting boxes with a few cream eggs along the back wall, a wooden feed trough and a water dish on the left, a roosting perch on the right, soft golden straw scattered on a clean wooden floor that fills the whole lower two-thirds as open space to walk on, a small round window on the back wall with warm light, the open doorway at the bottom edge. Two plump white clay hens, one sitting in a nesting box and one standing near the trough. No people, no text. Style: dreamy cosy Animal Crossing New Horizons inspired soft 3D clay, rounded chunky shapes, smooth matte clay, soft warm light, pastel cream, straw yellow and honey wood."
+ },
+ {
+  "id": "bedroom_shift",
+  "size": "1024x1024",
+  "ref": "art/raw/dream_bedroom_wide.png",
+  "prompt": "Exactly the same image as the reference, same isometric cut-away bedroom, same camera, same furniture, colours, lighting and details. The only change: the glowing white bunny lamp standing on the floor in front of the wooden door is moved a little to the left and forward, so it now stands beside the desk chair and the wooden door is completely clear. Everything else stays pixel identical."
+ },
+ {
+  "id": "bedroom_sleep",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/dream_bedroom_wide.png",
+   "art/raw/char_genz.png"
+  ],
+  "prompt": "Exactly the same image as the first reference, same isometric cut-away bedroom, same camera, furniture, colours and lighting. The only change: the girl from the second reference (same face, long wavy dark brown hair, warm light-brown skin) is lying asleep in the bed, tucked under the pink floral blanket up to her shoulders, head resting on the lilac heart pillow, eyes closed, peaceful smile, her hair spread on the pillow. Nothing else changes."
+ }
+]
