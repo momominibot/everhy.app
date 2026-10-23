@@ -200,7 +200,7 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
   const shell = /var SHELL = \[([\s\S]*?)\];/.exec(src)[1].match(/'([^']+)'/g).map(s => s.slice(1, -1)).filter(u => u !== './');
   check('every shell file exists', shell.every(u => fs.existsSync(path.join(ROOT, u))) || (console.log('missing', shell.filter(u => !fs.existsSync(path.join(ROOT, u)))), false));
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.webmanifest'), 'utf8'));
-  check('manifest names Ebb, portrait, standalone', manifest.name === 'Ebb' && manifest.orientation === 'portrait' && manifest.display === 'standalone');
+  check('manifest names EveRhy, portrait, standalone', manifest.name === 'EveRhy' && manifest.orientation === 'portrait' && manifest.display === 'standalone');
   check('manifest icons exist with a maskable one', manifest.icons.every(i => fs.existsSync(path.join(ROOT, i.src))) && manifest.icons.some(i => i.purpose === 'maskable' && i.sizes === '512x512') && manifest.icons.some(i => i.sizes === '192x192'));
   check('manifest colours match css', fs.readFileSync(path.join(ROOT, 'css/ebb.css'), 'utf8').includes('--bg: ' + manifest.background_color));
 })();

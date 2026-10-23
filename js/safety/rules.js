@@ -185,7 +185,7 @@
         var shortN = gaps.filter(function (g) { return g < 21; }).length, longN = gaps.filter(function (g) { return g > 35; }).length;
         if (shortN + longN < 2) return null;
         return { key: 'cycles-' + s.length, message: shortN > longN ? 'Your last few cycles have often been shorter than 21 days.' : longN > shortN ? 'Your last few cycles have often been longer than 35 days.' : 'Your last few cycles have often been shorter than 21 or longer than 35 days.',
-          action: 'That’s worth talking through with a GP or polyclinic doctor. Bring your Ebb log so they can see the pattern.' };
+          action: 'That’s worth talking through with a GP or polyclinic doctor. Bring your EveRhy log so they can see the pattern.' };
       }
     },
     {

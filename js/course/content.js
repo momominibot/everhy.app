@@ -146,7 +146,7 @@
   ];
 
   var COPY = {
-    name: 'Ebb mindfulness course',
+    name: 'EveRhy mindfulness course',
     kind: 'An MBSR-informed course',
     draft: 'Practice scripts are drafts awaiting review by a qualified MBSR teacher.',
     hard: ['Thank you for saying so. Practices can sometimes stir things up, and stopping is always fine.',

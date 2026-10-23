@@ -5,14 +5,14 @@
  * Copy is a draft for the study team and ethics board to review. */
 (function (root) {
   'use strict';
-  var COPY_VERSION = 'consent-copy-2026-10-22.1';
+  var COPY_VERSION = 'consent-copy-2026-10-23.1';
 
   var PURPOSES = [
     { id: 'core', title: 'Keep my notes on this phone',
-      body: 'Ebb saves what you log (periods, symptoms, moods, practices) on this phone so it can remember them. Nothing leaves the phone. You can still play without this, but Ebb won’t keep your health notes.',
+      body: 'EveRhy saves what you log (periods, symptoms, moods, practices) on this phone so it can remember them. Nothing leaves the phone. You can still play without this, but EveRhy won’t keep your health notes.',
       yes: 'Yes, keep my notes here', no: 'Not now' },
-    { id: 'physiology', title: 'Let Ebb use your cycle to shape the app',
-      body: 'Ebb can use your cycle and symptom logs to time gentle check-ins and show patterns back to you. This stays on this phone. Ebb doesn’t diagnose anything and isn’t a form of contraception.',
+    { id: 'physiology', title: 'Let EveRhy use your cycle to shape the app',
+      body: 'EveRhy can use your cycle and symptom logs to time gentle check-ins and show patterns back to you. This stays on this phone. EveRhy doesn’t diagnose anything and isn’t a form of contraception.',
       yes: 'Yes, use my logs for this', no: 'No thanks' },
     { id: 'research', title: 'Help the research study',
       body: 'If you are in the study, your logs could help doctors learn about cycles. In this version nothing is sent anywhere: saying yes only records your choice, and the study team will explain everything and ask again before any data leaves your phone.',

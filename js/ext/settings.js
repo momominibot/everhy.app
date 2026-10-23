@@ -16,7 +16,7 @@
   head('meta', { name: 'theme-color', content: '#f6efe6' });
   head('link', { rel: 'apple-touch-icon', href: 'art/icons/apple-touch-icon.png' });
   head('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
-  head('meta', { name: 'apple-mobile-web-app-title', content: 'Ebb' });
+  head('meta', { name: 'apple-mobile-web-app-title', content: 'EveRhy' });
   if ('serviceWorker' in root.navigator && /^https?:$/.test(root.location.protocol)) {
     root.addEventListener('load', function () { root.navigator.serviceWorker.register('sw.js').catch(function () { /* offline play is a bonus */ }); });
   }
@@ -85,7 +85,7 @@
     sheet.innerHTML =
       '<h2 id="settingsTitle">Settings</h2>' +
       '<section class="set-group" aria-labelledby="setData"><h3 id="setData">Your data</h3>' +
-      '<p class="muted">Everything Ebb keeps is on this device. ' + obs.length + (obs.length === 1 ? ' saved record.' : ' saved records.') + '</p>' +
+      '<p class="muted">Everything EveRhy keeps is on this device. ' + obs.length + (obs.length === 1 ? ' saved record.' : ' saved records.') + '</p>' +
       '<div class="set-row"><button type="button" class="btn" data-x="json">Export everything</button>' +
       '<button type="button" class="btn" data-x="csv">Records as CSV</button>' +
       '<button type="button" class="btn" data-x="fhir">Records as FHIR</button></div></section>' +
@@ -98,9 +98,9 @@
       pills('Motion', 'motion', ['system', 'reduce'], ['Follow my device', 'Reduce motion'], p.motion) +
       pills('Text size', 'textSize', ['normal', 'large', 'larger'], ['Normal', 'Large', 'Larger'], p.textSize) + '</section>' +
       '<section class="set-group" aria-labelledby="setPrivacy"><h3 id="setPrivacy">Privacy <span class="draft">Draft for legal review</span></h3>' +
-      '<p>Ebb keeps your game, your practices and your notes on this device only. Nothing is sent to us or to anyone else, ' +
+      '<p>EveRhy keeps your game, your practices and your notes on this device only. Nothing is sent to us or to anyone else, ' +
       'and nothing is used for advertising. You can export a copy at any time, and you can delete everything here. ' +
-      'If you clear this browser’s data, your Ebb data goes with it, so export first if you want to keep it.</p></section>' +
+      'If you clear this browser’s data, your EveRhy data goes with it, so export first if you want to keep it.</p></section>' +
       '<section class="set-group" aria-labelledby="setDelete"><h3 id="setDelete">Delete everything</h3>' +
       '<p class="muted">Removes your save, settings and the offline copy from this device.</p>' +
       '<button type="button" class="btn danger" data-x="delete">Delete everything…</button>' +
@@ -156,7 +156,7 @@
   doc.addEventListener('ebb:ready', function (e) {
     var left = false;
     try { left = root.sessionStorage.getItem('ebbDeleteIncomplete') === '1'; root.sessionStorage.removeItem('ebbDeleteIncomplete'); } catch (x) { }
-    if (left) e.detail.toast('Some Ebb data is still open in another tab. Close other Ebb tabs, then delete again.', 6000);
+    if (left) e.detail.toast('Some EveRhy data is still open in another tab. Close other EveRhy tabs, then delete again.', 6000);
   });
 
   G.registerPanel({ id: 'settings', label: 'Settings', open: open });

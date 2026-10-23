@@ -93,7 +93,7 @@
       box.appendChild(el('p', 'sf-reason', alert.message));
       box.appendChild(el('p', 'sf-action', alert.action));
       var why = el('details', 'sf-why'); why.appendChild(el('summary', null, 'Why am I seeing this?'));
-      why.appendChild(el('p', 'muted small', 'Ebb checks what you log against a short list of warning signs agreed for this study. It can’t examine you and this isn’t a diagnosis. If you are worried, trust that and get checked.'));
+      why.appendChild(el('p', 'muted small', 'EveRhy checks what you log against a short list of warning signs agreed for this study. It can’t examine you and this isn’t a diagnosis. If you are worried, trust that and get checked.'));
       why.appendChild(el('p', 'muted small', 'Rule ' + alert.ruleId + ' v' + alert.version + (alert.threshold ? ': ' + alert.threshold : '')));
       box.appendChild(why);
       var acts = el('div', 'sheet-actions');
@@ -126,7 +126,7 @@
   var CONTRA = [['None', 'none'], ['Condoms', 'condom'], ['Pill with breaks', 'combined_pill'], ['Pill without breaks', 'pill_continuous'], ['Mini pill', 'mini_pill'], ['Hormonal IUD', 'hormonal_iud'], ['Copper IUD', 'copper_iud'], ['Implant', 'implant'], ['Injection', 'injection'], ['Something else', 'other']];
   var FLAGS = [['PCOS (also called PMOS)', 'pcos'], ['Endometriosis', 'endometriosis'], ['Fibroids', 'fibroids'], ['Thyroid condition', 'thyroid'], ['Using HRT', 'hrt']];
   var TONES = [['Gentle', 'gentle'], ['Cheerful', 'cheerful'], ['Straight to the point', 'direct']];
-  var NUDGES = [['Once a day', 'daily'], ['A few times a week', 'few'], ['Once a week', 'weekly'], ['Only when I open Ebb', 'never']];
+  var NUDGES = [['Once a day', 'daily'], ['A few times a week', 'few'], ['Once a week', 'weekly'], ['Only when I open EveRhy', 'never']];
 
   function startOnboarding(opts) {
     opts = opts || {};
@@ -134,8 +134,8 @@
     var b = bucket(s), p = s.profile, draft = {};
     var steps = [];
     openSheet(function (box, close) {
-      box.classList.add('sf-onboard'); box.setAttribute('aria-label', 'Getting started with Ebb');
-      var head = el('div', 'sf-head'); head.appendChild(el('h2', null, opts.redo ? 'Your answers' : 'Welcome to Ebb'));
+      box.classList.add('sf-onboard'); box.setAttribute('aria-label', 'Getting started with EveRhy');
+      var head = el('div', 'sf-head'); head.appendChild(el('h2', null, opts.redo ? 'Your answers' : 'Welcome to EveRhy'));
       head.appendChild(button('Skip all', 'btn small', function () { finish(true); })); box.appendChild(head);
       var log = el('div', 'sf-chat'); log.setAttribute('aria-live', 'polite'); box.appendChild(log);
       var reply = el('div', 'sf-reply'); box.appendChild(reply);
@@ -200,14 +200,14 @@
       });
       steps.push(function (nx) { ask('How long is your cycle usually, from one period to the next?', CYCLE, 'cycleLength', nx); });
       steps.push(function (nx) {
-        ask('What would you most like from Ebb?', GOALS, 'goal', nx, function (v) {
-          if (v === 'avoid') say('Noted. Just so you know, Ebb can’t tell you safe days and isn’t a form of contraception.');
-          if (v === 'conceive') say('Noted. Ebb can help you keep track, but it can’t tell you your fertile days for certain.');
+        ask('What would you most like from EveRhy?', GOALS, 'goal', nx, function (v) {
+          if (v === 'avoid') say('Noted. Just so you know, EveRhy can’t tell you safe days and isn’t a form of contraception.');
+          if (v === 'conceive') say('Noted. EveRhy can help you keep track, but it can’t tell you your fertile days for certain.');
         });
       });
       steps.push(function (nx) { ask('Which of these fits you best right now?', STAGES, 'lifeStage', nx); });
       steps.push(function (nx) { ask('How old are you?', AGES.map(function (a) { return [a[0], a]; }), 'ageRow', nx, null); });
-      steps.push(function (nx) { ask('Are you using any contraception? This only helps Ebb avoid alerts that don’t apply to you.', CONTRA, 'contraception', nx); });
+      steps.push(function (nx) { ask('Are you using any contraception? This only helps EveRhy avoid alerts that don’t apply to you.', CONTRA, 'contraception', nx); });
       steps.push(function (nx) {
         if (!health()) return nx();
         say('Have you been told you have any of these? Pick any that apply.');
@@ -317,8 +317,8 @@
       ob.appendChild(button('Go through the questions again', 'btn', function () { close(); startOnboarding({ redo: true }); }));
       box.appendChild(ob);
 
-      var rl = el('section', 'sf-card'); rl.appendChild(el('h3', null, 'What Ebb watches for'));
-      rl.appendChild(el('p', 'muted small', 'A short list of warning signs, checked on this phone. These are starting points for the study’s doctors to confirm. Ebb doesn’t diagnose anything.'));
+      var rl = el('section', 'sf-card'); rl.appendChild(el('h3', null, 'What EveRhy watches for'));
+      rl.appendChild(el('p', 'muted small', 'A short list of warning signs, checked on this phone. These are starting points for the study’s doctors to confirm. EveRhy doesn’t diagnose anything.'));
       var ul = el('ul', 'sf-rules small');
       (R ? R.RULES : []).forEach(function (r) { var li = el('li'); li.appendChild(el('b', null, r.id + ' v' + r.version + ' ')); li.appendChild(doc.createTextNode(r.threshold)); ul.appendChild(li); });
       rl.appendChild(ul); box.appendChild(rl);

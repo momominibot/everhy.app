@@ -145,15 +145,15 @@
       entry.push({ fullUrl: oid, resource: observationResource(o) });
       entry.push({ fullUrl: pid, resource: {
         resourceType: 'Provenance', target: [{ reference: oid }], recorded: o.end || o.start || stamp,
-        activity: { text: 'Recorded in Ebb (' + String(o.source || 'unknown') + ')' },
+        activity: { text: 'Recorded in EveRhy (' + String(o.source || 'unknown') + ')' },
         agent: [
           { type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/provenance-participant-type', code: 'author' }] },
             who: { display: o.confirmed === true ? 'The person, confirmed in the app' : o.confirmed === false ? 'Not confirmed by the person' : 'Confirmation not recorded' } },
           { type: { coding: [{ system: 'http://terminology.hl7.org/CodeSystem/provenance-participant-type', code: 'assembler' }] },
-            who: { display: 'Ebb app, script ' + String(o.scriptVersion || 'n/a') } }]
+            who: { display: 'EveRhy app, script ' + String(o.scriptVersion || 'n/a') } }]
       } });
     });
-    var b = { resourceType: 'Bundle', type: 'collection', timestamp: stamp, meta: { tag: [{ code: 'ebb-export', display: 'Exported by the person from Ebb' }] } };
+    var b = { resourceType: 'Bundle', type: 'collection', timestamp: stamp, meta: { tag: [{ code: 'ebb-export', display: 'Exported by the person from EveRhy' }] } };
     if (entry.length) b.entry = entry; /* FHIR JSON allows no empty arrays */
     return b;
   }
