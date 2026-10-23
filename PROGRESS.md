@@ -39,6 +39,18 @@ seed-garden panel (a parallel economy beside the farm), a full-scene video plate
 - ebb-trees, ebb-title, ebb-seats: no commits beyond main (their sessions hit the limit); art/raw/seats.png,
   tree_stages.png, dig_items.png are rendered and unsliced.
 
+## Direction change (Jamie, 23 Oct 09:40): Singapore environment first
+The outdoors become Singapore places in the same dreamy clay look, mechanics unchanged: HDB community garden (the
+farm: four planter beds, shed with seed jars, dragon playground), a hawker centre (food log and kopi instead of the
+kitchen kettle outdoors), Sembawang hot spring foot bath (the soak), East Coast Park beach with a jetty (the sea
+takes the pond's offerings, fishing from the jetty), and a Singapore island map. Renders queued in
+tools/jobs_singapore.json; map each on a 5 percent grid as before, then re-point scenes and the map pins.
+
+Parked until after the Singapore pass (rendered, on disk, unmapped): art/raw/farm_big.png (bigger farm with a barn
+and a chicken house to enter, tidy 2x2 beds), coop_interior.png, bedroom_shift.png (Miffy lamp moved off the
+bathroom door) and bedroom_sleep.png (her tucked in bed, for a sleep overlay). Crop sprites on the painted beds still
+need per-bed soil quads so they sit inside the soil.
+
 ## Next
 1. Jamie's verdict on the isometric rooms (screenshots sent 23 Oct, about 03:50).
 2. Occlusion in the isometric rooms if wanted (she walks behind the arch-door walls today via solids, not cut-outs).
