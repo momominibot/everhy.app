@@ -11,7 +11,7 @@
   /* ---------- what can be done on a seat ----------
    * sec: planned seconds (0 means untimed). prompt: shown while it runs. done: the kind line after. */
   var ACTIONS = {
-    sip: { id: 'sip', label: 'Sip your kopi', sec: 20, prompt: 'Both hands round the cup. Notice the warmth, the smell, the first slow sip.', done: 'A small pause in a busy place. That counts.', fx: 'steam' },
+    sip: { id: 'sip', pose: 'sip', label: 'Sip your kopi', sec: 20, prompt: 'Both hands round the cup. Notice the warmth, the smell, the first slow sip.', done: 'A small pause in a busy place. That counts.', fx: 'steam' },
     breaths: { id: 'breaths', label: 'Three slow breaths', sec: 30, prompt: 'In through the nose, out a little longer. Three, at your own pace.', done: 'Three breaths, taken on purpose.', count: 3 },
     watch: { id: 'watch', label: 'People-watch', sec: 45, prompt: 'Look around. Name three things you can see, quietly, to yourself.', done: 'Three things noticed. Nothing to do with them.' },
     water: { id: 'water', label: 'Watch the water', sec: 60, prompt: 'Rest your eyes on the lake. Let it move; you do not have to.', done: 'A minute with the water. Enough.' },

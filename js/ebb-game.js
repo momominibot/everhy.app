@@ -164,9 +164,9 @@
   var standBack = null;
   function sit(sp) {
     standBack = { x: sp.stand.x, y: sp.stand.y };
-    sitting = true; me.x = sp.at.x; me.y = sp.at.y + 0.2; me.action = 'sit'; me.view = 'front'; path = [];
+    sitting = true; me.x = sp.at.x; me.y = sp.at.y + 0.2; me.action = 'sit'; me.pose = null; me.view = 'front'; path = [];
   }
-  function stand() { sitting = false; me.action = 'idle'; if (standBack) { me.x = standBack.x; me.y = standBack.y; } }
+  function stand() { sitting = false; me.action = 'idle'; me.pose = null; if (standBack) { me.x = standBack.x; me.y = standBack.y; } }
 
   function offer() {
     var item = F.takeFromBasket(st.farm);
@@ -262,7 +262,8 @@
     state: function () { return st; }, save: function () { S.save(); }, today: today, toast: toast, me: function () { return me; },
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
     zoom: function (f) { return f === undefined ? cam.user : f === 0 ? setZoom(1) : zoomBy(f); }, /* zoom(): read; zoom(0): reset; zoom(1.2): in by 20 percent */
-    work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.view = 'front'; path = []; },
+    work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at, pose) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.pose = pose || null; me.view = 'front'; path = []; },
+    pose: function (name) { if (sitting) me.pose = name || null; }, /* switch the seated action strip: sip, soak, fish, or null for the plain seat */
     stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
   };
   function registerKind(kind, fn) { kinds[kind] = fn; }

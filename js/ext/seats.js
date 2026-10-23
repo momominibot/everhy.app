@@ -80,6 +80,7 @@
       close(); showUp(); api.toast(action.prompt, 3200); return;
     }
     var E = R(), t = E.timer(action.sec), startIso = new Date().toISOString();
+    if (api.pose) api.pose(action.pose || null); /* a seated action strip when the set has one (sip), else the plain seat */
     var prompt = el('p', 'seat-prompt', action.prompt), clock = el('p', 'seat-clock'), count = el('p', 'seat-count');
     clock.setAttribute('aria-live', 'off'); count.setAttribute('aria-live', 'polite');
     var row = el('div', 'seat-row'); row.appendChild(clock); row.appendChild(count);
@@ -104,6 +105,7 @@
     function done() {
       if (over) return; over = true;
       if (run) { run.stop(); run = null; }
+      if (api.pose) api.pose(null);
       var rec = E.record(action, t, cur.scene, cur.spot.id, startIso, new Date().toISOString()), line;
       if (rec) {
         rec.id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);

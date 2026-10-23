@@ -125,7 +125,7 @@
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
     var me = api.me();
-    soaking = true; api.sit(SIT_IN_WATER); api.fx(waterOver(), 36e5);
+    soaking = true; api.sit(SIT_IN_WATER, 'soak'); api.fx(waterOver(), 36e5);
     function out() {
       if (!soaking) return; soaking = false;
       api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x;
@@ -168,7 +168,7 @@
   }
   root.EbbGame.registerKind('fish', function (spot, api) {
     var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.float ? spot.float.x : spot.at.x + 9, fy = spot.float ? spot.float.y : spot.at.y - 5.5;
-    api.work('none', 36e5, 'back');
+    api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }, 'fish'); /* she sits on the jetty edge with the rod */
     function clear() { timers.forEach(clearTimeout); timers = []; }
     sheet('Fishing', function (body, buttons) {
       body.innerHTML = '<p class="world-status" id="fishStatus" role="status"></p>';
@@ -194,7 +194,7 @@
         buttons([{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }]);
       }
       castLine();
-    }, function () { clear(); state = 'done'; api.fx('', 1); api.work('none', 0, 'front'); }, 'world-mini');
+    }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, 'world-mini');
   });
 
 })(typeof window !== 'undefined' ? window : globalThis);

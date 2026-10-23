@@ -1,0 +1,38 @@
+[
+ {
+  "id": "pose_sip",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She sits on an invisible stool facing front holding a small cup of kopi in both hands. Frame 1: the cup held low at her chest, a soft smile. Frame 2: the cup raised to her lips, eyes closed happily, a tiny wisp of steam."
+ },
+ {
+  "id": "pose_stretch",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She stands facing front doing a gentle morning stretch. Frame 1: both arms stretched straight up over her head, fingers laced, eyes closed. Frame 2: arms up and a soft lean to her left, one foot slightly out."
+ },
+ {
+  "id": "pose_soak",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She sits facing front soaking: legs forward as if in a shallow pool (the water itself is not drawn), hoodie sleeves pushed up, a small folded white towel resting on her head, eyes closed, relaxed smile. Frame 1: hands resting on her knees. Frame 2: arms stretched out to the sides along an invisible pool edge."
+ },
+ {
+  "id": "pose_fish",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She sits on an invisible jetty edge facing front holding a simple wooden fishing rod in both hands. Frame 1: the rod held upright, calm face. Frame 2: the rod tilted forward with a small tug, eyes wide, a little surprised smile."
+ }
+]

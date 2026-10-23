@@ -18,12 +18,15 @@
     var p = pose || {}, view = IDLE[p.view] !== undefined ? p.view : 'front', phase = p.phase || 0, breathe = 0, bob = 0;
     var strip = 'idle', frame = IDLE[view], flip = view === 'side' && !!p.flip;
     if (p.action === 'walk') { strip = 'walk_' + view; frame = Math.floor(phase * 8) % 8; bob = Math.abs(Math.sin(phase * Math.PI * 2)) * 1.1; }
-    else if (p.action === 'sit') { strip = 'sit'; frame = 0; flip = false; breathe = Math.sin(phase * Math.PI * 2); }
+    else if (p.action === 'sit') { /* a named pose strip (sip, soak, fish, stretch: two frames that alternate slowly) when the set has one, else the plain seat */
+      strip = p.pose ? p.pose : 'sit'; frame = p.pose ? Math.floor(phase * 2) % 2 : 0; flip = false; breathe = Math.sin(phase * Math.PI * 2);
+    }
     else if (p.action === 'work' && p.tool && p.tool !== 'none') {
       strip = 'work'; flip = !!p.flip; /* work poses face right */
       frame = p.tool === 'can' ? 0 : p.tool === 'hoe' ? (phase < 0.5 ? 1 : 2) : 3;
     } else breathe = Math.sin(phase * Math.PI * 2);
     return { strip: strip, frame: frame, flip: flip, breathe: breathe, bob: bob };
+    /* callers may also pass pose.pose, the name of a seated action strip */
   }
 
   function url(set, strip) { return 'art/chars/' + set + '/' + strip + '.webp'; }
@@ -51,7 +54,8 @@
       });
       c = g._clay = { set: set, body: body, cel: cel, imgs: imgs, strip: '', key: '', tf: '' };
     }
-    var k = pick(pose), m = s[k.strip] || s.idle, stripId = s[k.strip] ? k.strip : 'idle', key = stripId + ':' + k.frame;
+    var k = pick(pose), stripId = s[k.strip] ? k.strip : (pose && pose.action === 'sit' && s.sit) ? 'sit' : 'idle', m = s[stripId], key = stripId + ':' + k.frame;
+    if (stripId !== k.strip) k.frame = 0; /* a pose the set does not have yet falls back to the plain seat */
     if (key !== c.key) {
       c.key = key;
       var cw = m.w * UNIT, ch = m.h * UNIT;
