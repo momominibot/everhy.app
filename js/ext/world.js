@@ -125,10 +125,13 @@
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
     var me = api.me();
-    soaking = true; api.sit(SIT_IN_WATER, 'soak'); api.fx(waterOver(), 36e5);
+    soaking = true; api.fx(waterOver(), 36e5);
+    /* in she goes with a little spin, changing for the water as she turns (her towel tube once that art exists) */
+    if (api.spin) { api.sit(SIT_IN_WATER, null); api.spin(function () { if (soaking && api.pose) api.pose('soak'); }); } else api.sit(SIT_IN_WATER, 'soak');
     function out() {
       if (!soaking) return; soaking = false;
-      api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x;
+      function up() { api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x; }
+      if (api.spin) api.spin(up); else up(); /* and out again with a spin, back in her own clothes */
     }
     sheet('Hot spring', function (body, buttons, close) {
       function draw(line) {

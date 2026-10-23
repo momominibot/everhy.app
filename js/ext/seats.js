@@ -105,7 +105,7 @@
     function done() {
       if (over) return; over = true;
       if (run) { run.stop(); run = null; }
-      if (api.pose) api.pose(null);
+      if (api.pose) api.pose(cur && cur.spot.seat && cur.spot.seat.pose || null); /* back to the seat's resting pose (in the bath, still soaking) */
       var rec = E.record(action, t, cur.scene, cur.spot.id, startIso, new Date().toISOString()), line;
       if (rec) {
         rec.id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -148,8 +148,9 @@
     if (!spot.seat) spot.seat = R().seatFor(api.scene(), spot.id); /* a spot made a seat by the scene data later */
     if (cur && cur.spot === spot) { menu(); return; }
     cur = { spot: spot, scene: api.scene() };
-    api.sit(R().sitAt(spot), spot.seat && spot.seat.pose || null); api.refresh(); /* a seat may name its resting pose: legs down with a kopi at the hawker stools */
-    if (spot.seat && spot.seat.cover === 'bubbles') bubbles(R().sitAt(spot));
+    var bath = spot.seat && spot.seat.cover === 'bubbles';
+    api.sit(R().sitAt(spot), bath && api.spin ? null : spot.seat && spot.seat.pose || null); api.refresh(); /* a seat may name its resting pose: legs down with a kopi at the hawker stools */
+    if (bath) { bubbles(R().sitAt(spot)); if (api.spin) api.spin(function () { if (cur && cur.spot === spot && api.pose) api.pose(spot.seat.pose || null); }); } /* into the bath with a spin, changing as she turns */
     if (root.EbbLife && root.EbbLife.react) root.EbbLife.react('heart', 1600);
     /* she just sits first; the seat's options only if she asks for a mindful moment */
     if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: function () { menu(); }, up: function () { getUp('getUp'); } }); else menu();
@@ -160,7 +161,10 @@
     stopRun(); close(); hideUp(); api.fx('', 1); if (root.EbbUi && root.EbbUi.closeSeatChoice) root.EbbUi.closeSeatChoice();
     clearInterval(watch); watch = 0;
     var me = api.me(), sp = cur.spot; cur = null;
-    if (why !== 'scene' && why !== 'stood') { var st = R().standAt(sp); api.stand(st.y); me.x = st.x; me.y = st.y; }
+    if (why !== 'scene' && why !== 'stood') {
+      var st = R().standAt(sp), up = function () { api.stand(st.y); me.x = st.x; me.y = st.y; api.refresh(); };
+      if (sp.seat && sp.seat.cover === 'bubbles' && api.spin) api.spin(up); else up(); /* out of the bath with a spin, dressed again */
+    }
     api.refresh();
   }
   /* she is only seated while the scene is the one she sat in and the engine still has her sitting (a door, Decorate or

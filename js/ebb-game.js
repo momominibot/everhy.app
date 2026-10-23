@@ -172,7 +172,7 @@
         : 'Your seed box is empty. Seeds are sold at the Flower Dome, for hearts.', 3200);
     } else if (sp.kind === 'pond') offer();
     else if (sp.kind === 'cushion') { sit(sp); root.EbbUi.openPractice(function () { stand(); }); }
-    else if (sp.kind === 'wardrobe') root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } });
+    else if (sp.kind === 'wardrobe') root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) spin(function () { st.outfit = o; S.save(); }); });
     else if (sp.kind === 'bed') toast('A soft place to rest.');
   }
   var standBack = null;
@@ -219,10 +219,29 @@
     els.scene.classList.add('fading');
     setTimeout(function () { enter(door.to, door.arrive); toast(scene().name, 1400); els.scene.classList.remove('fading'); }, 320);
   }
+  /* the Animal Crossing spin: one quick turn on the spot with sparkles; whatever changes (an outfit) changes at the
+   * moment she is edge-on, so the swap is never seen. Reduced motion: the change happens at once, with the sparkles. */
+  var spinning = null;
+  function spin(onHalf) {
+    var reduced = (root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches) || doc.documentElement.getAttribute('data-motion') === 'reduce';
+    if (spinning && spinning.onHalf) { var f0 = spinning.onHalf; spinning.onHalf = null; try { f0(); } catch (e) { console.error(e); } }
+    if (root.EbbLife && root.EbbLife.react) root.EbbLife.react('sparkle', 1300);
+    try { if (root.EbbSound && typeof root.EbbSound.play === 'function') root.EbbSound.play('chime'); } catch (e) { }
+    if (reduced) { if (onHalf) onHalf(); spinning = null; return; }
+    spinning = { t0: Date.now(), dur: 700, onHalf: onHalf || null };
+  }
+  function spinScale() { /* the horizontal squash of the turn: cos of the angle, eased, never exactly zero */
+    if (!spinning) return 1;
+    var t = Math.min(1, (Date.now() - spinning.t0) / spinning.dur);
+    var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, k = Math.cos(e * Math.PI * 2);
+    if (e >= 0.75 && spinning.onHalf) { var f = spinning.onHalf; spinning.onHalf = null; try { f(); } catch (er) { console.error(er); } } /* exactly edge-on */
+    if (t >= 1) { spinning = null; return 1; }
+    return Math.abs(k) < 0.05 ? (k < 0 ? -0.05 : 0.05) : k;
+  }
   var lastProps = '';
   function render() {
-    var s = W.scaleAt(me.y, st.scene);
-    els.me.setAttribute('transform', 'translate(' + me.x.toFixed(2) + ' ' + me.y.toFixed(2) + ') scale(' + s.toFixed(3) + ')');
+    var s = W.scaleAt(me.y, st.scene), sx = s * spinScale();
+    els.me.setAttribute('transform', 'translate(' + me.x.toFixed(2) + ' ' + me.y.toFixed(2) + ') scale(' + sx.toFixed(3) + ' ' + s.toFixed(3) + ')');
     if (!(C && C.draw(els.me, C.setFor(st.outfit), me))) { /* the flat puppet only when no clay set is shipped */
       els.me._clay = null;
       els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
@@ -262,7 +281,7 @@
     els.scene.addEventListener('wheel', onWheel, { passive: false });
     els.prompt.addEventListener('click', function (e) { e.stopPropagation(); useNear(); });
     doc.addEventListener('keydown', keys);
-    if ($('wardrobeBtn')) $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
+    if ($('wardrobeBtn')) $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) spin(function () { st.outfit = o; S.save(); }); }); });
     $('moreBtn').addEventListener('click', function () { var m = $('moreMenu'); m.hidden = !m.hidden; });
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();
@@ -277,6 +296,7 @@
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
     zoom: function (f) { return f === undefined ? cam.user : f === 0 ? setZoom(1) : zoomBy(f); }, /* zoom(): read; zoom(0): reset; zoom(1.2): in by 20 percent */
     work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at, pose) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.pose = pose || null; me.view = 'front'; path = []; },
+    spin: spin, spinning: function () { return !!spinning; },
     pose: function (name) { if (sitting) me.pose = name || null; }, /* switch the seated action strip: sip, soak, fish, or null for the plain seat */
     stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
   };

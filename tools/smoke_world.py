@@ -101,12 +101,14 @@ def main():
         through('spring'); check('Little Guilin -> Sembawang hot spring', True); shot('04-spring')
         page.evaluate('() => { const f = EbbGame.state().farm; f.basket.egg = 1; EbbGame.api.save(); }')
         use('spring', 'soak'); page.wait_for_selector('.world-sheet', timeout=15000)
+        page.wait_for_function('() => !EbbGame.api.spinning()', timeout=5000)  # she spins into the water; the soak pose comes edge-on
         check('soaking: she sits in the water, in the soak pose', page.evaluate('() => EbbGame.me().action') == 'sit' and page.evaluate('() => EbbGame.me().pose') == 'soak')
         check('she is inside the pool, not on its edge', page.evaluate('() => !EbbWorld.walkable("spring", EbbGame.me())'))
         page.click('#dropEgg')
         b2 = basket(); check('a spa egg made from the egg', b2.get('spaEgg') == 1 and b2.get('egg') == 0)
         page.wait_for_timeout(2600); shot('05-soak')
         page.click('#leaveSpring'); page.wait_for_selector('.world-sheet', state='detached')
+        page.wait_for_function('() => !EbbGame.api.spinning() && EbbGame.me().action !== "sit"', timeout=5000)  # and spins out again
         check('climbs out standing on the floor', page.evaluate('() => EbbGame.me().action') != 'sit' and page.evaluate('() => EbbWorld.walkable("spring", EbbGame.me())'))
         through('waterfall'); check('hot spring -> Little Guilin', True)
 
