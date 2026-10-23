@@ -54,7 +54,9 @@
       });
       c = g._clay = { set: set, body: body, cel: cel, imgs: imgs, strip: '', key: '', tf: '' };
     }
-    var k = pick(pose), stripId = s[k.strip] ? k.strip : (pose && pose.action === 'sit' && s.sit) ? 'sit' : 'idle', m = s[stripId], key = stripId + ':' + k.frame;
+    var k = pick(pose);
+    if (k.strip === 'soak' && s.soak_tube) k.strip = 'soak_tube'; /* soaking (hot spring, bath): her towel tube, once the set has that strip (tools/jobs_soak_tube.json) */
+    var stripId = s[k.strip] ? k.strip : (pose && pose.action === 'sit' && s.sit) ? 'sit' : 'idle', m = s[stripId], key = stripId + ':' + k.frame;
     if (stripId !== k.strip) k.frame = 0; /* a pose the set does not have yet falls back to the plain seat */
     if (key !== c.key) {
       c.key = key;
