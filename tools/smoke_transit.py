@@ -68,13 +68,19 @@ with sync_playwright() as p:
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and '404' not in m.text else None)
     pg.goto(f'http://127.0.0.1:{port}/?time=14:00'); pg.evaluate("localStorage.clear()")
-    pg.evaluate("() => { try { if (window.EbbSafety && EbbSafety.seedReturning) EbbSafety.seedReturning(); } catch (e) {} }")
+    ready(pg)
+    # a returning player: the saved game carries the safety module's own onboarding record, so no sheet covers the room
+    pg.evaluate("""() => { const s = EbbGame.state(); s.safety = Object.assign({}, s.safety, { onboardedAt: '2026-10-22T08:00:00Z',
+      onboardVersion: (window.EbbSafetyUi && EbbSafetyUi.ONBOARD_VERSION) || 'onboard-2026-10-22.1' }); EbbGame.api.save(); }""")
     pg.reload(); ready(pg)
+    pg.evaluate("document.querySelectorAll('.sheet-wrap, .routines-card').forEach(w => w.remove())")
     pg.evaluate("EbbGame.enter('farm')"); pg.wait_for_timeout(300)
 
     # the map asks how she gets to Merlion Park; the map sheet is gone and nothing has moved yet
     go_map(pg, 'merlion')
-    pg.wait_for_selector('.transit-wrap', timeout=5000)
+    try: pg.wait_for_selector('.transit-wrap', timeout=5000)
+    except Exception:
+        print('DEBUG', pg.evaluate("() => ({ scene: EbbGame.api.scene(), transit: !!window.EbbTransit, rules: !!window.EbbTransitRules, map: !!document.querySelector('.map-wrap'), sheets: [...document.querySelectorAll('.sheet-wrap')].map(e => e.className), trip: (EbbGame.state().transit || {}).trip || null, offer: window.EbbTransitRules && EbbTransitRules.offerFor(EbbMap.pin('merlion'), EbbWorld.SCENES, EbbGame.api.scene()) })"), 'errors', errs); raise
     check('the choice sheet asks the question', pg.evaluate("document.querySelector('.transit-sheet h2').textContent") == 'How will you get there?')
     check('three ways to go', pg.evaluate("document.querySelectorAll('.transit-card').length") == 3)
     check('the map closed first', pg.evaluate("!document.querySelector('.map-wrap')"))

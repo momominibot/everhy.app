@@ -52,6 +52,11 @@ Little Guilin, garden and hawker queued in one guarded chain. Set each scene's `
 Bedroom: Miffy lamp moved off the bathroom door; tapping the bed tucks her in (js/ext/sleep.js). Merged from the
 ebb-bedroom-sleep session.
 
+## Known defect (23 Oct, 11:10): second ride after Just arrive
+tools/smoke_transit.py fails two checks on main: after "Just arrive" to Little Guilin, picking the MRT for Bedok
+Jetty boards the train with no trip saved and the Arrive button still names Merlion Park (the previous trip). The
+transit extension's trip state is not reset after a bypass arrival. Everything else in that smoke passes (57 of 59).
+
 ## Side sessions in flight (each on its own branch under .claude/worktrees; merge with keep-both on index.html)
 ebb-ui-fixes (remove Decorate, icon-chip HUD, phone frame status bar, Codex findings), ebb-routines (personalisable
 morning and evening home routines), ebb-transit (train or bus rides with on-board mindfulness or skip), ebb-flower-dome

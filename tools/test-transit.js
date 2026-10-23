@@ -25,7 +25,7 @@ const FILES = ['js/ebb-world.js', 'js/ext/world.js', 'js/ext/map.js', 'js/ext/tr
     check(`${id} is a tall indoor plate on disk`, s.aspect[0] === 4 && s.aspect[1] === 7 && s.indoor === true && fs.existsSync(path.join(__dirname, '..', s.plate)));
     check(`${id} names an indoor room tone`, s.sound === 'room');
     check(`${id} start is walkable`, W.walkable(id, s.start));
-    check(`${id} has seats and an exit`, s.spots.length >= 6 && s.spots.every(sp => sp.kind === 'seat') && s.doors.length >= 1);
+    check(`${id} has seats and an exit`, s.spots.length >= 6 && s.spots.every(sp => sp.kind === 'ride') && s.doors.length >= 1);
     const entries = [s.start].concat(Object.keys(W.SCENES).flatMap(o => W.SCENES[o].doors.filter(d => d.to === id).map(d => d.arrive)).filter(Boolean));
     s.spots.forEach(sp => {
       check(`${id}/${sp.id} stand is walkable`, W.walkable(id, sp.stand));

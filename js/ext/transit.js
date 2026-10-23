@@ -18,12 +18,12 @@
     solids: [[16, 84, 22, 93], [62, 86, 68, 96], [91, 90, 98, 100]], /* the three pole feet */
     doors: [{ id: 'exit', rect: [20, 126, 80, 140], to: 'merlion', label: 'Step off at your stop' }],
     spots: [
-      { id: 'seat1', kind: 'seat', at: { x: 9, y: 82 }, stand: { x: 9, y: 94 }, label: SEAT },
-      { id: 'seat2', kind: 'seat', at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
-      { id: 'seat3', kind: 'seat', at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
-      { id: 'seat4', kind: 'seat', at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
-      { id: 'seat5', kind: 'seat', at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
-      { id: 'seat6', kind: 'seat', at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
+      { id: 'seat1', kind: 'ride', at: { x: 9, y: 82 }, stand: { x: 9, y: 94 }, label: SEAT },
+      { id: 'seat2', kind: 'ride', at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
+      { id: 'seat3', kind: 'ride', at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
+      { id: 'seat4', kind: 'ride', at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
+      { id: 'seat5', kind: 'ride', at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
+      { id: 'seat6', kind: 'ride', at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
     ],
     start: { x: 50, y: 112 }
   });
@@ -37,13 +37,13 @@
       { id: 'stairsRight', rect: [54, 150, 72, 163], to: 'hawker', label: 'Down the stairs to get off' }
     ],
     spots: [
-      { id: 'bench', kind: 'seat', at: { x: 50, y: 87 }, stand: { x: 50, y: 96 }, label: SEAT },
-      { id: 'leftFar', kind: 'seat', at: { x: 24, y: 93 }, stand: { x: 36, y: 97 }, label: SEAT },
-      { id: 'leftMid', kind: 'seat', at: { x: 19, y: 106 }, stand: { x: 35, y: 108 }, label: SEAT },
-      { id: 'leftNear', kind: 'seat', at: { x: 14, y: 121 }, stand: { x: 34, y: 122 }, label: SEAT },
-      { id: 'rightFar', kind: 'seat', at: { x: 77, y: 93 }, stand: { x: 64, y: 97 }, label: SEAT },
-      { id: 'rightMid', kind: 'seat', at: { x: 82, y: 106 }, stand: { x: 65, y: 108 }, label: SEAT },
-      { id: 'rightNear', kind: 'seat', at: { x: 86, y: 121 }, stand: { x: 66, y: 122 }, label: SEAT }
+      { id: 'bench', kind: 'ride', at: { x: 50, y: 87 }, stand: { x: 50, y: 96 }, label: SEAT },
+      { id: 'leftFar', kind: 'ride', at: { x: 24, y: 93 }, stand: { x: 36, y: 97 }, label: SEAT },
+      { id: 'leftMid', kind: 'ride', at: { x: 19, y: 106 }, stand: { x: 35, y: 108 }, label: SEAT },
+      { id: 'leftNear', kind: 'ride', at: { x: 14, y: 121 }, stand: { x: 34, y: 122 }, label: SEAT },
+      { id: 'rightFar', kind: 'ride', at: { x: 77, y: 93 }, stand: { x: 64, y: 97 }, label: SEAT },
+      { id: 'rightMid', kind: 'ride', at: { x: 82, y: 106 }, stand: { x: 65, y: 108 }, label: SEAT },
+      { id: 'rightNear', kind: 'ride', at: { x: 86, y: 121 }, stand: { x: 66, y: 122 }, label: SEAT }
     ],
     start: { x: 40, y: 145 }
   });
@@ -278,7 +278,7 @@
     lastScene = a.scene(); retarget(); paintBar();
     setInterval(watch, 250);
   }
-  root.EbbGame.registerKind('seat', seat);
+  root.EbbGame.registerKind('ride', seat); /* 'ride' not 'seat': the seats extension owns the benches and the hawker table */
   doc.addEventListener('ebb:ready', function (e) { start(e.detail || root.EbbGame.api); });
   if (root.EbbGame._ready) start(root.EbbGame.api);
 
