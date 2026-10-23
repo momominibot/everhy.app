@@ -17,6 +17,8 @@
     water: { id: 'water', label: 'Watch the water', sec: 60, prompt: 'Rest your eyes on the lake. Let it move; you do not have to.', done: 'A minute with the water. Enough.' },
     listen: { id: 'listen', label: 'Listen', sec: 45, prompt: 'Close your eyes if you like. Name three sounds, near or far.', done: 'Three sounds, heard. The world kept going.' },
     boats: { id: 'boats', label: 'Watch the boats', sec: 60, prompt: 'Follow one boat across the bay until it is gone. Then another.', done: 'A minute by the bay. The boats carried on without you.' },
+    soak: { id: 'soak', pose: 'soak', label: 'A warm soak', sec: 120, prompt: 'Let the warm water hold you. Notice where it touches: your back, your shoulders, your hands. Breathe in the steam, and let each breath out be a little slower.', done: 'Two warm minutes, noticed. A gentle way to end the day.' },
+    warmth: { id: 'warmth', pose: 'soak', label: 'Feel the warmth', sec: 60, prompt: 'Rest your hands on the water. Feel warm, then a little warmer. With each breath out, let your shoulders drop a little more.', done: 'A minute of warmth, on purpose.' },
     still: { id: 'still', label: 'Just sit', sec: 0, prompt: 'Sitting. Nothing to do. Get up whenever you like.', done: '' }
   };
 
@@ -33,6 +35,7 @@
     'hawker:stool3': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: 4, y: -10 } },
     'hawker:stool4': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -8, y: -12 } },
     'waterfall:bench': { title: 'On the lake bench', line: 'The quarry lake, the cliff in it upside down.', offset: { x: 2.5, y: 12 }, actions: ['water', 'breaths', 'listen', 'still'] },
+    'bathroom:bath': { title: 'In the bath', line: 'Warm water, soft bubbles, the day nearly done.', offset: { x: 0, y: 9 }, pose: 'soak', cover: 'bubbles', actions: ['soak', 'warmth', 'breaths', 'still'] },
     'merlion:bench': { title: 'On the stone bench', line: 'The bay, the spout, the boats going by.', offset: { x: 5, y: 8 }, actions: ['boats', 'breaths', 'still'] }
   };
 

@@ -71,3 +71,13 @@
 .lg-unit { font: 600 15px var(--font); padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); min-height: 42px; }
 .lg-warn { margin: 0; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { .lg-sheet { animation: none; } }
+
+/* journal look back: a week of her own words, read on the phone */
+.lg-past { display: flex; flex-direction: column; gap: 10px; }
+.lg-tally { margin: 0; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-weight: 700; }
+.lg-days { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.lg-days h3 { margin: 0 0 4px; font-size: 13px; color: var(--soft); text-transform: capitalize; }
+.lg-days ul { margin: 0; padding: 10px 12px 10px 28px; border-radius: 14px; background: var(--bg); }
+.lg-days ul li { margin: 2px 0; overflow-wrap: anywhere; }
+.lg-private { margin: 0; }
+.ebb-log[data-view="past"] .lg-foot { display: none; }

@@ -65,7 +65,7 @@
     food: { title: 'Food and drink', food: true, line: 'What did you eat or drink? A few words is plenty. Nothing is saved until you tap Save.', chips: [
       { label: 'A proper meal', item: item('food', 'a proper meal') }, { label: 'A snack', item: item('food', 'a snack') }, { label: 'Water', item: item('food', 'water') },
       { label: 'Kopi or teh', item: item('food', 'kopi or teh') }, { label: 'A sweet drink', item: item('food', 'a sweet drink') }, { label: 'Skipped a meal', item: item('food', 'skipped a meal') }] },
-    mood: { title: 'Journal', journal: true, line: 'How are you feeling? Write as much or as little as you like. Nothing is saved until you tap Save.', chips: [
+    mood: { title: 'Journal', journal: true, lookback: true, line: 'How are you feeling? Write as much or as little as you like. Nothing is saved until you tap Save.', chips: [
       { label: 'Good', icon: 'sun', item: item('mood', 'good') }, { label: 'Low', item: item('mood', 'low') }, { label: 'Anxious', item: item('mood', 'anxious') },
       { label: 'Stressed', item: item('mood', 'stressed') }, { label: 'Irritable', item: item('mood', 'irritable') },
       { label: 'Tired', item: item('energy', 'low') }, { label: 'Lots of energy', item: item('energy', 'high') }, { label: 'Not sure', icon: 'unsure', say: 'not sure' }] }
@@ -174,13 +174,14 @@
     return load().then(function () {
       M.ensure(st());
       if (wrap) wrap.remove();
-      topic = want; reset(); view = 'chat'; picked = null; month = null;
+      topic = want; reset(); view = 'chat'; picked = null; month = null; lookWeek = null;
       var T = TOPICS[topic];
       if (topic === 'general' && !L().thread.length) M.say(st(), 'ebb', 'Hi, it’s Ovia. Tell me how today is going, in your own words. For example: “light flow, mild cramps, slept 6 hours”. Nothing is saved until you tap Save.');
       since = topic === 'general' ? Math.max(0, L().thread.length - 60) : L().thread.length;
       wrap = doc.createElement('div'); wrap.className = 'ebb-log'; wrap.dataset.topic = topic;
       wrap.innerHTML = '<div class="lg-sheet" role="dialog" aria-modal="true" aria-labelledby="lgTitle"><div class="lg-grab" aria-hidden="true"></div><header class="lg-top"><h2 id="lgTitle">' + esc(T.title) + '</h2>' +
         (T.tabs ? '<div class="lg-tabs" role="tablist"><button type="button" role="tab" data-view="chat">Chat</button><button type="button" role="tab" data-view="calendar">Calendar</button></div>' : '') +
+        (T.lookback ? '<div class="lg-tabs" role="tablist"><button type="button" role="tab" data-view="chat">Write</button><button type="button" role="tab" data-view="past">Look back</button></div>' : '') +
         '<button type="button" class="btn small lg-close" aria-label="Close">Close</button></header>' +
         (T.ring ? '<section class="lg-ring" aria-live="polite"></section>' : '') + '<section class="lg-body"></section>' +
         '<footer class="lg-foot"><div class="lg-chips"></div><form class="lg-form"><label class="lg-sr" for="lgInput">Tell Ovia in your own words</label><input id="lgInput" autocomplete="off" maxlength="' + (T.journal ? 2000 : 400) + '" placeholder="' + (T.journal ? 'Write anything…' : 'Or type it your way…') + '"><button type="submit" class="btn primary">Send</button></form></footer></div>';
@@ -232,9 +233,11 @@
   function render() {
     if (!wrap) return;
     wrap.querySelectorAll('.lg-tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.view === view)); });
+    wrap.dataset.view = view; /* looking back hides the chat's chips and box */
     ring();
     var body = wrap.querySelector('.lg-body'), T = TOPICS[topic];
     if (view === 'calendar') { calendar(body); return; }
+    if (view === 'past') { past(body); return; }
     var msgs = L().thread.slice(since);
     var html = '<ol class="lg-thread">' + (T.line ? '<li class="lg-msg ebb">' + esc(T.line) + '</li>' : '') +
       msgs.map(function (m) { return '<li class="lg-msg ' + (m.who === 'me' ? 'mine' : 'ebb') + '">' + esc(m.text) + '</li>'; }).join('') + '</ol>';
@@ -359,6 +362,38 @@
     return box;
   }
 
+  /* ---------- look back: her journal by day, one week at a time, read on this phone only (no model, nothing sent) ---------- */
+  var JOURNAL_TYPES = { mood: 1, note: 1, energy: 1 };
+  /* pure: the week (Monday to Sunday) that holds `day`, its days newest first, each with the journal entries saved for it,
+   * and a tally: days written, and how often each mood was named */
+  function weekOf(obs, day, add) {
+    var d = new Date(day + 'T12:00:00'), mon = add(day, -((d.getDay() + 6) % 7)), days = [], moods = {}, written = 0;
+    for (var i = 6; i >= 0; i--) {
+      var ds = add(mon, i), items = obs.filter(function (o) { return JOURNAL_TYPES[o.type] && o.start === ds; })
+        .sort(function (a, b) { return (a.created || '') < (b.created || '') ? -1 : 1; });
+      if (items.length) written++;
+      items.forEach(function (o) { if (o.type === 'mood' && o.value) moods[o.value] = (moods[o.value] || 0) + 1; });
+      days.push({ day: ds, items: items });
+    }
+    return { from: mon, to: add(mon, 6), days: days, written: written, moods: moods };
+  }
+  var lookWeek = null;
+  function past(body) {
+    var t = today(); if (!lookWeek) lookWeek = t;
+    var w = weekOf(M.activeObs(st()), lookWeek, C.addDays), canNext = w.to < t;
+    var tally = Object.keys(w.moods).sort(function (a, b) { return w.moods[b] - w.moods[a]; }).map(function (k) { return esc(k) + (w.moods[k] > 1 ? ' ×' + w.moods[k] : ''); }).join(', ');
+    var html = '<div class="lg-past"><div class="lg-calhead"><button type="button" class="btn small" data-w="-7" aria-label="Previous week">‹</button><b>' + esc(C.fmt(w.from)) + ' to ' + esc(C.fmt(w.to)) + '</b>' +
+      '<button type="button" class="btn small" data-w="7" aria-label="Next week"' + (canNext ? '' : ' disabled') + '>›</button></div>' +
+      '<p class="lg-tally">' + (w.written ? 'You wrote on ' + w.written + ' day' + (w.written === 1 ? '' : 's') + ' this week.' + (tally ? ' Moods you named: ' + tally + '.' : '') : 'Nothing written this week, and that is fine.') + '</p><ol class="lg-days">';
+    w.days.forEach(function (d) {
+      if (!d.items.length || d.day > t) return;
+      html += '<li><h3>' + esc(dayName(d.day)) + '</h3><ul>' + d.items.map(function (o) { return '<li>' + esc(o.type === 'note' ? String(o.value || '') : label(o)) + '</li>'; }).join('') + '</ul></li>';
+    });
+    html += '</ol><p class="muted small lg-private">Your journal stays on this phone. Nothing here is sent anywhere or read by anyone else.</p></div>';
+    body.innerHTML = html;
+    body.querySelectorAll('[data-w]').forEach(function (b) { b.addEventListener('click', function () { lookWeek = C.addDays(lookWeek, +b.dataset.w); if (lookWeek > t) lookWeek = t; render(); }); });
+  }
+
   /* ---------- calendar: a day change waits on a confirm row, then is one undoable write echoed in the thread ---------- */
   function calendar(body) {
     var t = today(); if (!month) month = t.slice(0, 7);
@@ -408,5 +443,5 @@
     return true;
   }
   if (!register()) doc.addEventListener('DOMContentLoaded', register);
-  root.EbbLog = { open: function (t) { return open(root.EbbGame && root.EbbGame.api, t); }, close: close, topics: Object.keys(TOPICS), handle: function (t) { handle(t, 'chat'); }, ready: load };
+  root.EbbLog = { weekOf: weekOf, open: function (t) { return open(root.EbbGame && root.EbbGame.api, t); }, close: close, topics: Object.keys(TOPICS), handle: function (t) { handle(t, 'chat'); }, ready: load };
 })(window);

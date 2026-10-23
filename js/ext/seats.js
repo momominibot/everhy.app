@@ -134,6 +134,14 @@
     api.fx('<g class="seat-steam-g">' + cup + out + '</g>', 36e5);
   }
 
+  /* ---------- the bath: soft bubbles drawn over her up to the shoulders while she sits in the tub (every outfit) ---------- */
+  function bubbles(at) { /* the painted tub has its own foam; a few soap bubbles drift up from it while she soaks */
+    var sc = root.EbbWorld.scaleAt ? root.EbbWorld.scaleAt(at.y, api.scene()) : 0.2, h = 243 * 104 / 300 * sc, w = 150 * 104 / 300 * sc;
+    var f = function (v) { return v.toFixed(2); }, x = at.x, top = at.y - h * 0.45, out = '';
+    [[-0.7, 0.05, 0.07], [0.75, -0.05, 0.06], [-0.35, -0.15, 0.05], [0.4, -0.25, 0.045]].forEach(function (d, i) { out += '<circle class="seat-bubble" style="animation-delay:-' + (i * 0.8).toFixed(1) + 's" cx="' + f(x + d[0] * w) + '" cy="' + f(top + d[1] * h) + '" r="' + f(d[2] * w) + '" fill="rgba(255,255,255,0.25)" stroke="#ffffff" stroke-width="0.12"/>'; });
+    api.fx('<g class="seat-bubbles">' + out + '</g>', 36e5);
+  }
+
   /* ---------- sitting down and getting up ---------- */
   function seat(spot, a) {
     api = a;
@@ -141,6 +149,7 @@
     if (cur && cur.spot === spot) { menu(); return; }
     cur = { spot: spot, scene: api.scene() };
     api.sit(R().sitAt(spot), spot.seat && spot.seat.pose || null); api.refresh(); /* a seat may name its resting pose: legs down with a kopi at the hawker stools */
+    if (spot.seat && spot.seat.cover === 'bubbles') bubbles(R().sitAt(spot));
     if (root.EbbLife && root.EbbLife.react) root.EbbLife.react('heart', 1600);
     /* she just sits first; the seat's options only if she asks for a mindful moment */
     if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: function () { menu(); }, up: function () { getUp('getUp'); } }); else menu();

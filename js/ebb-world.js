@@ -34,10 +34,12 @@
       floor: [[50, 47], [96, 69], [50, 91], [3, 69]],
       /* tub, wall sink and cabinet, towel rail and basket and plant stool, toilet and brush, twin sinks, candle stool, big plant and cabinet and lilac stool */
       solids: [[23, 34, 50, 57], [3, 44, 20, 60], [8, 52, 29, 73], [22, 58, 41, 82], [54, 34, 78, 59], [43, 76, 50, 87], [70, 60, 94, 81]],
+      fronts: [{ src: 'art/occluders/bathroom-tub.webp', rect: [23.633, 43.652, 47.949, 60.254], base: 58 }], /* the bath's front (tools/cut_front.py): drawn over her while she soaks in it */
       doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 75.5, y: 67 }, label: 'Back to the bedroom' }], /* clear of the moved lamp */
       spots: [
         { id: 'toilet', kind: 'log', topic: 'cycle', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Flow and cycle' }, /* one chat for flow and the cycle (24 Oct); the cabinet no longer opens a second one */
-        { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' }
+        { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' },
+        { id: 'bath', kind: 'seat', at: { x: 35, y: 47 }, stand: { x: 44, y: 61 }, label: 'Have a warm soak' } /* js/seats/rules.js: she sits in the tub, bubbles up to her shoulders */
       ],
       start: { x: 52, y: 78 }
     },

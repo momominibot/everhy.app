@@ -208,7 +208,7 @@
   /* what the plate is multiplied by under the cut-outs of this scene, per channel 0..1 */
   /* how much the night picture dims a cut-out's patch of the painting (measured by tools/night_plates.py's output over
    * the cut-out's rect), so a cut-out drawn over her matches the relit room around it */
-  var NIGHT_CUT = { 'art/occluders/bedroom-arch-door.webp': [0.576, 0.586, 0.667] };
+  var NIGHT_CUT = { 'art/occluders/bedroom-arch-door.webp': [0.576, 0.586, 0.667], 'art/occluders/bathroom-tub.webp': [0.573, 0.542, 0.546] };
   function cutFactor(p, indoor, sc) {
     var fr0 = (sc.fronts || [])[0], nk = indoor && els && els.night && els.night.dataset.src && fr0 && NIGHT_CUT[fr0.src];
     if (nk) return nk.map(function (c) { return 1 - p.lamp + p.lamp * c; });

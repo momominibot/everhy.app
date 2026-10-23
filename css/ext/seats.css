@@ -30,3 +30,7 @@
 @keyframes seat-steam { 0% { opacity: 0; transform: translateY(0.6px) scale(0.9); } 30% { opacity: 0.75; } 100% { opacity: 0; transform: translateY(-2.2px) scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .seat-ring, .seat-steam { animation: none; opacity: 0.7; } }
 html[data-motion="reduce"] .seat-ring, html[data-motion="reduce"] .seat-steam { animation: none; opacity: 0.7; }
+/* the bath: a few soap bubbles drift up while she soaks */
+.seat-bubble { animation: seat-bubble 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes seat-bubble { 0% { transform: translateY(0); opacity: 0; } 30% { opacity: 0.9; } 100% { transform: translateY(-6px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .seat-bubble { animation: none; } }
