@@ -1,8 +1,8 @@
 # Ebb hand-over for continuing in Doubao (updated 23 Oct 2026, 03:50 SGT)
 
 Paste this into Doubao to continue: "Continue building Ebb at
-/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb. Read docs/HANDOVER-DOUBAO.md, PROGRESS.md,
-docs/AC-STUDY.md and docs/EXTENDING.md first. Work on main; run node tools/test-core.js before every commit."
+/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb. Read docs/DOUBAO-PLAYBOOK.md first (exact steps and small details), then PROGRESS.md,
+docs/AC-STUDY.md and docs/EXTENDING.md first. Work on main; run bash tools/check_all.sh before every commit and only commit when it prints ALL GREEN."
 
 ## Where things stand (23 Oct, midday)
 - The world is a cute clay Singapore: home (three isometric rooms), Garden (`farm`), Hawker (`hawker`), Little Guilin
