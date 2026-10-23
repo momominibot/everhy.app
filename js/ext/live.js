@@ -30,9 +30,17 @@
     if (/\.mp4$/.test(src) && !mp4 && webm) return src.replace(/\.mp4$/, '.webm');
     return src;
   }
+  /* iPhone Safari cannot blend the sky's multiply tint over a playing video: the whole plate vanished at night (24 Oct,
+   * iOS simulator). So the loop plays only while no tint is on (daytime); dusk and night show the still painting. */
+  function tinted() {
+    var sky = doc.querySelector('.sky'); if (!sky) return false;
+    var on = sky.querySelectorAll('.sky-shade, .sky-vignette');
+    for (var i = 0; i < on.length; i++) if (!on[i].hidden) return true;
+    return false;
+  }
   function wanted() {
     var id = G.api.scene(), sc = W.SCENES[id];
-    if (!sc || !sc.video || reduced()) return '';
+    if (!sc || !sc.video || reduced() || tinted()) return '';
     return pickSrc(sc.video);
   }
   function tick() {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Night layers for the isometric rooms, made locally from each painted plate (no model call).
 
-For each room plate it writes art/night/<plate>.webp, the same size as the plate and transparent except:
+(Retired 24 Oct: Jamie found an overlay on the day art looks pasted on; night is now a repainted plate.) For each room plate it wrote art/night/<plate>.webp, the same size as the plate and transparent except:
   * the window glass: pixels inside a hand-set box (percent of the plate) that are light and not wood, rim or curtain,
     filled with a deep blue night sky, a few stars and a soft moon glow, so the frames and curtains stay as painted;
   * the empty space around the room: everything joined to the plate's border that matches the backdrop colour,

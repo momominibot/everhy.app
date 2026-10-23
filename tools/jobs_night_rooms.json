@@ -1,0 +1,26 @@
+[
+ {
+  "id": "night_bedroom-dream-wide",
+  "size": "1024x1024",
+  "prompt": "The same room as in the image, exactly the same layout, furniture, camera angle, framing and soft 3D clay style, now late at night: deep blue night sky with stars and a small crescent moon seen through the window glass, fairy lights and table lamps glowing warm, soft pools of warm lamplight, gentle cool shadow in the corners, the empty background around the room a deep starry navy. No people. Change nothing else.",
+  "ref": "art/plates/bedroom-dream-wide.webp"
+ },
+ {
+  "id": "night_bathroom-dream-wide",
+  "size": "1024x1024",
+  "prompt": "The same room as in the image, exactly the same layout, furniture, camera angle, framing and soft 3D clay style, now late at night: deep blue night sky with stars and a small crescent moon seen through the window glass, fairy lights and table lamps glowing warm, soft pools of warm lamplight, gentle cool shadow in the corners, the empty background around the room a deep starry navy. No people. Change nothing else.",
+  "ref": "art/plates/bathroom-dream-wide.webp"
+ },
+ {
+  "id": "night_living-dream-wide",
+  "size": "1024x1024",
+  "prompt": "The same room as in the image, exactly the same layout, furniture, camera angle, framing and soft 3D clay style, now late at night: deep blue night sky with stars and a small crescent moon seen through the window glass, fairy lights and table lamps glowing warm, soft pools of warm lamplight, gentle cool shadow in the corners, the empty background around the room a deep starry navy. No people. Change nothing else.",
+  "ref": "art/plates/living-dream-wide.webp"
+ },
+ {
+  "id": "night_kitchen",
+  "size": "1024x1024",
+  "prompt": "The same room as in the image, exactly the same layout, furniture, camera angle, framing and soft 3D clay style, now late at night: deep blue night sky with stars and a small crescent moon seen through the window glass, fairy lights and table lamps glowing warm, soft pools of warm lamplight, gentle cool shadow in the corners, the empty background around the room a deep starry navy. No people. Change nothing else.",
+  "ref": "art/plates/kitchen.webp"
+ }
+]

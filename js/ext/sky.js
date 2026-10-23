@@ -224,8 +224,11 @@
     list = list || sc.lamps || hints(sc).lamps || [{ x: 50, y: 30, r: 46 }]; /* a room with no lamps known: one soft light */
     return list.filter(function (l) { return l && isFinite(l.x) && isFinite(l.y); });
   }
-  var NIGHT_ROOMS = { 'bedroom-dream-wide': 1, 'bathroom-dream-wide': 1, 'living-dream-wide': 1, kitchen: 1 };
-  function nightFor(sc) { var m = /art\/plates\/([\w-]+)\.webp$/.exec(sc && sc.plate || ''); return m && NIGHT_ROOMS[m[1]] ? 'art/night/' + m[1] + '.webp' : null; }
+  /* a room's own night painting (art/plates/night/<plate>.webp, the same room repainted at night from the day plate, one
+   * guarded render run: tools/jobs_night_rooms.json) fades in over the day plate with the lamps. Listed only once the
+   * painting exists; an overlay painted over the day art looked pasted on (Jamie, 24 Oct), so there is none meanwhile. */
+  var NIGHT_ROOMS = {};
+  function nightFor(sc) { var m = /art\/plates\/([\w-]+)\.webp$/.exec(sc && sc.plate || ''); return m && NIGHT_ROOMS[m[1]] ? 'art/plates/night/' + m[1] + '.webp' : null; }
   function rebuild(id, sc, indoor) {
     var nsrc = indoor ? nightFor(sc) : null; els.night.dataset.src = nsrc || '';
     if (nsrc && els.night.getAttribute('src') !== nsrc) els.night.src = nsrc;
