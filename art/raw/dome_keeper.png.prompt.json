@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Character sheet of a friendly Singaporean auntie gardener for a cosy clay phone game, standing, front view, full body, centred, on a flat pure magenta #FF00FF background: short grey hair with a pink flower clip, round glasses, green apron with pockets over a cream shirt, holding a small potted flower, warm smile. Same proportions as a normal adult, slightly chubby, smooth matte clay. Rounded chunky shapes, soft warm light, pastel colours. No text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 59.1,
+ "bytes": 1285995
+}

@@ -1,0 +1,37 @@
+/* Flower Dome: the seed stall sheet. */
+.dome-balance { margin: 0; font-weight: 700; }
+.dome-balance b { font-variant-numeric: tabular-nums; }
+.dome-said { margin: 0; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, #f2c14e 16%, var(--card)); }
+.dome-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dome-item { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.dome-item.short { opacity: 0.82; }
+.dome-icon { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--card) 70%, var(--line)); }
+.dome-icon svg { width: 22px; height: 22px; display: block; }
+.dome-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.dome-text b { font-size: 15px; }
+.dome-text small { color: var(--soft); font-size: 12px; }
+.dome-buy { flex: none; min-width: 72px; }
+.dome-buy:disabled { cursor: default; color: var(--soft); background: var(--bg); }
+.dome-short { flex-basis: 100%; color: var(--soft); font-size: 12px; margin-top: -4px; }
+.dome-earn, .dome-shed { margin: 0; font-size: 13px; }
+html[data-text="large"] .dome-text b { font-size: 17px; }
+html[data-text="larger"] .dome-text b { font-size: 19px; }
+
+/* two shelves */
+.dome-tabs { display: flex; gap: 6px; }
+.dome-tab { flex: 1; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 9px 12px; font: 700 14px var(--font); min-height: 42px; cursor: pointer; }
+.dome-tab[aria-selected="true"] { background: var(--teal); border-color: var(--teal); color: #fff; }
+.dome-tab:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.dome-plant-icon { background: color-mix(in srgb, #f2c14e 10%, var(--card)); }
+.dome-plant-icon svg { width: 26px; height: 34px; }
+.dome-sub { margin: 4px 0 0; font-size: 16px; }
+.dome-move { flex: none; min-width: 72px; }
+.dome-pick { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dome-spot { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; border-radius: 14px; padding: 10px 14px; text-align: left; }
+.dome-spot b { font-size: 15px; }
+.dome-spot small { color: var(--soft); font-size: 12px; font-weight: 500; }
+.dome-spot:disabled { opacity: 0.6; cursor: default; }
+.dome-back { align-self: flex-start; }
+/* the keeper and her line, the plants at home */
+.dome-bubble text { font-family: var(--font); }
+html[data-text="large"] .dome-spot b { font-size: 17px; }
