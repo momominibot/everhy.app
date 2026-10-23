@@ -100,3 +100,18 @@ Next:
 4. Bathroom: a bathtub soak with a mindful practice (soak pose exists from the hot spring).
 5. Wardrobe: the bedroom cabinet opens outfits: a tudung set, and cabin-crew uniforms in the Ebb clay style in blue,
    green and red (check the real rank colours first; confirm the collaboration's licence before anything ships).
+Added by Jamie later the same evening (23 Oct):
+6. Outfits are worn at the bedroom wardrobe, not the cabinet.
+7. Every seat: she just sits first. Then a small inline choice, "Just sit" or "A mindful moment", never a pop-up that
+   greys the screen. People sit to take a picture.
+8. MRT carriage feels too wide. Bus: make the interior like a real Singapore double-decker (paired seats), cute style.
+   Choose a seat first, then offer the mindful option.
+9. From home, the Garden is next door: no MRT or bus offer for home to Garden.
+10. The shed's "pick seeds" is wrong: seeds are bought at the Flower Dome; the shed only holds what she bought.
+11. Weather: follow live Singapore weather (rain when it rains, sun when it's clear), not a random rainy day.
+12. Hawker centre: she can't sit on the chairs. Make it much bigger (the camera follows, no phone-size limit), with
+    five stalls (Singapore hawker classics, Chinese, Western, Malay, Indian), a stallholder behind each, a cute menu
+    to order from with hearts, each dish showing calories, protein, fibre and so on for one standard serving.
+Blocked: every new picture (bus interior, bigger hawker, stallholders, food pictures, outfits, drink and victory poses)
+waits on the image key; ~/.config/volcengine/api_key changed 23 Oct 15:17 and returns 401. art/BLOCKED.json stays
+until Jamie says the key is fixed and to rerun.
