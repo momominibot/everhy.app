@@ -109,7 +109,7 @@
     if (!n) return null;
     if (n.spot) return n.spot.label;
     var a = F.nextAction(st.farm, n.bed, today());
-    return { hoe: 'Hoe the soil', plant: 'Plant a seed', needSeeds: 'Seeds are in the shed', water: 'Water', harvest: 'Harvest', done: 'Watered today' }[a];
+    return { hoe: 'Hoe the soil', plant: 'Plant a seed', needSeeds: 'Seeds come from the Flower Dome', water: 'Water', harvest: 'Harvest', done: 'Watered today' }[a];
   }
   function refreshPrompt() {
     var n = nearest(), label = !path.length && !sitting ? promptFor(n) : null;
@@ -148,7 +148,7 @@
     if (!t) return;
     if (t.bed !== undefined) {
       var before = F.nextAction(st.farm, t.bed, today());
-      if (before === 'needSeeds') { toast('Pick up seeds from the shed first'); return; }
+      if (before === 'needSeeds') { toast('Buy seeds at the Flower Dome first, then plant them here'); return; }
       if (before === 'done') { toast('Already watered today. It grows overnight.'); return; }
       var res = F.act(st.farm, t.bed, today()); S.save();
       work({ hoe: 'hoe', plant: 'seed', water: 'can', harvest: 'pick' }[res.action] || 'none', 700, 'side');
@@ -166,8 +166,10 @@
       return;
     }
     if (sp.kind === 'shed') {
-      var got = F.takeSeeds(st.farm, today()); S.save(); updateHud();
-      toast(got ? 'A ' + F.CROPS[got].name.toLowerCase() + ' seed. ' + st.farm.seedsLeft + ' more today.' : 'That’s today’s seeds. More tomorrow.');
+      /* her seed box: what she bought at the Flower Dome; seeds are no longer free */
+      var have = Object.keys(st.farm.seeds || {}).filter(function (k) { return st.farm.seeds[k] > 0 && F.CROPS[k]; });
+      toast(have.length ? 'In your seed box: ' + have.map(function (k) { return st.farm.seeds[k] + ' ' + F.CROPS[k].name.toLowerCase(); }).join(', ') + '. Tap a bed to plant.'
+        : 'Your seed box is empty. Seeds are sold at the Flower Dome, for hearts.', 3200);
     } else if (sp.kind === 'pond') offer();
     else if (sp.kind === 'cushion') { sit(sp); root.EbbUi.openPractice(function () { stand(); }); }
     else if (sp.kind === 'wardrobe') root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } });

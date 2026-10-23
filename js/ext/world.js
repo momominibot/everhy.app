@@ -148,8 +148,10 @@
       draw();
     }, out);
   });
-  root.EbbGame.registerProps('waterfall', function (api, near) {
-    var sp = W.SCENES[FISH_SCENE].spots.filter(function (s) { return s.id === 'fishing'; })[0], out = sign(80, 162, 'Hot spring');
+  /* Little Guilin: only the signpost. No fishing there: NParks lists Bukit Batok Town Park as "Do not fish" */
+  root.EbbGame.registerProps('waterfall', function () { return sign(80, 162, 'Hot spring'); });
+  root.EbbGame.registerProps(FISH_SCENE, function (api, near) {
+    var sp = W.SCENES[FISH_SCENE].spots.filter(function (s) { return s.id === 'fishing'; })[0], out = '';
     if (!sp) return out;
     /* a little rod resting at the pond edge */
     out += '<g class="world-rod"><path d="M' + (sp.at.x - 2) + ' ' + (sp.at.y + 3) + ' L' + (sp.at.x + 5) + ' ' + (sp.at.y - 5) + '" stroke="#9a7552" stroke-width="0.6" stroke-linecap="round"/>' +

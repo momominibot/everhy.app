@@ -269,7 +269,8 @@
         if (saved) body.appendChild(el('p', 'muted small', 'Saved to your practice history, with where it happened.'));
       }, [{ label: 'Stay seated', id: 'stay', fn: function (b, done) { done(); } }, { label: 'Get up', primary: true, id: 'up', fn: function (b, done) { done(); getUp(); } }]);
     }
-    pick();
+    /* she just sits first (the ride has its own Get up and Arrive); the practices only if she asks */
+    if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: pick }); else pick();
   }
 
   /* ---------- wiring ---------- */

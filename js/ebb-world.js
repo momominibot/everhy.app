@@ -73,7 +73,7 @@
         { id: 'toHawker', rect: [4, 168, 24, 175], to: 'hawker', arrive: { x: 50, y: 152 }, label: 'Walk to the hawker centre' },
         { id: 'toFalls', rect: [60, 170, 96, 175], to: 'waterfall', arrive: { x: 44, y: 166 }, label: 'Path to Little Guilin' }
       ],
-      spots: [{ id: 'shed', kind: 'shed', at: { x: 78, y: 100 }, stand: { x: 84, y: 116 }, label: 'Seeds from the jars' }],
+      spots: [{ id: 'shed', kind: 'shed', at: { x: 78, y: 100 }, stand: { x: 84, y: 116 }, label: 'Look in your seed box' }],
       beds: [
         { x: 35, y: 125, w: 26, stand: { x: 28, y: 115 } },
         { x: 65, y: 125, w: 26, stand: { x: 72, y: 115 } },
@@ -131,6 +131,7 @@
       solids: [[20, 102, 42, 124], [56, 90, 61, 104], [8, 134, 25, 147], [86, 116, 100, 175], [33, 142, 37, 150], [48, 136, 52, 144], [63, 126, 67, 134], [83, 139, 87, 147], [68, 153, 72, 161]], /* bench, deck's left rail, rock, right bushes, bollards */
       soundSources: { birds: [[82, 30, 50], [10, 40, 42]], hush: [] },
       doors: [{ id: 'toFarm', rect: [30, 170, 55, 175], to: 'farm', arrive: { x: 78, y: 162 }, label: 'Path to the garden' }], /* the world extension adds the hot spring door beside it */
+      water: [[[6, 80], [96, 80], [96, 99], [58, 101], [56, 111], [22, 111], [8, 107]]], /* the lake, for tap ripples (js/ext/ripples.js) */
       spots: [
         { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Offer to the lake' },
         { id: 'bench', kind: 'cushion', at: { x: 31, y: 110 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }

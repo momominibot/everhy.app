@@ -91,6 +91,22 @@
   }
   function weatherFor(key) { return hash('ebb-sky|' + key) % 1000 < RAIN_PER_MILLE ? 'rain' : 'clear'; }
   function weatherAt(d) { return weatherFor(dateKey(d)); }
+  /* live Singapore weather: NEA's two-hour forecast from data.gov.sg (public, no key). Each place reads its own area;
+   * places without one read the island-wide majority. Rain when the forecast says rain or showers, clear otherwise. */
+  var AREAS = { merlion: 'City', jetty: 'Bedok', waterfall: 'Bukit Batok', spring: 'Sembawang', dome: 'City', hawker: 'Toa Payoh', farm: 'Toa Payoh' };
+  var LIVE_MAX_MS = 3 * 3600 * 1000; /* older than three hours: not trusted, the sky is simply clear */
+  function wet(text) { return /rain|shower/i.test(String(text || '')); }
+  function liveWeather(live, sceneId, nowMs) {
+    if (!live || !live.at || !Array.isArray(live.areas) || nowMs - live.at > LIVE_MAX_MS) return null;
+    var name = AREAS[sceneId], hit = live.areas.filter(function (a) { return a.area === name; })[0];
+    if (hit) return wet(hit.forecast) ? 'rain' : 'clear';
+    var n = live.areas.filter(function (a) { return wet(a.forecast); }).length;
+    return live.areas.length && n * 2 > live.areas.length ? 'rain' : 'clear';
+  }
+  function parseForecast(json, nowMs) { /* the API's answer -> { at, areas: [{ area, forecast }] }, or null */
+    try { var it = json.data.items[0]; return { at: nowMs, issued: it.update_timestamp || null, areas: it.forecasts.map(function (f) { return { area: String(f.area), forecast: String(f.forecast) }; }) }; }
+    catch (e) { return null; }
+  }
 
   function isIndoor(id, scene) {
     if (scene && typeof scene.indoor === 'boolean') return scene.indoor;
@@ -114,7 +130,7 @@
 
   var api = null, lampHooks = {}, current = {};
   root.EbbSky = { vignetteAt: vignetteAt, cutMatrix: cutMatrix, PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
-    dateKey: dateKey, weatherFor: weatherFor, weatherAt: weatherAt, isIndoor: isIndoor, effects: effects,
+    dateKey: dateKey, weatherFor: weatherFor, weatherAt: weatherAt, liveWeather: liveWeather, parseForecast: parseForecast, AREAS: AREAS, isIndoor: isIndoor, effects: effects,
     parseTime: parseTime, parseWeather: parseWeather,
     /* other modules: where the lamps are in a room, e.g. from its furniture. fn(api) -> [{ x, y }] in scene percent */
     setLamps: function (sceneId, fn) { lampHooks[sceneId] = fn; if (api) update(true, true); },
@@ -126,6 +142,16 @@
   var W = root.EbbWorld;
   var search = root.location ? root.location.search : '';
   var fixedMinute = parseTime(search), fixedWeather = parseWeather(search);
+  var LIVE_KEY = 'ebb_weather_v1', FORECAST = 'https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast', live = null;
+  try { live = JSON.parse(root.localStorage.getItem(LIVE_KEY) || 'null'); } catch (e) { live = null; }
+  function fetchLive() { /* every 30 minutes while open; offline or refused simply keeps the last answer (and clear sky once stale) */
+    if (fixedWeather || !root.fetch || (live && Date.now() - live.at < 25 * 60 * 1000)) return;
+    root.fetch(FORECAST, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var got = j && parseForecast(j, Date.now()); if (!got || !got.areas.length) return;
+      live = got; try { root.localStorage.setItem(LIVE_KEY, JSON.stringify(live)); } catch (e) { }
+      update(true, true);
+    }).catch(function () { });
+  }
   var mq = root.matchMedia ? root.matchMedia('(prefers-reduced-motion: reduce)') : null;
   /* per plate, for the art that shipped without lamp or window positions; a scene's own lamps/windows always win */
   var PLATE_HINTS = {
@@ -222,7 +248,7 @@
   function update(snap, force) {
     if (!api || !els) return;
     var d = now(), m = minuteOf(d), id = api.scene(), sc = W && W.SCENES[id] || {}, indoor = isIndoor(id, sc);
-    var weather = fixedWeather || weatherAt(d), p = paint(m, { indoor: indoor, weather: weather });
+    var weather = fixedWeather || liveWeather(live, id, Date.now()) || 'clear', p = paint(m, { indoor: indoor, weather: weather });
     var fx = effects({ phase: p.phase, indoor: indoor, weather: weather, fireflies: !!(sc.fireflies || FLIES[id]), reduced: reduced() });
     if (snap) els.sky.classList.add('snap');
     if (id !== sceneId || force) { sceneId = id; rebuild(id, sc, indoor); }
@@ -259,6 +285,7 @@
     update(true);
     root.requestAnimationFrame(frame);
     root.setInterval(function () { update(false); }, 30000);
+    fetchLive(); root.setInterval(fetchLive, 30 * 60 * 1000);
     doc.addEventListener('visibilitychange', function () { if (!doc.hidden) update(true); });
     if (mq) { var on = function () { update(true); }; if (mq.addEventListener) mq.addEventListener('change', on); else if (mq.addListener) mq.addListener(on); }
     if (root.MutationObserver) new MutationObserver(function () { update(true); }).observe(doc.documentElement, { attributes: true, attributeFilter: ['data-motion'] });

@@ -1,6 +1,6 @@
 /* Ebb seats: the compact sheet while she sits somewhere in the world (js/ext/seats.js). A light scrim so the seat and
  * the place stay in view behind it. */
-.seat-wrap { background: rgba(40, 30, 30, 0.1); }
+.seat-wrap { background: none; } /* no grey over the room: she stays in view while choosing */
 .seat-sheet { gap: 8px; max-height: 40vh; padding-top: 12px; }
 .seat-sheet:focus { outline: none; } /* focus lands on the dialog itself, with no ring on a tap screen */
 .seat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

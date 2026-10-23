@@ -115,3 +115,19 @@ Added by Jamie later the same evening (23 Oct):
 Blocked: every new picture (bus interior, bigger hawker, stallholders, food pictures, outfits, drink and victory poses)
 waits on the image key; ~/.config/volcengine/api_key changed 23 Oct 15:17 and returns 401. art/BLOCKED.json stays
 until Jamie says the key is fixed and to rerun.
+Done in the evening batch: home to Garden needs no ride; the shed is now her seed box (seeds only from the Flower
+Dome); live NEA two-hour forecast per place (rain only when it rains); no fishing rod at Little Guilin (NParks: "Do not
+fish" at Bukit Batok Town Park); tap ripples on the Little Guilin lake; every seat sits first with small chips (Just
+sit, A mindful moment, Get up), no grey sheet.
+Still to do, from Jamie's later notes:
+13. Little Guilin: Erin speaks more there, on nature and noticing when you zone out. The bench should face the lake
+    with her seen from behind (needs the plate re-rendered with the bench turned, and a back-view seated pose).
+14. Merlion Park: the boat sailing across in a loop (Seedance); a choice of the stone bench or the wooden bench; an
+    ice cream cart (matcha and others) where she buys one and eats it on the spot, holding it (poses needed).
+15. Flower Dome: the monstera bonsai bigger; shop items as square cards; plants detailed and cute; buy as many as
+    she likes into an inventory, place one at a single home spot for now (decorating comes later).
+16. Garden: plant bought seeds, water daily, see the plot change every day, ready to pick on day 3 or 4.
+17. Bedok Jetty: a fishing mission; caught fish go in the bag; cook them in the home kitchen; a FairPrice-style grocer
+    for garlic and spices, cooking as in Rhythme.
+18. Map: the whole of Singapore including Sentosa, with its iconic buildings, and our places hidden until tapped
+    (a tap reveals the place with a prompt to go there). Needs a new map render.

@@ -68,7 +68,7 @@ def main():
 
         def on_console(m):  # other workstreams' entry files or art may be missing on this branch; the bag's own must not be
             url = (m.location or {}).get('url', '')
-            if m.type == 'error' and not ('/ext/' in url and 'bag' not in url):
+            if m.type == 'error' and not ('/ext/' in url and 'bag' not in url) and 'data.gov.sg' not in m.text + url:  # the live weather fetch is blocked offline here, by design
                 errors.append(m.text + ' ' + url)
         page.on('console', on_console)
         page.on('pageerror', lambda e: errors.append(str(e)))

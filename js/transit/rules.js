@@ -36,6 +36,7 @@
     if (pin.id === 'home' || HOME.indexOf(pin.scene) >= 0) return null;
     if (!pin.spot && (pin.here || [pin.scene]).indexOf(current) >= 0) return null;
     if (isTransitScene(current)) return null;
+    if (pin.scene === 'farm' && HOME.indexOf(current) >= 0) return null; /* the Garden is next door to her home: she walks out of the door */
     return { to: pin.scene, arrive: sp ? { x: sp.stand.x, y: sp.stand.y } : null, label: pin.label || s.name };
   }
 

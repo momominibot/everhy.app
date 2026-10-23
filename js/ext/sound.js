@@ -293,6 +293,10 @@
         burst(ctx, out, at + 0.07, { f: between(r, 900, 1200), q: 3, a: 0.002, d: 0.04, gain: 0.08 }, r);
       }
     } },
+    plop: { dur: 0.5, make: function (ctx, out, t, r) { /* a fingertip on still water: a small drop and its ring */
+      tone(ctx, out, t, { f: between(r, 520, 620), to: 1400, glide: 0.06, a: 0.002, d: 0.09, gain: 0.26 });
+      burst(ctx, out, t + 0.02, { kind: 'pink', type: 'lowpass', f: 900, a: 0.004, d: 0.18, gain: 0.12 }, r);
+    } },
     heart: { dur: 2.6, make: function (ctx, out, t) { /* a reward: two bright bell notes up and a soft sparkle on top */
       bell(ctx, out, t, 1318.5, 0.09, -0.15); bell(ctx, out, t + 0.11, 1975.5, 0.08, 0.15);
       tone(ctx, out, t + 0.11, { f: 3951, a: 0.002, d: 0.2, gain: 0.02 });

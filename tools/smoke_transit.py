@@ -52,6 +52,12 @@ def go_map(pg, pin):
     click(pg, f'.map-place[data-pin="{pin}"]')
 
 
+def ride_mindful(pg):  # she just sits first (the ride has its own Get up); the seat options come with A mindful moment
+    pg.wait_for_selector('.seat-choice [data-act="mindful"]', timeout=5000)
+    check('on the ride she just sits first: Just sit and A mindful moment', pg.locator('.seat-choice .btn').all_inner_texts() == ['Just sit', 'A mindful moment'])
+    click(pg, '.seat-choice [data-act="mindful"]')
+
+
 def scene(pg): return pg.evaluate("EbbGame.api.scene()")
 
 
@@ -108,7 +114,7 @@ with sync_playwright() as p:
     me = pg.evaluate("() => ({ x: EbbGame.me().x, y: EbbGame.me().y })")
     check('she walks the aisle', abs(me['x'] - 30) < 1.5 and abs(me['y'] - 112) < 1.5)
     seat = pg.evaluate("() => EbbWorld.SCENES.train.spots[2]")
-    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat); settle(pg)
+    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat); settle(pg); ride_mindful(pg)
     pg.wait_for_selector('.transit-wrap', timeout=5000)
     check('seated with the seat sheet open', pg.evaluate("EbbGame.me().action === 'sit' && EbbTransit.seated()"))
     check('three seat choices', pg.evaluate("[...document.querySelectorAll('.transit-card')].map(b => b.dataset.choice).join()") == 'breathe,notice,sit')
@@ -149,7 +155,7 @@ with sync_playwright() as p:
     check('Arrive is back after the reload', pg.evaluate("document.getElementById('transitArrive').textContent") == 'Arrive at Merlion Park')
     # notice five things, run to the end quickly by ending through the rules timer
     seat2 = pg.evaluate("() => EbbWorld.SCENES.train.spots[4]")
-    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat2); settle(pg)
+    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat2); settle(pg); ride_mindful(pg)
     pg.wait_for_selector('.transit-card[data-choice="notice"]', timeout=5000); click(pg, '.transit-card[data-choice="notice"]')
     pg.wait_for_selector('#transitClock', timeout=3000)
     check('notice runs straight away with 45 seconds', pg.evaluate("document.getElementById('transitClock').textContent").startswith('0:4') and 'see' in pg.evaluate("document.querySelector('.transit-cue').textContent"))
@@ -161,7 +167,7 @@ with sync_playwright() as p:
     me = pg.evaluate("() => ({ x: EbbGame.me().x, y: EbbGame.me().y, a: EbbGame.me().action })")
     check('Get up puts her at the stand point', me['a'] != 'sit' and abs(me['x'] - seat2['stand']['x']) < 0.5 and abs(me['y'] - seat2['stand']['y']) < 0.5)
     # just sit, then Arrive from the seat
-    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat); settle(pg)
+    pg.evaluate("sp => EbbGame.walkTo(sp.stand, { spot: sp })", seat); settle(pg); ride_mindful(pg)
     pg.wait_for_selector('.transit-card[data-choice="sit"]', timeout=5000); click(pg, '.transit-card[data-choice="sit"]'); pg.wait_for_timeout(300)
     n_obs = pg.evaluate("EbbGame.state().observations.length")
     check('Just sit saves nothing and keeps her seated', pg.evaluate("EbbGame.me().action") == 'sit' and not pg.evaluate("!!document.querySelector('.transit-wrap')"))

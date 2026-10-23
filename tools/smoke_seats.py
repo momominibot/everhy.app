@@ -38,7 +38,11 @@ def walk_to(pg, spot):
     """as a tap on the seat would: walk to its stand point, then act on it"""
     pg.evaluate("(q) => EbbGame.walkTo(q.stand, { spot: q })", spot); pg.wait_for_timeout(350)
     pg.wait_for_function("() => EbbGame.me().action !== 'walk'", timeout=20000); pg.wait_for_timeout(300)
+    if pg.locator('.seat-choice [data-act="mindful"]').count():  # she just sits first; the seat's options come with A mindful moment
+        CHIPS.append(pg.locator('.seat-choice .btn').all_inner_texts())
+        pg.click('.seat-choice [data-act="mindful"]'); pg.wait_for_timeout(250)
 
+CHIPS = []
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -73,6 +77,7 @@ with sync_playwright() as p:
     # a walk tap on the floor does nothing while she sits
     pg.evaluate("(q) => EbbGame.walkTo(q)", {'x': 50, 'y': 160}); pg.wait_for_timeout(600)
     s3 = pg.evaluate(STATE)
+    check('she just sits first: Just sit, A mindful moment, Get up, and no sheet before she asks', bool(CHIPS) and CHIPS[0] == ['Just sit', 'A mindful moment', 'Get up'])
     check('a floor tap does not move her while seated', s3['action'] == 'sit' and abs(s3['x'] - sit['x']) < 0.01, str(s3))
     pg.evaluate("document.getElementById('scene').click()"); pg.wait_for_timeout(400)
     check('a scene click does not stand her up', pg.evaluate(STATE)['action'] == 'sit')

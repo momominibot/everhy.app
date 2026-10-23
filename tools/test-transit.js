@@ -55,6 +55,8 @@ const FILES = ['js/ebb-world.js', 'js/ext/world.js', 'js/ext/map.js', 'js/ext/tr
   check('a park away from the farm is offered', !!R.offerFor(pin('merlion'), W.SCENES, 'farm') && R.offerFor(pin('merlion'), W.SCENES, 'farm').to === 'merlion');
   check('the offer names the place', R.offerFor(pin('merlion'), W.SCENES, 'farm').label === 'Merlion Park');
   check('home is never a ride', R.offerFor(pin('home'), W.SCENES, 'farm') === null);
+  check('the Garden from home is next door, no ride', R.offerFor(pin('farm'), W.SCENES, 'living') === null && R.offerFor(pin('farm'), W.SCENES, 'bedroom') === null);
+  check('the Garden from elsewhere is still a ride', !!R.offerFor(pin('farm'), W.SCENES, 'merlion'));
   check('a home room by scene id is never a ride', R.offerFor({ id: 'x', scene: 'living' }, W.SCENES, 'farm') === null);
   check('her own place is not a ride', R.offerFor(pin('farm'), W.SCENES, 'farm') === null);
   check('home counts every home room as here', R.offerFor(pin('home'), W.SCENES, 'bathroom') === null);
@@ -65,7 +67,7 @@ const FILES = ['js/ebb-world.js', 'js/ext/world.js', 'js/ext/map.js', 'js/ext/tr
   pier.arrive.x = 0; check('the arrival is a copy', fishing.stand.x !== 0);
   check('a scene pin arrives at the scene start', R.offerFor(pin('hawker'), W.SCENES, 'farm').arrive === null);
   check('no boarding from on board', R.offerFor(pin('merlion'), W.SCENES, 'train') === null && R.offerFor(pin('merlion'), W.SCENES, 'bus') === null);
-  check('from home every outside place is offered', ['farm', 'hawker', 'waterfall', 'spring', 'merlion', 'pier'].every(id => !!R.offerFor(pin(id), W.SCENES, 'bedroom')));
+  check('from home every outside place but the Garden next door is offered', ['hawker', 'waterfall', 'spring', 'merlion', 'pier'].every(id => !!R.offerFor(pin(id), W.SCENES, 'bedroom')));
   check('copy has no em dash', !DASH.test(JSON.stringify(R.MODES) + JSON.stringify(R.SEAT_OPTIONS) + R.NOTICE.join('') + JSON.stringify(R.BREATH)));
 })();
 

@@ -281,7 +281,8 @@
         { label: 'Not now', id: 'notnow', fn: done },
         { label: 'Simple sitting', id: 'simple', fn: function () { close(); root.EbbUi.openPractice(up); } }]);
     }
-    pick();
+    /* she just sits first; the practices only if she asks for a mindful moment */
+    if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: pick, up: up }); else pick();
   }
 
   root.EbbGame.registerPanel({ id: 'course', label: 'Course', open: function (api) { home(api); } });

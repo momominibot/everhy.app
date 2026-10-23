@@ -1,6 +1,6 @@
 /* Ebb farm rules, pure. A bed goes grass -> tilled -> planted -> ripe -> (harvest) -> tilled. A planted bed grows one
  * stage for each real day it was watered before today, so water shows the next morning; a dry day simply adds nothing,
- * and nothing ever wilts, dies or is taken away. Seeds come free from the shed, three a day. Days are 'YYYY-MM-DD'
+ * and nothing ever wilts, dies or is taken away. Seeds are bought at the Flower Dome (js/ext/dome.js); takeSeeds below is the old free-seed rule, no longer called. Days are 'YYYY-MM-DD'
  * strings passed in by the caller, so tests can move the calendar. */
 (function (root) {
   'use strict';

@@ -148,5 +148,27 @@
       { label: 'Save', primary: true, fn: function () { save(); c(); onDone(); } }]);
   }
 
-  root.EbbUi = { openWardrobe: openWardrobe, openPractice: openPractice, modalOpen: function () { return open; } };
+  /* after she sits anywhere: three small chips where the walking prompt sits, never a sheet over the room. Just sit
+   * leaves only Get up (or nothing, when the place has its own Get up); A mindful moment hands over to the seat's own
+   * options. The chips go by themselves once she is no longer sitting. o: { mindful(), up(), justSit() } */
+  var choiceClose = null;
+  function seatChoice(o) {
+    if (choiceClose) choiceClose();
+    var bar = doc.querySelector('.actionbar') || doc.body, box = doc.createElement('div'), watch = 0;
+    box.className = 'seat-choice'; box.addEventListener('click', function (e) { e.stopPropagation(); });
+    function close() { clearInterval(watch); if (box.parentNode) box.remove(); if (choiceClose === close) choiceClose = null; }
+    function btn(label, act, fn, primary) {
+      var b = doc.createElement('button'); b.type = 'button'; b.className = 'btn small' + (primary ? ' primary' : ''); b.dataset.act = act; b.textContent = label;
+      b.addEventListener('click', function (e) { e.stopPropagation(); fn(); }); box.appendChild(b);
+    }
+    function upOnly() { box.innerHTML = ''; if (o.up) btn('Get up', 'getup', function () { close(); o.up(); }); else close(); }
+    btn('Just sit', 'justsit', function () { upOnly(); if (o.justSit) o.justSit(); });
+    btn('A mindful moment', 'mindful', function () { close(); o.mindful(); }, true);
+    if (o.up) btn('Get up', 'getup', function () { close(); o.up(); });
+    bar.appendChild(box); choiceClose = close;
+    watch = setInterval(function () { var G = root.EbbGame; if (!G || !G.me || G.me().action !== 'sit') close(); }, 300);
+    return close;
+  }
+
+  root.EbbUi = { openWardrobe: openWardrobe, openPractice: openPractice, seatChoice: seatChoice, closeSeatChoice: function () { if (choiceClose) choiceClose(); }, modalOpen: function () { return open; } };
 })(window);

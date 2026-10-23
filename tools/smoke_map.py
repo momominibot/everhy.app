@@ -46,7 +46,7 @@ with sync_playwright() as p:
     b = btn.bounding_box()
     check('map button sits bottom right', b['x'] + b['width'] > 360 and b['y'] + b['height'] > 780)
     # every action label a spot can show stays clear of the button
-    labels = pg.evaluate("Object.values(EbbWorld.SCENES).flatMap(s => s.spots.map(sp => sp.label)).concat(['Seeds are in the shed', 'Hoe the soil', 'Watered today', 'Slip into the warm water', 'Say hello to Clover'])")
+    labels = pg.evaluate("Object.values(EbbWorld.SCENES).flatMap(s => s.spots.map(sp => sp.label)).concat(['Seeds come from the Flower Dome', 'Hoe the soil', 'Watered today', 'Slip into the warm water', 'Say hello to Clover'])")
     clear = True
     for text in labels:
         box = pg.evaluate("t => { const e = document.getElementById('prompt'); e.hidden = false; e.textContent = t; const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; }", text)

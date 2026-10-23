@@ -134,5 +134,19 @@ check('reduced motion hides rain and fireflies in CSS too', /prefers-reduced-mot
 const src = fs.readFileSync(path.join(ROOT, 'js/ext/sky.js'), 'utf8') + css + fs.readFileSync(__filename, 'utf8');
 check('no em dashes in the sky files', src.indexOf(String.fromCharCode(0x2014)) < 0);
 
+/* live Singapore weather: the NEA two-hour forecast shape, per-place areas, island majority, stale means clear */
+const api = { data: { items: [{ update_timestamp: '2026-10-23T16:06:55+08:00', forecasts: [
+  { area: 'City', forecast: 'Thundery Showers' }, { area: 'Bedok', forecast: 'Partly Cloudy (Day)' }, { area: 'Bukit Batok', forecast: 'Light Rain' },
+  { area: 'Sembawang', forecast: 'Cloudy' }, { area: 'Toa Payoh', forecast: 'Fair (Day)' }] }] } };
+const NOW = 1000000000000, L = S.parseForecast(api, NOW);
+check('the forecast parses into areas', L && L.areas.length === 5 && L.issued === '2026-10-23T16:06:55+08:00');
+check('Merlion Park reads the City: thundery showers is rain', S.liveWeather(L, 'merlion', NOW) === 'rain');
+check('Bedok Jetty reads Bedok: partly cloudy is clear', S.liveWeather(L, 'jetty', NOW) === 'clear');
+check('Little Guilin reads Bukit Batok: light rain is rain', S.liveWeather(L, 'waterfall', NOW) === 'rain');
+check('a place with no area reads the island majority (2 of 5 wet: clear)', S.liveWeather(L, 'kitchen', NOW) === 'clear');
+check('an answer over three hours old is not trusted', S.liveWeather(L, 'merlion', NOW + 3 * 3600 * 1000 + 1) === null);
+check('nothing fetched yet is no weather at all', S.liveWeather(null, 'merlion', NOW) === null && S.parseForecast({}, NOW) === null);
+check('every mapped area is a real NEA area name', Object.values(S.AREAS).every(a => ['City', 'Bedok', 'Bukit Batok', 'Sembawang', 'Toa Payoh'].includes(a)));
+
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -38,6 +38,15 @@ def shot(page, name):
         page.screenshot(path=str(SHOTS / f'{name}.png'))
 
 
+def mindful(page):  # she just sits first; the practices come with A mindful moment
+    page.wait_for_selector('.seat-choice [data-act="mindful"]', timeout=5000)
+    CHIPS.append(page.locator('.seat-choice .btn').all_inner_texts())
+    page.click('.seat-choice [data-act="mindful"]'); page.wait_for_timeout(200)
+
+
+CHIPS = []
+
+
 def btn(page, act):
     page.locator(f'.course-wrap [data-act="{act}"]').click()
 
@@ -58,9 +67,10 @@ def main():
             page.locator('.sf-onboard').get_by_role('button', name='Skip all').click()
 
         # the cushion before the course: three short voice-guided practices, with simple sitting still one tap away
-        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
+        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})'); mindful(page)
         check('cushion before course offers three guided practices and simple sitting', page.locator('.course-wrap h2', has_text='On the cushion').count() == 1 and page.locator('.course-card').count() == 3 and [d for d in page.eval_on_selector_all('.course-card', 'els => els.map(e => e.dataset.practice)')] == ['arrive', 'breath', 'sound'] and page.locator('.course-wrap [data-act="simple"]').count() == 1)
         check('she sits on the cushion', page.evaluate('EbbGame.me().action') == 'sit')
+        check('on the cushion she just sits first, the chips before any sheet', bool(CHIPS) and CHIPS[0] == ['Just sit', 'A mindful moment', 'Get up'])
         page.get_by_role('button', name='Not now').click()
         check('she stands again', page.evaluate('EbbGame.me().action') == 'idle')
 
@@ -129,7 +139,7 @@ def main():
         btn(page, 'back'); page.locator('.course-wrap .btn', has_text='Close').click()
 
         # the cushion now opens the course runner
-        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
+        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})'); mindful(page)
         check('cushion opens the course once started', page.locator('.course-wrap h2', has_text='On the cushion').count() == 1)
         check('cushion offers week 1 practices', page.locator('.course-card').count() == 2)
         shot(page, '06-cushion')
@@ -146,7 +156,7 @@ def main():
         btn(page, 'nosave')
         check('not saved when she chose not to', page.evaluate('EbbGame.state().observations.length') == 1)
         check('she stands after the cushion', page.evaluate('EbbGame.me().action') == 'idle' and page.locator('.course-wrap').count() == 0)
-        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
+        page.evaluate(f'EbbGame.act({{ spot: {cushion} }})'); mindful(page)
         check('paused course: cushion back to the guided practices and simple sitting', page.locator('.course-wrap h2', has_text='On the cushion').count() == 1 and page.locator('.course-card').count() == 3 and [d for d in page.eval_on_selector_all('.course-card', 'els => els.map(e => e.dataset.practice)')] == ['arrive', 'breath', 'sound'] and page.locator('.course-wrap [data-act="simple"]').count() == 1)
         page.get_by_role('button', name='Not now').click()
 

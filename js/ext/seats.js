@@ -142,12 +142,13 @@
     cur = { spot: spot, scene: api.scene() };
     api.sit(R().sitAt(spot)); api.refresh();
     if (root.EbbLife && root.EbbLife.react) root.EbbLife.react('heart', 1600);
-    menu();
+    /* she just sits first; the seat's options only if she asks for a mindful moment */
+    if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: function () { menu(); }, up: function () { getUp('getUp'); } }); else menu();
     clearInterval(watch); watch = setInterval(tick, 250);
   }
   function getUp(why) {
     if (!cur) return;
-    stopRun(); close(); hideUp(); api.fx('', 1);
+    stopRun(); close(); hideUp(); api.fx('', 1); if (root.EbbUi && root.EbbUi.closeSeatChoice) root.EbbUi.closeSeatChoice();
     clearInterval(watch); watch = 0;
     var me = api.me(), sp = cur.spot; cur = null;
     if (why !== 'scene' && why !== 'stood') { var st = R().standAt(sp); api.stand(st.y); me.x = st.x; me.y = st.y; }
