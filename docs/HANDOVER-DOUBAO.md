@@ -4,19 +4,20 @@ Paste this into Doubao to continue: "Continue building Ebb at
 /Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb. Read docs/HANDOVER-DOUBAO.md, PROGRESS.md,
 docs/AC-STUDY.md and docs/EXTENDING.md first. Work on main; run node tools/test-core.js before every commit."
 
-## Where things stand (main at a144c81 or later)
-- The overnight Doubao session's work was found uncommitted on main and snapshotted to branch
-  `doubao/2026-10-23-overnight` before anything else. Taken onto main: its spacious farm, cherry-tree waterfall and
-  stone hot spring plates (geometry re-read on a 5 percent grid), the walk bob, the early cushion practices, the
-  waterfall streams. Left on the branch: villagers (Jamie said no NPCs), time.js (duplicates sky.js), the bells
-  garden panel, the video plate.
-- Rooms are now isometric cut-away renders (bedroom-dream-wide, bathroom-dream-wide, living-dream-wide), square,
-  zoom 2.2, camera pans; see PROGRESS.md "Look". Decorate mode still uses the tall shells.
-- Every image from Seedream 5.0 pro through `python3 tools/run_batch.py <jobs.json>` (one guarded run, lock
-  `art/RUN.lock`, no retries, stops and writes `art/BLOCKED.json` on the first failure; never delete that file yourself).
-- Checks before every commit: `for t in core world map sky sound bag log safety settings course today; do node
-  tools/test-$t.js | tail -1; done`, then `python3 tools/smoke_doors.py` (dev server on 8096) and `python3 tools/smoke_today.py`.
-- If Playwright says browsers are missing (the nightly cleanup empties ~/Library/Caches): `python3 -m playwright install chromium`.
+## Where things stand (23 Oct, midday)
+- The world is a cute clay Singapore: home (three isometric rooms), Garden (`farm`), Hawker (`hawker`), Little Guilin
+  (`waterfall`), Sembawang hot spring (`spring`, in `js/ext/world.js`), Merlion Park (`merlion`), Bedok Jetty (`jetty`),
+  the clay island map (`art/map/world.webp`). Decorate mode, the barn and the villagers are gone. The top bar shows
+  icon chips. She tucks into bed (`js/ext/sleep.js`); morning and evening routines live in `js/ext/routines.js`.
+- Side branches still being built or merged: ebb-transit (MRT or bus rides), ebb-flower-dome (seed and plant stall,
+  points for logging, shopkeeper NPC), ebb-seats (seated actions), ebb-kitchen (the big kitchen scene with working
+  appliances). Merge each with `git merge --no-ff`, keep both sides on `index.html` conflicts, then run every
+  `tools/test-*.js`, `python3 tools/smoke_doors.py` and the branch's own smoke.
+- Living plates: `tools/live_all.py tools/jobs_live_sg.json` animates the Singapore plates one guarded Seedance run
+  at a time (merlion, hot spring and jetty done; guilin, garden, hawker in progress) and `video:` on each scene points
+  at `art/plates/<id>-live.mp4`.
+- Checks before every commit: `for t in core world map sky sound bag log safety settings course today sleep routines;
+  do node tools/test-$t.js | tail -1; done`, then `python3 tools/smoke_doors.py` with the dev server on 8096.
 
 ## Live plates (animated scenery)
 Jamie wants only the water and trees to move. Recipe that worked (23 Oct): `python3 tools/live_plate.py art/raw/<plate>.png art/live/<name>-seedance.mp4 "<prompt: locked static camera, only X moves, everything else perfectly still>"`
