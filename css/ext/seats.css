@@ -1,0 +1,32 @@
+/* Ebb seats: the compact sheet while she sits somewhere in the world (js/ext/seats.js). A light scrim so the seat and
+ * the place stay in view behind it. */
+.seat-wrap { background: rgba(40, 30, 30, 0.1); }
+.seat-sheet { gap: 8px; max-height: 40vh; padding-top: 12px; }
+.seat-sheet:focus { outline: none; } /* focus lands on the dialog itself, with no ring on a tap screen */
+.seat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.seat-head h2 { font-size: 17px; }
+.seat-bar { flex-wrap: nowrap; }
+.seat-body { display: flex; flex-direction: column; gap: 8px; }
+.seat-body p { margin: 0; }
+.seat-body .muted { color: var(--soft); }
+.seat-done { color: var(--teal); font-weight: 700; }
+/* the actions: two to a row, label over its length */
+.seat-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seat-action { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; min-height: 48px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--bg); color: var(--ink); text-align: left; font: 700 14px var(--font); cursor: pointer; }
+.seat-action small { font-weight: 600; font-size: 12px; color: var(--soft); }
+.seat-action:active { transform: scale(0.98); }
+/* a running action: the prompt, then the clock with the breath count beside it */
+.seat-prompt { font-size: 14px; }
+.seat-row { display: flex; align-items: baseline; gap: 12px; }
+.seat-clock { font: 800 28px/1.1 var(--font); letter-spacing: 0.02em; }
+.seat-count { color: var(--soft); font-weight: 700; }
+/* Just sit: one small Get up button where the walking prompt sits */
+.seat-up { pointer-events: auto; }
+/* the ring on a seat she stands near, and the steam over her kopi */
+.seat-ring { animation: seat-ring 1.6s ease-in-out infinite; }
+@keyframes seat-ring { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.seat-steam { opacity: 0; animation: seat-steam 2.1s ease-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes seat-steam { 0% { opacity: 0; transform: translateY(0.6px) scale(0.9); } 30% { opacity: 0.75; } 100% { opacity: 0; transform: translateY(-2.2px) scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .seat-ring, .seat-steam { animation: none; opacity: 0.7; } }
+html[data-motion="reduce"] .seat-ring, html[data-motion="reduce"] .seat-steam { animation: none; opacity: 0.7; }
