@@ -2,26 +2,29 @@
 """Walk the whole world in the live page: smoke_doors.py [port]. Needs the dev server (default 8096). For every scene
 the engine knows (extensions included) she walks through each door and must arrive in the room it names on a walkable
 spot; she walks to every spot's stand point and the action prompt must offer that spot; she reaches every bed stand.
-Starts as a returning, consented player so no sheet covers the room."""
+Starts as a returning player (the saved onboarding record) and checks that no onboarding sheet opens."""
 import sys
 from playwright.sync_api import sync_playwright
 port = sys.argv[1] if len(sys.argv) > 1 else '8096'
+URL = f'http://localhost:{port}/?time=14:00'
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and '404' not in m.text else None)
-    pg.goto(f'http://localhost:{port}/?time=14:00'); pg.evaluate("localStorage.clear()")
-    pg.evaluate("() => { try { if (window.EbbSafety && EbbSafety.seedReturning) EbbSafety.seedReturning(); } catch (e) {} }")
-    pg.reload(); pg.wait_for_function('window.EbbGame && EbbGame._ready')
-    pg.evaluate("document.querySelectorAll('.sheet-wrap').forEach(w => w.remove())")
+    # a returning player: the saved game carries the safety module's own onboarding record, so no sheet covers the room
+    pg.goto(URL); pg.wait_for_function('window.EbbGame && EbbGame._ready'); pg.evaluate("localStorage.clear()")
+    pg.evaluate("""() => { const s = EbbGame.state(); s.safety = Object.assign({}, s.safety, { onboardedAt: '2026-10-22T08:00:00Z',
+      onboardVersion: (window.EbbSafetyUi && EbbSafetyUi.ONBOARD_VERSION) || 'onboard-2026-10-22.1' }); EbbGame.api.save(); }""")
+    pg.reload(); pg.wait_for_function('window.EbbGame && EbbGame._ready'); pg.wait_for_timeout(300)
+    fails = 0
+    if pg.evaluate("() => !!document.querySelector('.sf-onboard')"): fails += 1; print('FAIL onboarding sheet opened for a returning player')
+    if pg.evaluate("() => !!document.querySelector('.sheet-wrap')"): fails += 1; print('FAIL a sheet covers the room at start')
     plan = pg.evaluate("""() => { const W = EbbWorld, out = []; Object.keys(W.SCENES).forEach(id => { const s = W.SCENES[id];
       s.doors.forEach(d => out.push({ kind: 'door', scene: id, id: d.id, to: d.to, x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 }));
       s.spots.forEach(sp => out.push({ kind: 'spot', scene: id, id: sp.id, label: sp.label, x: sp.stand.x, y: sp.stand.y }));
       (s.beds || []).forEach((b, i) => out.push({ kind: 'bed', scene: id, id: 'bed' + i, x: b.stand.x, y: b.stand.y })); }); return out; }""")
-    fails = 0
     for step in plan:
         pg.evaluate(f"EbbGame.enter('{step['scene']}')"); pg.wait_for_timeout(200)
-        pg.evaluate("document.querySelectorAll('.sheet-wrap').forEach(w => w.remove())")
         pg.evaluate("(q) => EbbGame.walkTo(q)", {'x': step['x'], 'y': step['y']})
         try:
             if step['kind'] == 'door':

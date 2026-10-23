@@ -59,11 +59,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .pill[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: #fff; }
 .run .cue { font-size: 19px; font-weight: 600; min-height: 3em; margin: 6px 0; }
 .run .clock { color: var(--soft); font-variant-numeric: tabular-nums; margin: 0; }
-.furn.ghost { opacity: 0.75; }
-.decobar { position: absolute; z-index: 6; left: 50%; transform: translateX(-50%); bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px)); display: flex; gap: 8px; padding: 8px; border-radius: 999px; background: color-mix(in srgb, var(--card) 88%, transparent); box-shadow: 0 4px 14px rgba(40, 30, 30, 0.18); }
-.decobar .btn { min-height: 44px; }
-.decobar .btn.primary { background: var(--teal); border-color: var(--teal); }
-.scene.decorating { cursor: grab; }
 /* life: ambient motion and reaction bubbles */
 .life-twinkle { fill: #fff3c4; animation: twinkle 2.3s ease-in-out infinite; }
 @keyframes twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
@@ -88,4 +83,4 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .spark { animation: spark 1.6s ease-out both; }
 @keyframes spark { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-14px); } }
 @media (max-width: 420px) { .wardrobe { grid-template-columns: 1fr; } .wardrobe .preview { margin: 0 auto; } .counts { font-size: 12px; gap: 2px 8px; } .place { font-size: 16px; } }
-@media (prefers-reduced-motion: reduce) { .fall, .goddess, .spark, .life-twinkle, .life-glow, .life-mote, .life-pollen, .life-mist, .life-petal, .life-steam, .life-pop { animation: none; } .scene { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fall, .goddess, .spark, .life-twinkle, .life-glow, .life-mote, .life-pollen, .life-mist, .life-petal, .life-steam, .life-sakura, .life-pop { animation: none; } .scene { transition: none; } }

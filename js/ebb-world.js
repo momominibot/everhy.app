@@ -6,18 +6,14 @@
   var SCENES = {
     /* The three rooms are one isometric cut-away render each (1024 square, 23 Oct): bigger than a phone, so the camera
      * (zoom 2.2) pans around them as she walks. Floors are the wooden diamond minus every painted piece, each piece
-     * carrying a margin above it so she is never drawn in front of something she stands behind. y runs 0..100.
-     * `shell` and friends keep "Decorate this room" alive on the older tall empty rooms (aspect 4:7, y 0..175). */
+     * carrying a margin above it so she is never drawn in front of something she stands behind. y runs 0..100. */
     bedroom: {
       name: 'Bedroom', plate: 'art/plates/bedroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 93, 0.17],
-      shell: 'art/plates/bedroom-tall.webp', shellAspect: [4, 7], shellDepth: [95, 0.25, 175, 0.33], shellStart: { x: 47, y: 145 },
       lamps: [{ x: 38, y: 33 }, { x: 76, y: 56 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
       floor: [[50, 42], [97, 68], [50, 93], [2, 67]],
       /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp and plant, dresser, laundry basket, pouf, little table */
       solids: [[10, 40, 27, 67], [2, 50, 24, 76], [25, 36, 56, 65], [25, 76, 37, 84], [56, 42, 75, 61], [72, 42, 78, 60], [79, 48, 97, 67], [76, 66, 86, 78], [50, 62, 62, 70], [43, 72, 49, 80]],
       fronts: [{ src: 'art/occluders/bedroom-arch-door.webp', rect: [25.5, 51.5, 36.5, 83.5] }], /* the free-standing arch door, cut from the plate: she walks behind it, only its foot is solid */
-      shellFloor: [[18, 76], [82, 76], [97, 104], [100, 112], [100, 175], [0, 175], [0, 112], [3, 104]],
-      shellDoors: [{ id: 'toLiving', rect: [4, 90, 13, 104] }, { id: 'toBathroom', rect: [87, 88, 96, 102] }],
       doors: [
         { id: 'toLiving', rect: [35, 76, 41, 86], to: 'living', arrive: { x: 28, y: 70 }, label: 'To the kitchen' },
         { id: 'toBathroom', rect: [75, 60, 79, 65], to: 'bathroom', arrive: { x: 60, y: 68 }, label: 'Into the bathroom' }
@@ -34,13 +30,10 @@
     },
     bathroom: {
       name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [48, 0.125, 91, 0.17],
-      shell: 'art/plates/bathroom-tall.webp', shellAspect: [4, 7], shellDepth: [88, 0.25, 175, 0.33], shellStart: { x: 45, y: 125 },
       lamps: [{ x: 8, y: 37 }, { x: 26, y: 38 }, { x: 46, y: 80 }], windows: [{ x: 36, y: 21, rx: 8, ry: 9 }],
       floor: [[50, 47], [96, 69], [50, 91], [3, 69]],
       /* tub, wall sink and cabinet, towel rail and basket and plant stool, toilet and brush, twin sinks, candle stool, big plant and cabinet and lilac stool */
       solids: [[23, 34, 50, 57], [3, 44, 20, 60], [8, 52, 29, 73], [22, 58, 41, 82], [54, 34, 78, 59], [43, 76, 50, 87], [70, 60, 94, 81]],
-      shellFloor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
-      shellDoors: [{ id: 'toBedroom', rect: [66, 90, 86, 104] }],
       doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 72, y: 68 }, label: 'Back to the bedroom' }],
       spots: [
         { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Log bleeding or mucus' },
@@ -201,12 +194,6 @@
     var fix = s.doorFix && s.doorFix[door.id]; if (fix) door = Object.assign({}, door, fix); /* a repainted plate can move an extension's door */
     s.doors.push(door); return true;
   }
-  /* the shell (empty room) has its doors on the walls where the painted room has them by its furniture; same targets */
-  function shellDoors(s) {
-    if (!s.shellDoors) return s.doors;
-    return s.doors.map(function (d) { var sd = s.shellDoors.filter(function (x) { return x.id === d.id; })[0]; return sd ? Object.assign({}, d, { rect: sd.rect }) : d; });
-  }
-
-  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, shellDoors: shellDoors, bedStand: bedStand, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
+  root.EbbWorld = { SCENES: SCENES, register: register, addDoor: addDoor, bedStand: bedStand, units: units, inFloor: inFloor, walkable: walkable, segClear: segClear, plan: plan, nearestWalkable: nearestWalkable,
     doorAt: doorAt, inRect: inRect, scaleAt: scaleAt };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -77,6 +77,20 @@
     return k;
   }
 
-  root.EbbFarm = { CROPS: CROPS, SEEDS_PER_DAY: SEEDS_PER_DAY, fresh: fresh, stage: stage, grown: grown,
+  /* an older save may hold more beds than the painted farm shows (or fewer): anything tilled or growing in a bed that is
+   * gone moves to the first bed still grass, crop and watered days intact; missing beds are grass. True when changed */
+  function fitBeds(farm, n) {
+    if (!farm || !Array.isArray(farm.beds) || !(n > 0)) return false;
+    var beds = farm.beds, changed = false;
+    for (var i = n; i < beds.length; i++) {
+      var b = beds[i]; if (!b || b.state === 'grass') continue;
+      for (var j = 0; j < n; j++) if (!beds[j] || beds[j].state === 'grass') { beds[j] = b; break; }
+    }
+    if (beds.length > n) { beds.length = n; changed = true; }
+    for (var k = 0; k < n; k++) if (!beds[k]) { beds[k] = { state: 'grass', crop: null, watered: [] }; changed = true; }
+    return changed;
+  }
+
+  root.EbbFarm = { CROPS: CROPS, SEEDS_PER_DAY: SEEDS_PER_DAY, fresh: fresh, fitBeds: fitBeds, stage: stage, grown: grown,
     nextAction: nextAction, act: act, takeSeeds: takeSeeds, takeFromBasket: takeFromBasket, wateredToday: wateredToday };
 })(typeof window !== 'undefined' ? window : globalThis);
