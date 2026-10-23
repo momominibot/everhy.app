@@ -86,3 +86,17 @@ hidden under the Flower Dome pin): tags now pick a free side and the Dome pin si
 labels ran 2 px under the Map button; focus was lost after the transit sheet closed; bathroom footsteps were tile on a
 painted plank floor. `tools/grid.py` draws the game's coordinate grid on any plate. docs/DOUBAO-PLAYBOOK.md holds the
 step by step build guide for when Jamie hands work to Doubao (later).
+
+## Jamie's queue (23 Oct, evening), in working order
+Done tonight: cut-outs tinted at night (filter #skyCut), standing stretch on the rug in the morning routine, camera keeps
+her above any open bottom sheet, Points chip has its own flower, she is 1.5x bigger in the three home rooms (the basin
+and island now reach her waist), the whole interface goes to a warm night palette after dark (html[data-daylight]) and
+rooms dim gently with the lamps.
+Next:
+1. One currency: logging and finished practices give hearts; hearts are spent at the Flower Dome on seeds (today the
+   dome keeps separate "points"). Each reward shows a little heart above her with a cute chime.
+2. Clickable things get a small yellow diamond sparkle, so players know what to tap; logging lives in the house.
+3. Sound: a cute optional melody; Merlion Park has the Merlion's water near the statue; birds in nature places.
+4. Bathroom: a bathtub soak with a mindful practice (soak pose exists from the hot spring).
+5. Wardrobe: the bedroom cabinet opens outfits: a tudung set, and cabin-crew uniforms in the Ebb clay style in blue,
+   green and red (check the real rank colours first; confirm the collaboration's licence before anything ships).

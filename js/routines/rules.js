@@ -13,7 +13,7 @@
     wake: { routine: 'morning', label: 'Wake slowly', where: 'In bed', scene: 'bedroom', spot: 'bed', kind: 'timed', secs: 30, options: [30, 45, 60],
       blurb: 'Three slow breaths before your feet touch the floor.',
       cues: [[0, 'Stay where you are for a moment. One slow breath in, and let it go.'], [0.34, 'A second breath. Feel the weight of the bed under you.'], [0.67, 'A third. Then, when you are ready, up you get.']] },
-    stretch: { routine: 'morning', label: 'Stretch by the window', where: 'Bedroom', scene: 'bedroom', spot: 'cushion', kind: 'timed', secs: 60, options: [45, 60, 90],
+    stretch: { routine: 'morning', label: 'Stretch by the window', where: 'Bedroom', scene: 'bedroom', spot: 'cushion', kind: 'timed', secs: 60, options: [45, 60, 90], pose: 'stretch', poseAt: { x: 65, y: 75 }, /* she stands on the rug beside the cushion and reaches up (art/chars/genz/stretch) */
       blurb: 'A gentle reach, a roll of the shoulders, nothing that pulls.',
       cues: [[0, 'Stand easy. Reach both arms up, slowly, and let them float down.'], [0.25, 'Roll your shoulders back a few times. Let the jaw soften.'], [0.5, 'Lean a little to one side, then the other. Only as far as feels good.'], [0.75, 'Let your head hang forward for a breath. Then come back up tall.']] },
     water: { routine: 'morning', label: 'A glass of water', where: 'Kitchen', scene: 'living', spot: 'kettle', kind: 'timed', secs: 20, options: [20, 30],

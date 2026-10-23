@@ -69,11 +69,12 @@ check('a rainy day is a little greyer outdoors', lum(rainNoon.shade) < 0.97 && l
 let indoorOk = true, lampByDay = 0;
 for (let m = 0; m < 1440; m++) {
   const p = S.paint(m, { indoor: true, weather: m % 2 ? 'rain' : 'clear' }), ph = S.phaseAt(m);
-  if (!p.shade.every(v => v === 255) || p.glow[3] !== 0 || p.pool !== 0) indoorOk = false;
+  if (p.glow[3] !== 0 || p.pool !== 0 || (p.lamp === 0 && !p.shade.every(v => v === 255)) || p.shade.some(v => v < 180)) indoorOk = false; /* untouched by day, only a gentle dim with the lamps at night */
   const settled = S.phaseAt(m - 21) === ph && S.phaseAt(m + 21) === ph; /* outside the fade at either end */
   if ((ph === 'morning' || ph === 'noon' || ph === 'afternoon') && settled && p.lamp > 0) lampByDay++;
 }
-check('indoors never gets the outdoor tint, rain or shine', indoorOk);
+check('indoors never gets the outdoor tint: untouched by day, a gentle dim at night, rain or shine', indoorOk);
+check('a room at night is dimmer than by day', S.paint(hm('23:00'), { indoor: true }).shade.every(v => v < 210) && S.paint(hm('13:00'), { indoor: true }).shade.every(v => v === 255));
 check('indoor lamps are off through dawn, day and golden hour', lampByDay === 0);
 check('indoor lamps are fully on at night', S.paint(hm('22:00'), { indoor: true }).lamp === 1 && S.paint(hm('03:00'), { indoor: true }).lamp === 1);
 check('outdoors has no indoor lamps', S.paint(hm('22:00'), {}).lamp === 0);

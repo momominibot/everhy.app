@@ -8,7 +8,7 @@
      * (zoom 2.2) pans around them as she walks. Floors are the wooden diamond minus every painted piece, each piece
      * carrying a margin above it so she is never drawn in front of something she stands behind. y runs 0..100. */
     bedroom: {
-      name: 'Bedroom', plate: 'art/plates/bedroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 93, 0.17],
+      name: 'Bedroom', plate: 'art/plates/bedroom-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.19, 93, 0.255],
       lamps: [{ x: 38, y: 33 }, { x: 66.5, y: 59 }], windows: [{ x: 37, y: 24, rx: 8, ry: 8 }, { x: 61, y: 20, rx: 8, ry: 10 }],
       floor: [[50, 42], [97, 68], [50, 93], [2, 67]],
       /* wardrobe, plant and cup table and basket, bed, arch door wall, desk and chair, bunny lamp (moved left of the wooden door, 23 Oct), dresser, laundry basket, pouf, little table */
@@ -29,7 +29,7 @@
       start: { x: 50, y: 80 }
     },
     bathroom: {
-      name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, surface: 'wood', /* the painted floor is planks */ depth: [48, 0.125, 91, 0.17],
+      name: 'Bathroom', plate: 'art/plates/bathroom-dream-wide.webp', indoor: true, zoom: 2.2, surface: 'wood', /* the painted floor is planks */ depth: [48, 0.19, 91, 0.255],
       lamps: [{ x: 8, y: 37 }, { x: 26, y: 38 }, { x: 46, y: 80 }], windows: [{ x: 36, y: 21, rx: 8, ry: 9 }],
       floor: [[50, 47], [96, 69], [50, 91], [3, 69]],
       /* tub, wall sink and cabinet, towel rail and basket and plant stool, toilet and brush, twin sinks, candle stool, big plant and cabinet and lilac stool */
@@ -43,7 +43,7 @@
       start: { x: 52, y: 78 }
     },
     living: { /* L-shaped kitchen and living room: the kitchen nook top left behind the arch-door wall, the lounge along the back, a window alcove on the right, the dining table in front of it */
-      name: 'Kitchen', plate: 'art/plates/living-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.125, 94, 0.17],
+      name: 'Kitchen', plate: 'art/plates/living-dream-wide.webp', indoor: true, zoom: 2.2, depth: [44, 0.19, 94, 0.255],
       lamps: [{ x: 65, y: 25 }, { x: 33, y: 22 }, { x: 73, y: 64 }], windows: [{ x: 28, y: 25, rx: 7, ry: 8 }, { x: 85, y: 52, rx: 9, ry: 8 }],
       floor: [[20, 47], [44, 46], [62, 47], [72, 50], [72, 58], [96, 69], [50, 94], [20, 77]],
       /* island and stools, coffee table, plant pot, record cabinet, dining table and chairs */

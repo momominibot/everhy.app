@@ -50,3 +50,11 @@
 @media (prefers-reduced-motion: reduce) { .sky-rain, .sky-flies { display: none !important; } .sky * { transition: none !important; } }
 html[data-motion="reduce"] .sky-rain, html[data-motion="reduce"] .sky-flies { display: none !important; }
 html[data-motion="reduce"] .sky * { transition: none !important; }
+/* painting cut-outs drawn over her (js/ebb-world.js fronts) take the same tint as the plate */
+#layer image[href^="art/occluders/"] { filter: url(#skyCut); }
+/* night: the interface dims with the scene, warm and soft rather than black (the phase comes from the phone's clock) */
+html[data-daylight="night"] { --bg: #241e23; --card: #2f272c; --ink: #f4eae4; --soft: #c2b1ac; --line: #463a3f; --scrim: rgba(0, 0, 0, 0.55);
+  --cream: #2f272c; --chip: #392f35; --chip-line: #4d4046; --bar-ink: #f5e4ea; --pink: #8a5468; --pink-deep: #d784a5; --pink-ink: #ffdbe7;
+  --accent: #f09a86; --teal: #7fc0bb; color-scheme: dark; }
+html[data-daylight="night"] .top .btn.small { background: var(--chip); color: var(--pink-ink); }
+html[data-daylight="night"] .cicon { background: var(--chip); color: var(--ink); }

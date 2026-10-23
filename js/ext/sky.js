@@ -16,6 +16,7 @@
   /* six looks across the day: sunrise 05:30, morning 07:30, noon 11:30, afternoon 15:00, sunset 17:30, night 19:30 */
   var BOUNDS = [[330, 'sunrise'], [450, 'morning'], [690, 'noon'], [900, 'afternoon'], [1050, 'sunset'], [1170, 'night']];
   var PHASES = ['sunrise', 'morning', 'noon', 'afternoon', 'sunset', 'night'];
+  var IN_NIGHT = [196, 182, 202]; /* what a room is multiplied by at full night: soft and a little cool, the lamps warm it back */
   var LABELS = { sunrise: 'Sunrise', morning: 'Morning', noon: 'Midday', afternoon: 'Afternoon', sunset: 'Sunset', night: 'Night' };
   var EASE = 20; /* each change of phase fades over 40 minutes, centred on its start time */
   /* shade: what the plate is multiplied by (white = untouched). glow: soft light from the sky, screened, rgb + alpha.
@@ -71,7 +72,8 @@
   function paint(m, o) {
     o = o || {};
     var l = look(m);
-    if (o.indoor) return { phase: l.phase, shade: [255, 255, 255], glow: [l.glow[0], l.glow[1], l.glow[2], 0], pool: 0, lamp: l.lamp };
+    /* indoors: no sky colour, but the room dims gently as the lamps come on, so a night room is not lit like noon */
+    if (o.indoor) return { phase: l.phase, shade: IN_NIGHT.map(function (v) { return 255 - (255 - v) * l.lamp; }), glow: [l.glow[0], l.glow[1], l.glow[2], 0], pool: 0, lamp: l.lamp };
     var rain = o.weather === 'rain';
     return { phase: l.phase,
       shade: l.shade.map(function (v, i) { return rain ? v * RAIN_SHADE[i] / 255 : v; }),
@@ -111,7 +113,7 @@
   function parseWeather(search) { var v = param(search, 'weather'); return v === 'rain' || v === 'clear' ? v : null; }
 
   var api = null, lampHooks = {}, current = {};
-  root.EbbSky = { PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
+  root.EbbSky = { vignetteAt: vignetteAt, cutMatrix: cutMatrix, PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
     dateKey: dateKey, weatherFor: weatherFor, weatherAt: weatherAt, isIndoor: isIndoor, effects: effects,
     parseTime: parseTime, parseWeather: parseWeather,
     /* other modules: where the lamps are in a room, e.g. from its furniture. fn(api) -> [{ x, y }] in scene percent */
@@ -154,7 +156,37 @@
     els.rain = el('div', 'sky-rain'); els.rain.setAttribute('aria-hidden', 'true'); els.rain.hidden = true;
     el('i', 'far', els.rain); el('i', 'near', els.rain);
     scene.insertBefore(els.rain, stage.nextSibling);
+    /* cut-outs of the painting (the arch door she walks behind) sit in the SVG layer above the tint, so they get the same
+     * multiply through a filter: one colour matrix, updated with the sky */
+    var svg = layer || doc.getElementById('layer'), NS = 'http://www.w3.org/2000/svg';
+    if (svg && !doc.getElementById('skyCut')) {
+      var defs = svg.querySelector('defs') || svg.insertBefore(doc.createElementNS(NS, 'defs'), svg.firstChild);
+      var f = doc.createElementNS(NS, 'filter'); f.setAttribute('id', 'skyCut'); f.setAttribute('color-interpolation-filters', 'sRGB');
+      f.setAttribute('x', '0'); f.setAttribute('y', '0'); f.setAttribute('width', '1'); f.setAttribute('height', '1');
+      els.cut = doc.createElementNS(NS, 'feColorMatrix'); els.cut.setAttribute('type', 'matrix'); els.cut.setAttribute('values', cutMatrix([1, 1, 1]));
+      f.appendChild(els.cut); defs.appendChild(f);
+    }
     return true;
+  }
+  function cutMatrix(k) { return k[0].toFixed(4) + ' 0 0 0 0  0 ' + k[1].toFixed(4) + ' 0 0 0  0 0 ' + k[2].toFixed(4) + ' 0 0  0 0 0 1 0'; }
+  /* the vignette's colour at a point of the stage (percent), as css/ext/sky.css draws it: an ellipse 72% x 66% at the
+   * centre, (255 240 222) at the middle, (252 226 202) at 52%, (196 166 172) at the edge */
+  var VIG = [[0, [255, 240, 222]], [0.52, [252, 226, 202]], [1, [196, 166, 172]]];
+  function vignetteAt(x, y) {
+    var d = Math.min(1, Math.sqrt(Math.pow((x - 50) / 72, 2) + Math.pow((y - 50) / 66, 2)));
+    var a = d <= VIG[1][0] ? VIG[0] : VIG[1], b = d <= VIG[1][0] ? VIG[1] : VIG[2], t = (d - a[0]) / (b[0] - a[0]);
+    return a[1].map(function (v, i) { return v + (b[1][i] - v) * t; });
+  }
+  /* what the plate is multiplied by under the cut-outs of this scene, per channel 0..1 */
+  function cutFactor(p, indoor, sc) {
+    var k = p.shade.map(function (v) { return v / 255; }), fr = sc.fronts || [];
+    if (indoor && p.lamp >= 0.004 && fr.length) {
+      var units = W && W.units ? W.units(sceneId) : 100, x = 0, y = 0;
+      fr.forEach(function (f) { x += (f.rect[0] + f.rect[2]) / 2; y += (f.rect[1] + f.rect[3]) / 2; });
+      var v = vignetteAt(x / fr.length, (y / fr.length) / units * 100);
+      k = k.map(function (c, i) { return c * (1 - p.lamp + p.lamp * v[i] / 255); });
+    }
+    return k;
   }
 
   function hints(sc) { return sc && PLATE_HINTS[sc.plate] || {}; }
@@ -196,6 +228,7 @@
     if (id !== sceneId || force) { sceneId = id; rebuild(id, sc, indoor); }
     var white = p.shade.every(function (v) { return v > 254.5; });
     els.shade.hidden = white; els.shade.style.backgroundColor = rgb(p.shade);
+    if (els.cut) els.cut.setAttribute('values', cutMatrix(cutFactor(p, indoor, sc)));
     els.glow.hidden = p.glow[3] < 0.004; els.glow.style.opacity = p.glow[3].toFixed(3);
     els.glow.style.setProperty('--sky-glow', p.glow.slice(0, 3).map(Math.round).join(' '));
     var light = indoor ? p.lamp : p.pool;
@@ -204,6 +237,8 @@
     els.lights.hidden = light < 0.004; els.lights.style.setProperty('--sky-lamp', light.toFixed(3));
     els.flies.hidden = !fx.flies; els.rain.hidden = !fx.rain;
     els.sky.dataset.phase = p.phase; els.sky.dataset.place = indoor ? 'in' : 'out'; els.sky.dataset.weather = weather;
+    /* the whole interface follows the clock too: a soft warm night palette after dark (css/ext/sky.css) */
+    if (doc.documentElement.dataset.daylight !== (p.phase === 'night' ? 'night' : 'day')) doc.documentElement.dataset.daylight = p.phase === 'night' ? 'night' : 'day';
     placeHer();
     if (snap) root.requestAnimationFrame(function () { root.requestAnimationFrame(function () { els.sky.classList.remove('snap'); }); });
     var next = { phase: p.phase, weather: weather, indoor: indoor, scene: id, rain: fx.rain, fireflies: fx.flies };

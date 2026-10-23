@@ -47,11 +47,23 @@
     if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
   }
+  /* how much of the screen's bottom an open bottom sheet covers, in px (0 when none, or when it is a full-screen sheet);
+   * measured four times a second, not every frame */
+  var coverPx = 0, coverAt = 0;
+  function sheetCover() {
+    var t = Date.now(); if (t - coverAt < 250) return coverPx; coverAt = t; coverPx = 0;
+    var sh = doc.querySelector('.sheet-wrap > .sheet'), r = els.scene.getBoundingClientRect();
+    if (sh) { var top = sh.getBoundingClientRect().top, c = r.bottom - top; if (c > 0 && c < r.height * 0.62) coverPx = c; }
+    return coverPx;
+  }
   function follow(dt) {
     if (!cam.S) layout();
-    var tx = cam.W / 2 - me.x / 100 * cam.S, ty = cam.H * 0.56 - me.y / 100 * cam.S;
+    /* her feet a little below the middle of what is visible: above a bottom sheet when one is open, so a practice never
+     * hides her; the plate may then slide up only as far as the sheet covers, so no unpainted edge ever shows */
+    var cover = sheetCover(), viewH = cam.H - cover;
+    var tx = cam.W / 2 - me.x / 100 * cam.S, ty = viewH * (cover ? 0.62 : 0.56) - me.y / 100 * cam.S;
     tx = Math.min(0, Math.max(cam.W - cam.S, tx));
-    ty = cam.Sh <= cam.H ? (cam.H - cam.Sh) / 2 : Math.min(0, Math.max(cam.H - cam.Sh, ty)); /* a short plate sits centred */
+    ty = cam.Sh <= cam.H ? (cam.H - cam.Sh) / 2 : Math.min(0, Math.max(cam.H - cover - cam.Sh, ty)); /* a short plate sits centred */
     if (cam.snap || still) { cam.x = tx; cam.y = ty; cam.snap = false; }
     else { var k = 1 - Math.exp(-dt / 0.2); cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; }
     els.stage.style.transform = 'translate3d(' + cam.x.toFixed(1) + 'px,' + cam.y.toFixed(1) + 'px,0)';

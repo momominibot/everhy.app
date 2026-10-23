@@ -271,7 +271,11 @@
   /* ---------- wiring ---------- */
   function start(a) {
     api = a;
-    root.EbbGame.registerHud('Points', function () { return R() ? R().balance(a.state().points) : 0; });
+    /* its own little icon: a five-petal flower, so the Points chip never borrows the Hearts chip's heart */
+    var FLOWER = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="#f6c453" stroke="#d99a2b" stroke-width="1.1">' +
+      [0, 72, 144, 216, 288].map(function (d) { return '<ellipse cx="12" cy="6.6" rx="3.6" ry="4.6" transform="rotate(' + d + ' 12 12)"/>'; }).join('') +
+      '</g><circle cx="12" cy="12" r="3" fill="#fff4d6" stroke="#d99a2b" stroke-width="1.1"/></svg>';
+    root.EbbGame.registerHud('Points', function () { return R() ? R().balance(a.state().points) : 0; }, FLOWER);
     sync(true); /* what she already saved counts from the first open, with no fanfare */
     pollTimer = setInterval(function () { if (!doc.hidden) sync(); }, 3000);
     doc.addEventListener('visibilitychange', function () { if (!doc.hidden) sync(); });

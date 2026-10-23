@@ -75,6 +75,7 @@ with sync_playwright() as p:
     p2.wait_for_timeout(300)
     s2 = p2.evaluate("JSON.parse(localStorage.getItem('ebb_save_v1'))")
     ok('Not now skips with no health data or consent stored', p2.locator('.sf-onboard').count() == 0 and not s2.get('consent') and not s2['profile'].get('lastPeriodStart') and s2['safety'].get('onboardSkippedAt'))
+    p2.wait_for_timeout(900)  # with the sheet gone the camera glides back down to her (about half a second)
     x0 = p2.evaluate("EbbGame.me().x + ',' + EbbGame.me().y")
     p2.click('#scene', position={'x': 200, 'y': 300}); p2.wait_for_timeout(400)
     ok('game still playable after skipping (she moves on a tap)', p2.evaluate("EbbGame.me().x + ',' + EbbGame.me().y") != x0)

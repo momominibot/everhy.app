@@ -190,11 +190,12 @@
   function timed(step, c, spot) {
     var a = active, K = R(), t = K.timer(step.secs), startIso = nowIso(), sat = false;
     if (c.sit && spot) { api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }); sat = true; }
+    else if (c.pose && spot) { var pa = c.poseAt || spot.stand; api.sit({ x: pa.x, y: pa.y }, c.pose); sat = true; } /* a standing pose held on open floor: the stretch, beside the cushion rather than on it */
     var cap = el('p', 'rt-cue'); cap.setAttribute('aria-live', 'polite');
     var clock = el('p', 'rt-clock'), back = el('p', 'muted small rt-back');
     show(K.ROUTINES[a.routine].label, [head(c, a.run), cap, clock, back], [
       { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) K.resume(t, Date.now()); else K.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; paint(); } },
-      { label: 'Skip', id: 'skip', fn: function () { over(); skip(step); } },
+      { label: 'Skip', id: 'skip', fn: function () { over(); if (sat) api.stand(spot.stand.y); skip(step); } },
       { label: 'Stop for now', id: 'stop', fn: function () { over(); if (sat) api.stand(spot.stand.y); stop(); api.toast('Kept for later. Carry on from More whenever you like.', 2800); } }
     ], 'running');
     var shown = -1, backTimer = 0, done = false;
