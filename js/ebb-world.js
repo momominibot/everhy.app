@@ -95,7 +95,12 @@
       spots: [
         { id: 'kopi', kind: 'tea', at: { x: 18, y: 100 }, stand: { x: 8, y: 118 }, label: 'Order a kopi' },
         { id: 'chickenrice', kind: 'log', topic: 'food', at: { x: 47, y: 98 }, stand: { x: 46, y: 116 }, label: 'What did you eat or drink?' },
-        { id: 'table', kind: 'cushion', at: { x: 80, y: 116 }, stand: { x: 66, y: 124 }, label: 'Sit with your kopi a moment' }
+        { id: 'table', kind: 'cushion', at: { x: 80, y: 116 }, stand: { x: 66, y: 124 }, label: 'Sit with your kopi a moment' },
+        /* the stools round the other tables (read off a 5 unit grid): seats too, set up by js/seats/rules.js */
+        { id: 'stool1', kind: 'seat', at: { x: 18, y: 127 }, stand: { x: 18, y: 140 }, label: 'Sit at this table' },
+        { id: 'stool2', kind: 'seat', at: { x: 35, y: 127 }, stand: { x: 34, y: 141 }, label: 'Sit at this table' },
+        { id: 'stool3', kind: 'seat', at: { x: 46, y: 132 }, stand: { x: 47, y: 146 }, label: 'Sit at this table' },
+        { id: 'stool4', kind: 'seat', at: { x: 61, y: 134 }, stand: { x: 60, y: 146 }, label: 'Sit at this table' }
       ],
       start: { x: 50, y: 152 }
     },

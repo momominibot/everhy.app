@@ -97,5 +97,6 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .ripple ellipse { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 0.22; transform-box: fill-box; transform-origin: center; animation: ripple 1.4s ease-out forwards; opacity: 0; }
 @keyframes ripple { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(5); opacity: 0; } }
 /* the chips after she sits (EbbUi.seatChoice): small, in the action area, the room stays clear */
-.seat-choice { pointer-events: auto; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: calc(100% - 2 * (max(14px, env(safe-area-inset-left)) + 62px)); }
+.seat-choice { pointer-events: auto; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: calc(100% - 24px); margin-bottom: 58px; } /* one row, in the gap between the Map and sound buttons below and the Bag button above */
+body:has(.seat-choice) .hint { visibility: hidden; } /* the walking hint steps aside while she sits */
 .seat-choice .btn { box-shadow: 0 4px 14px rgba(40, 30, 30, 0.16); }

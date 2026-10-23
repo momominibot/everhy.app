@@ -140,7 +140,7 @@
     if (!spot.seat) spot.seat = R().seatFor(api.scene(), spot.id); /* a spot made a seat by the scene data later */
     if (cur && cur.spot === spot) { menu(); return; }
     cur = { spot: spot, scene: api.scene() };
-    api.sit(R().sitAt(spot)); api.refresh();
+    api.sit(R().sitAt(spot), spot.seat && spot.seat.pose || null); api.refresh(); /* a seat may name its resting pose: legs down with a kopi at the hawker stools */
     if (root.EbbLife && root.EbbLife.react) root.EbbLife.react('heart', 1600);
     /* she just sits first; the seat's options only if she asks for a mindful moment */
     if (root.EbbUi && root.EbbUi.seatChoice) root.EbbUi.seatChoice({ mindful: function () { menu(); }, up: function () { getUp('getUp'); } }); else menu();

@@ -18,7 +18,7 @@ const labels = (sc, id) => R.actionsFor(sc, id).map(a => a.label);
 const before = {};
 Object.keys(W.SCENES).forEach(id => { before[id] = W.SCENES[id].spots.map(s => s.id + '=' + s.kind); });
 const changed = R.retarget(W.SCENES);
-check('three seats retargeted', changed.length === 3 && ['hawker:table', 'waterfall:bench', 'merlion:bench'].every(k => changed.includes(k)));
+check('every seat is set up: the kopi table, four hawker stools, two benches', changed.length === 7 && ['hawker:table', 'hawker:stool1', 'hawker:stool2', 'hawker:stool3', 'hawker:stool4', 'waterfall:bench', 'merlion:bench'].every(k => changed.includes(k)));
 Object.keys(W.SCENES).forEach(id => {
   const after = W.SCENES[id].spots.map(s => s.id + '=' + s.kind);
   const expect = before[id].map(s => R.isSeat(id, s.split('=')[0]) ? s.split('=')[0] + '=seat' : s);

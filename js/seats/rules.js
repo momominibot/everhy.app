@@ -27,7 +27,11 @@
    * TODO integrator: fold `kind: 'seat'` and this config into the scene data in js/ebb-world.js; the extension only
    * retargets these three spots at load because another workstream owns that file. */
   var SEATS = {
-    'hawker:table': { title: 'At the kopi table', line: 'A marble table, a stool, a kopi going cold slowly.', offset: { x: -6.5, y: 11.5 }, actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -1.8, y: -1.2 } },
+    'hawker:table': { title: 'At the kopi table', line: 'A marble table, a stool, a kopi going cold slowly.', offset: { x: -6.5, y: 11.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -1.8, y: -1.2 } },
+    'hawker:stool1': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: 5, y: -9 } },
+    'hawker:stool2': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -6, y: -9 } },
+    'hawker:stool3': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: 4, y: -10 } },
+    'hawker:stool4': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -8, y: -12 } },
     'waterfall:bench': { title: 'On the lake bench', line: 'The quarry lake, the cliff in it upside down.', offset: { x: 2.5, y: 12 }, actions: ['water', 'breaths', 'listen', 'still'] },
     'merlion:bench': { title: 'On the stone bench', line: 'The bay, the spout, the boats going by.', offset: { x: 5, y: 8 }, actions: ['boats', 'breaths', 'still'] }
   };
