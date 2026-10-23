@@ -12,14 +12,14 @@
   /* scene: where travel goes; spot: arrive at that spot's stand point instead of the scene start;
    * here: scenes that count as being at this place (home holds the bedroom and the bathroom) */
   var PINS = [
-    { id: 'home', label: 'Home', note: 'Bedroom, bathroom and kitchen', scene: 'bedroom', here: ['bedroom', 'bathroom', 'living'], icon: 'home', x: 33, y: 37 },
+    { id: 'home', label: 'Home', note: 'Bedroom, bathroom and kitchen', scene: 'bedroom', here: ['bedroom', 'bathroom', 'living'], icon: 'home', x: 35, y: 34 },
     { id: 'farm', label: 'Garden', note: 'Planter beds by the HDB block', scene: 'farm', icon: 'farm', x: 61, y: 38 },
     { id: 'hawker', label: 'Hawker centre', note: 'Kopi, chicken rice and a quiet table', scene: 'hawker', icon: 'hawker', x: 45, y: 51 },
-    { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 24, y: 49 },
+    { id: 'waterfall', label: 'Little Guilin', note: 'The quarry lake at Bukit Gombak', scene: 'waterfall', icon: 'falls', x: 22, y: 51 },
     { id: 'spring', label: 'Hot spring', note: 'Sembawang foot bath', scene: 'spring', icon: 'spring', x: 47, y: 31 },
     { id: 'merlion', label: 'Merlion Park', note: 'The bay and the Merlion', scene: 'merlion', icon: 'merlion', x: 40, y: 69 },
     { id: 'pier', label: 'Bedok Jetty', note: 'Cast a quiet line into the sea', scene: 'jetty', spot: 'fishing', icon: 'fish', x: 88, y: 46 },
-    { id: 'dome', label: 'Flower Dome', note: 'Seeds for your garden', scene: 'dome', icon: 'dome', x: 52, y: 60 }
+    { id: 'dome', label: 'Flower Dome', note: 'Seeds for your garden', scene: 'dome', icon: 'dome', x: 66, y: 64 }
   ];
 
   function spotIn(scene, id) {
@@ -105,8 +105,36 @@
         '<span class="map-place-icon">' + icon(p.icon) + '</span><span class="map-place-text"><b>' + p.label + '</b><small>' + sub + '</small></span></button></li>';
     });
     wrap.querySelector('.map-pins').innerHTML = pins;
+    placeLabels(wrap.querySelector('.map-pins'));
     wrap.querySelector('.map-list').innerHTML = list;
     wrap.querySelector('.map-where').textContent = hereLine(current) + ' Tap a place to go there.';
+  }
+  /* each name tag takes the first side of its pin (below, right, left, above) that touches no other pin or tag and stays on
+   * the map; her own place is placed first. If no side is clear, the side with the least overlap wins. */
+  function placeLabels(box) {
+    var pins = [].slice.call(box.querySelectorAll('.map-pin')), area = box.getBoundingClientRect();
+    if (!area.width || !box.isConnected) return;
+    pins.sort(function (a, b) { return (b.classList.contains('is-here') ? 1 : 0) - (a.classList.contains('is-here') ? 1 : 0); });
+    var taken = pins.map(function (pin) { return pin.getBoundingClientRect(); }); /* the upright pin box: the head is a tilted round drop, its rotated box is wider than what shows */
+    function overlap(a, b) { return Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)); }
+    pins.forEach(function (pin, i) {
+      var lab = pin.querySelector('.map-pin-label'), best = null;
+      lab.style.marginLeft = '';
+      ['below', 'right', 'left', 'above'].some(function (side) {
+        pin.dataset.lab = side;
+        var r = lab.getBoundingClientRect(), cost = 0;
+        taken.forEach(function (t, j) { if (j !== i) cost += overlap(r, t); });
+        cost += Math.max(0, area.left - r.left) * r.height + Math.max(0, r.right - area.right) * r.height + Math.max(0, area.top - r.top) * r.width + Math.max(0, r.bottom - area.bottom) * r.width;
+        if (!best || cost < best.cost) best = { side: side, cost: cost, rect: r };
+        return cost === 0;
+      });
+      pin.dataset.lab = best.side;
+      /* a tag near the map's edge slides back inside instead of being clipped by the rounded corner */
+      var r = lab.getBoundingClientRect(), pad = 4;
+      if (r.right > area.right - pad) lab.style.marginLeft = (area.right - pad - r.right) + 'px';
+      else if (r.left < area.left + pad) lab.style.marginLeft = (area.left + pad - r.left) + 'px';
+      taken.push(lab.getBoundingClientRect());
+    });
   }
   function open() {
     if (wrap) return;
@@ -137,6 +165,12 @@
     });
     draw();
     doc.body.appendChild(wrap);
+    /* tags are measured once the sheet is on screen, and again when the fonts or the screen size change */
+    var pinsBox = wrap.querySelector('.map-pins'), relabel = function () { if (wrap && wrap.contains(pinsBox)) placeLabels(pinsBox); };
+    relabel();
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(relabel);
+    var im = wrap.querySelector('.map-img'); if (im && !im.complete) im.addEventListener('load', relabel);
+    root.addEventListener('resize', relabel); wrap._relabel = relabel;
     var app = doc.querySelector('.app');
     if (app) { appInert = app.inert; app.inert = true; }
     if (btn) btn.setAttribute('aria-expanded', 'true');
@@ -144,6 +178,7 @@
   }
   function close() {
     if (!wrap) return;
+    if (wrap._relabel) root.removeEventListener('resize', wrap._relabel);
     wrap.remove(); wrap = null;
     var app = doc.querySelector('.app');
     if (app) app.inert = appInert;

@@ -7,4 +7,4 @@
 .snd-toggle[aria-pressed="true"] { color: var(--teal); }
 .snd-toggle:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 /* a very long prompt wraps before it reaches the toggle */
-.actionbar .prompt { max-width: calc(100% - 2 * (max(14px, env(safe-area-inset-left)) + 52px)); }
+.actionbar .prompt { max-width: calc(100% - 2 * (max(14px, env(safe-area-inset-left), env(safe-area-inset-right)) + 54px + 8px)); } /* clear of the 54 px Map button with a small gap */

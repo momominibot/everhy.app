@@ -71,12 +71,13 @@
   /* ---------- a small sheet in the engine's look ---------- */
   function sheet(title, build, actions) {
     if (openSheet) openSheet();
-    var wrap = el('div', 'sheet-wrap transit-wrap');
+    var wrap = el('div', 'sheet-wrap transit-wrap'), prevFocus = doc.activeElement; /* focus goes back where it was when the sheet closes */
     var sh = el('section', 'sheet transit-sheet'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', title);
     sh.appendChild(el('h2', '', title));
     var body = el('div', 'sheet-body transit-body'), acts = el('div', 'sheet-actions');
     sh.appendChild(body); sh.appendChild(acts); wrap.appendChild(sh);
-    function close() { if (!wrap.parentNode) return; wrap.remove(); if (openSheet === close) openSheet = null; if (wrap._cleanup) { wrap._cleanup(); wrap._cleanup = null; } }
+    function close() { if (!wrap.parentNode) return; wrap.remove(); if (openSheet === close) openSheet = null; if (wrap._cleanup) { wrap._cleanup(); wrap._cleanup = null; }
+      if (prevFocus && prevFocus !== doc.body && doc.contains(prevFocus) && prevFocus.focus && !doc.querySelector('.sheet-wrap')) prevFocus.focus(); }
     (actions || []).forEach(function (a) {
       var b = el('button', a.primary ? 'btn primary' : 'btn', a.label); b.type = 'button'; if (a.id) b.dataset.act = a.id;
       b.addEventListener('click', function () { a.fn(b, close); }); acts.appendChild(b);
