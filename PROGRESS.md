@@ -175,3 +175,8 @@ MRT and bus stay lit) into art/plates/night/, swapped in after dark with a fade 
 night version can replace these files later (tools/jobs_night_rooms.json) once the image key works. Journal Look back (desk:
 Write / Look back, a week at a time, on the phone only). Bath soak: bathroom:bath seat, tub front cut by tools/cut_front.py.
 NEXT: Erin's voice for the bath practices (one guarded TTS run on his OK), outdoor night pictures if he wants them too.
+Towel tube for soaking (Jamie, 24 Oct): code ready (js/ebb-clay.js uses a set's soak_tube strip whenever the soak pose is
+asked for). Art waits on the image key: run `python3 tools/run_batch.py tools/jobs_soak_tube.json` (one guarded run, on his
+OK), slice with `tools/slice_sheet.py <sheet> art/chars/genz/soak_tube --count 2 --ref art/chars/genz/soak.webp --match height`,
+add soak_tube to js/ebb-clay-sets.js. Tudung outfits keep their own clothes (no tube). A local pixel repaint was tried and
+dropped: it looked unclothed, not a towel.
