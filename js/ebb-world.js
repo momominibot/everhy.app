@@ -89,7 +89,7 @@
       start: { x: 50, y: 160 }
     },
     waterfall: { /* 23 Oct render: cherry trees on the cliff, the falls into a round pond, a wishing well on the left, a little bridge over the stream on the right, the path out at the bottom */
-      name: 'Waterfall', plate: 'art/plates/waterfall_ac.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33],
+      name: 'Waterfall', plate: 'art/plates/waterfall_ac.webp', video: 'art/plates/waterfall-live.mp4', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], /* the video: the same plate with only the falls, pond and cherry trees moving */
       floor: [[2, 109], [68, 109], [68, 100], [98, 100], [98, 175], [2, 175]], /* the meadow plus the bridge deck */
       solids: [[17, 86, 72, 109], [10, 96, 27, 118], [78, 113, 100, 126]], /* pond, well, the stream below the bridge */
       doors: [{ id: 'toFarm', rect: [34, 171, 58, 175], to: 'farm', arrive: { x: 88, y: 150 }, label: 'Back to the farm' }],

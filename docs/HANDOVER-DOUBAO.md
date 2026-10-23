@@ -18,6 +18,13 @@ docs/AC-STUDY.md and docs/EXTENDING.md first. Work on main; run node tools/test-
   tools/test-$t.js | tail -1; done`, then `python3 tools/smoke_doors.py` (dev server on 8096) and `python3 tools/smoke_today.py`.
 - If Playwright says browsers are missing (the nightly cleanup empties ~/Library/Caches): `python3 -m playwright install chromium`.
 
+## Live plates (animated scenery)
+Jamie wants only the water and trees to move. Recipe that worked (23 Oct): `python3 tools/live_plate.py art/raw/<plate>.png art/live/<name>-seedance.mp4 "<prompt: locked static camera, only X moves, everything else perfectly still>"`
+(one guarded Seedance run, writes art/BLOCKED.json on any failure), then a soft mask of the moving regions and the
+ffmpeg crossfade loop plus `alphamerge` + `overlay` onto the still plate (see the 23 Oct commit for the exact filters),
+then `video: 'art/plates/<name>-live.mp4'` on the scene. Seedance moves the whole frame a little, so the mask is what
+keeps the rest still; measure mean diff outside the mask (should be about 2, codec only) before shipping.
+
 ## Rendered but not yet used
 `art/raw/seats.png` (bench, rock, cushion on magenta), `tree_stages.png`, `dig_items.png`: slice with
 `tools/slice_sheet.py`, for the seats and trees workstreams.

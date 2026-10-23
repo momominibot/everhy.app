@@ -46,7 +46,7 @@
     return '<g class="atmo-waterfall">' + out + '</g>';
   }
 
-  G.registerProps('waterfall', waterfallAtmosphere);
+  G.registerProps('waterfall', function () { return root.EbbLive && root.EbbLive.active() ? '' : waterfallAtmosphere(); }); /* drawn water only while the live plate is not playing */
 
   root.EbbAtmosphere = { version: '2.1' };
 })(typeof window !== 'undefined' ? window : globalThis);

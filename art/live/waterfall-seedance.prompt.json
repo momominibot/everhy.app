@@ -1,0 +1,12 @@
+{
+ "model": "doubao-seedance-2-0-260128",
+ "prompt": "Locked static camera, no camera movement, no zoom, no pan. Cosy clay style game scene: only the waterfall water keeps flowing down the cliff and splashes softly into the round pond, the pond surface ripples gently outward, and the two pink cherry blossom trees sway very slightly in a light breeze with a few petals drifting down. Everything else stays perfectly still and unchanged: the rocks, grass, wishing well, wooden bridge, path, stream and sky. Soft even lighting that does not change. Calm seamless loop.",
+ "plate": "art/raw/waterfall_ac.png",
+ "size": [
+  768,
+  1344
+ ],
+ "ratio": "adaptive",
+ "resolution": "720p",
+ "duration": 5
+}

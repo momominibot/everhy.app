@@ -14,8 +14,13 @@ Design rules: docs/AC-STUDY.md. Blueprint mapping: docs/BLUEPRINT-MAP.md. Hooks 
   spring (23 Oct renders from the Doubao continuation), barn.
 - The player is the original girl redrawn smooth in clay, hoodie and jeans (art/chars/genz); outfits default, lilac,
   tudung. The big-headed ac sets stay on disk, unused.
-- Life layer (js/ebb-life.js): twinkling window lights, lamp glows, motes, petals, steam, mist, reaction bubbles;
-  atmosphere extension adds the waterfall streams and pond ripples. Six times of day in js/ext/sky.js.
+- Life layer (js/ebb-life.js): twinkling window lights, lamp glows, motes, petals, steam, mist, reaction bubbles.
+  Six times of day in js/ext/sky.js.
+- Live plates (js/ext/live.js, 23 Oct): the waterfall plays art/plates/waterfall-live.mp4 (webm for browsers without
+  H.264), a 4.4 s seamless loop in which only the falls, the pond and the two cherry trees move. Made by
+  tools/live_plate.py (one guarded Seedance 2.0 image-to-video run on the plate) plus art/live/waterfall-mask.png and
+  an ffmpeg crossfade-loop and masked overlay, so every pixel outside the mask is the still painting. Reduced motion,
+  Decorate mode or a refused autoplay fall back to the still plate and the drawn streams.
 
 ## Merged into main
 settings/offline/export, safety/consent/onboarding, chat logging and cycle chart (pop-ups from room objects), course

@@ -35,5 +35,17 @@ with sync_playwright() as p:
                 elif step['kind'] == 'spot' and step['label'] not in me['prompt']: fails += 1; print('FAIL prompt', repr(step['label']), 'got', repr(me['prompt']), step['scene'], step['id'])
         except Exception as e:
             fails += 1; print('FAIL', 'door never opened' if step['kind'] == 'door' else 'walk stalled', step, str(e).split('\n')[0])
+    # the live plate: the waterfall's loop plays over the still plate, and stays away under reduced motion
+    live = 0
+    pg.evaluate("EbbGame.enter('waterfall')")
+    try:
+        pg.wait_for_function("() => { const v = document.querySelector('video.live-plate'); return v && !v.hidden && v.currentTime > 0.4 && EbbLive.active(); }", timeout=15000)
+        if pg.evaluate("() => document.querySelectorAll('#props .atmo-waterfall').length") != 0: fails += 1; print('FAIL drawn water still shown over the live plate')
+        pg.evaluate("document.documentElement.setAttribute('data-motion', 'reduce')")
+        pg.wait_for_function("() => { const v = document.querySelector('video.live-plate'); return v && v.hidden && !EbbLive.active(); }", timeout=5000)
+        pg.evaluate("document.documentElement.removeAttribute('data-motion')"); live = 3
+        plan.extend([{'kind': 'live'}] * 3)
+    except Exception as e:
+        fails += 1; plan.append({'kind': 'live'}); print('FAIL live plate', str(e).split('\n')[0])
     print(f'smoke_doors: {len(plan) - fails} of {len(plan)} passed; page errors: {errs}')
     br.close(); sys.exit(1 if fails or errs else 0)
