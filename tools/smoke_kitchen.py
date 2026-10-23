@@ -61,6 +61,7 @@ with sync_playwright() as p:
     check('the prompt offers cooking', s1['prompt'] == 'Cook something' and not s1['promptHidden'], str(s1))
     check('the near appliance wears a soft ring', s1['ring'], str(s1))
     if shot:
+        pg.evaluate("document.querySelectorAll('[data-act=notnow]').forEach(b => b.click())")  # main's morning routine card, if the clock is in its window
         pg.wait_for_timeout(600); pg.screenshot(path=f'{shot}_hob.png')
     pg.evaluate("document.getElementById('prompt').click()"); pg.wait_for_timeout(300)
     s2 = pg.evaluate(STATE)
