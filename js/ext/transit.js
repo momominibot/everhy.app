@@ -104,6 +104,7 @@
   }
   function board(mode, dest) {
     var r = R(), a = api;
+    lastScene = a.scene(); /* the trip starts from wherever she is now: a scene change the watch has not yet seen (she may have arrived a moment ago) must not be read as leaving the carriage */
     r.begin(a.state(), mode, dest.to, dest.arrive, Date.now()); a.save(); retarget();
     fade(function () { a.enter(r.MODES[mode].scene); lastScene = a.scene(); a.toast(r.MODES[mode].toast + dest.label, 2600); paintBar(); });
   }
