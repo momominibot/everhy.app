@@ -285,6 +285,22 @@
     } },
     gift: { dur: 3.6, make: function (ctx, out, t) { /* five notes, for the Goddess's gift */
       [1046.5, 1318.5, 1568, 1760, 2093].forEach(function (f, i) { bell(ctx, out, t + i * 0.13, f, 0.075, (i - 2) * 0.18); });
+    } },
+    gulp: { dur: 1.2, make: function (ctx, out, t, r) { /* three soft swallows of water: a low glug and a tiny bubble each */
+      for (var i = 0; i < 3; i++) {
+        var at = t + i * 0.34 + between(r, 0, 0.04);
+        tone(ctx, out, at, { f: between(r, 230, 260), to: 120, glide: 0.09, a: 0.006, d: 0.12, gain: 0.34 });
+        burst(ctx, out, at + 0.07, { f: between(r, 900, 1200), q: 3, a: 0.002, d: 0.04, gain: 0.08 }, r);
+      }
+    } },
+    heart: { dur: 2.6, make: function (ctx, out, t) { /* a reward: two bright bell notes up and a soft sparkle on top */
+      bell(ctx, out, t, 1318.5, 0.09, -0.15); bell(ctx, out, t + 0.11, 1975.5, 0.08, 0.15);
+      tone(ctx, out, t + 0.11, { f: 3951, a: 0.002, d: 0.2, gain: 0.02 });
+    } },
+    cheer: { dur: 3.0, make: function (ctx, out, t) { /* a little springy hop up, then a happy run of notes to start the day */
+      tone(ctx, out, t, { f: 300, to: 760, glide: 0.12, a: 0.004, d: 0.16, gain: 0.22 });
+      [1046.5, 1318.5, 1568, 2093].forEach(function (f, i) { bell(ctx, out, t + 0.16 + i * 0.09, f, 0.075, (i - 1.5) * 0.2); });
+      tone(ctx, out, t + 0.52, { f: 2637, a: 0.003, d: 0.5, gain: 0.03 });
     } }
   };
 

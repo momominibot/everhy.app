@@ -47,3 +47,24 @@
 @media (prefers-reduced-motion: reduce) { .routine-card { animation: none; } }
 html[data-text="large"] .rt-text b { font-size: 17px; }
 html[data-text="larger"] .rt-text b { font-size: 19px; }
+/* the end of the morning: a springy double hop (the clay frames inside #me, so the engine's own transform is untouched) */
+#me.hop > * { transform-box: fill-box; transform-origin: 50% 100%; animation: rt-hop 0.9s cubic-bezier(.3, .7, .4, 1) 2; }
+@keyframes rt-hop { 0% { transform: none; } 15% { transform: scale(1.06, 0.92); } 45% { transform: translateY(-22%) scale(0.96, 1.05); }
+  75% { transform: scale(1.05, 0.94); } 100% { transform: none; } }
+/* while a step runs: a compact cream panel about a quarter of the screen, so the room and she stay in view */
+.routine-wrap.running { background: none; }
+.routine-wrap.running .sheet { background: color-mix(in srgb, var(--cream) 90%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  max-height: 27vh; padding: 12px 16px calc(10px + env(safe-area-inset-bottom)); gap: 4px; }
+.routine-wrap.running .sheet h2 { font-size: 13px; margin: 0; color: var(--soft); font-weight: 700; }
+.routine-wrap.running .rt-head b { font-size: 16px; }
+.routine-wrap.running .rt-head small { margin-left: 6px; }
+.routine-wrap.running .rt-head { display: flex; align-items: baseline; flex-wrap: wrap; }
+.routine-wrap.running .rt-cue { font-size: 16px; min-height: 2.8em; margin: 4px 0; }
+.routine-wrap.running .rt-clock { margin: 0; font-size: 13px; }
+.routine-wrap.running .rt-back:empty { display: none; }
+.routine-wrap.running .sheet-actions { margin-top: 4px; gap: 8px; }
+.routine-wrap.running .sheet-actions .btn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+/* Erin's voice toggle: on the prompt card and at the right of the step heading */
+.rt-head .rt-voice { margin-left: auto; min-height: 30px; padding: 4px 10px; font-size: 12px; }
+.routine-wrap.running .rt-head .rt-voice { min-height: 28px; padding: 3px 10px; font-size: 12px; }
+.rt-cardrow .rt-voice { margin-right: auto; }

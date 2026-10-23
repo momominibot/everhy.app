@@ -1,0 +1,20 @@
+[
+ {
+  "id": "pose_drink",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She stands facing front holding a small clear glass of water. Frame 1: the glass held in both hands at her chest, a soft smile. Frame 2: one hand tilts the glass to her lips, sipping slowly, eyes closed."
+ },
+ {
+  "id": "pose_cheer",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), drawn in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props except those named. She is full of cheerful energy, facing front. Frame 1: standing with knees a little bent, both fists at her chest, a big happy smile. Frame 2: a small hop in the air, feet off the ground, one fist raised high in victory, the other hand on her hip, eyes happily closed."
+ }
+]

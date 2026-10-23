@@ -4,17 +4,35 @@
  * private line; the pop-up log; or simply walking to bed. Each completed step saves a mindfulness observation with a
  * routine field, so hearts and summaries pick it up. A run is remembered per date and resumes where it stopped.
  * Entry points: More > Morning routine / Evening routine, and a gentle card when the app opens in the morning or
- * evening. Rules live in js/routines/rules.js (pure). Erin's voice is not used here: text, and a soft chime. */
+ * evening. Rules live in js/routines/rules.js (pure). Erin's voice reads the prompt and each cue (js/routines/voice.js, made by tools/voice_routines.py), and can be muted. */
 (function (root) {
   'use strict';
   var doc = root.document;
   if (!doc || !root.EbbGame) return; /* the node harness stops here */
   if (!root.EbbRoutineRules) { var sc = doc.createElement('script'); sc.src = 'js/routines/rules.js'; sc.async = false; doc.head.appendChild(sc); }
+  if (!root.EbbRoutineVoice) { var sv = doc.createElement('script'); sv.src = 'js/routines/voice.js'; sv.async = false; doc.head.appendChild(sv); }
   function R() { return root.EbbRoutineRules; }
   function W() { return root.EbbWorld; }
 
   var api = null, wrap = null, cleanup = null, active = null, card = null, promptTimer = 0;
   function data() { var st = api.state(); st.routines = R().ensure(st.routines); return st.routines; }
+
+  /* ---------- Erin's voice: one reused audio element; on unless she mutes it (kept in the save) ---------- */
+  var vo = null;
+  function voiceOn() { return api.state().routineVoice !== false; }
+  function clipFor(text) { var V = root.EbbRoutineVoice; return V && V.clips && V.clips[text] || null; }
+  function hush() { if (vo) { try { vo.pause(); } catch (e) { } } }
+  function say(text) { /* returns how long she speaks, in ms (0 when silent) */
+    hush(); var c = clipFor(text); if (!voiceOn() || !c) return 0;
+    try { vo = vo || new Audio(); vo.src = c.src; var p = vo.play(); if (p && p.catch) p.catch(function () { }); } catch (e) { return 0; }
+    return Math.round((c.sec || 0) * 1000);
+  }
+  function voiceBtn() {
+    var b = el('button', 'btn small rt-voice'); b.type = 'button'; b.dataset.act = 'voice';
+    function paint() { b.textContent = voiceOn() ? 'Mute Erin' : 'Erin\u2019s voice'; b.setAttribute('aria-pressed', voiceOn() ? 'false' : 'true'); }
+    b.addEventListener('click', function (e) { e.stopPropagation(); api.state().routineVoice = !voiceOn(); api.save(); if (!voiceOn()) hush(); paint(); });
+    paint(); return b;
+  }
   function nowIso() { return new Date().toISOString(); }
   function el(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function para(text, cls) { return el('p', cls || '', text); }
@@ -185,22 +203,22 @@
     else if (c.kind === 'log') log(step, c, spot);
     else if (c.kind === 'bed') { api.toast('Lights down. Goodnight.', 3200); complete(step, null, null, nowIso()); }
   }
-  function head(c, rn) { var h = el('div', 'rt-head'); h.appendChild(el('b', '', c.label)); h.appendChild(el('small', 'muted', 'Step ' + (rn.index + 1) + ' of ' + rn.steps.length)); return h; }
+  function head(c, rn) { var h = el('div', 'rt-head'); h.appendChild(el('b', '', c.label)); h.appendChild(el('small', 'muted', 'Step ' + (rn.index + 1) + ' of ' + rn.steps.length)); if (clipFor((c.cues || [[0, '']])[0][1])) h.appendChild(voiceBtn()); return h; }
 
   function timed(step, c, spot) {
     var a = active, K = R(), t = K.timer(step.secs), startIso = nowIso(), sat = false;
-    if (c.sit && spot) { api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }); sat = true; }
+    if (c.sit && spot) { api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }, c.pose || null); sat = true; }
     else if (c.pose && spot) { var pa = c.poseAt || spot.stand; api.sit({ x: pa.x, y: pa.y }, c.pose); sat = true; } /* a standing pose held on open floor: the stretch, beside the cushion rather than on it */
     var cap = el('p', 'rt-cue'); cap.setAttribute('aria-live', 'polite');
     var clock = el('p', 'rt-clock'), back = el('p', 'muted small rt-back');
     show(K.ROUTINES[a.routine].label, [head(c, a.run), cap, clock, back], [
-      { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) K.resume(t, Date.now()); else K.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; paint(); } },
+      { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) K.resume(t, Date.now()); else { K.pause(t, Date.now()); hush(); } b.textContent = t.paused ? 'Resume' : 'Pause'; paint(); } },
       { label: 'Skip', id: 'skip', fn: function () { over(); if (sat) api.stand(spot.stand.y); skip(step); } },
       { label: 'Stop for now', id: 'stop', fn: function () { over(); if (sat) api.stand(spot.stand.y); stop(); api.toast('Kept for later. Carry on from More whenever you like.', 2800); } }
     ], 'running');
     var shown = -1, backTimer = 0, done = false;
     function paint() {
-      var i = K.cueAt(c.cues, t); if (i !== shown) { shown = i; cap.textContent = c.cues[i][1]; }
+      var i = K.cueAt(c.cues, t); if (i !== shown) { shown = i; cap.textContent = c.cues[i][1]; var talk = t.paused ? 0 : say(c.cues[i][1]), fx = c.cues[i][2]; if (fx && root.EbbSound && root.EbbSound.play) setTimeout(function () { if (active) root.EbbSound.play(fx); }, talk ? talk + 250 : 0); } /* a cue can carry a small sound (the gulp), played once Erin has finished speaking */
       clock.textContent = K.clockText(t);
     }
     function onVis() {
@@ -211,7 +229,7 @@
     K.setHidden(t, doc.hidden, Date.now());
     var iv = setInterval(function () { K.tick(t, Date.now()); paint(); if (t.ended && !done) { done = true; over(); if (sat) api.stand(spot.stand.y); complete(step, t, startIso, nowIso()); } }, 250);
     cleanup = function () { clearInterval(iv); clearTimeout(backTimer); doc.removeEventListener('visibilitychange', onVis); };
-    function over() { if (cleanup) { cleanup(); cleanup = null; } }
+    function over() { hush(); if (cleanup) { cleanup(); cleanup = null; } }
     paint();
   }
 
@@ -269,7 +287,18 @@
     var n = Object.keys(a.run.done).length;
     show(K.ROUTINES[a.routine].short + ' done', [para(K.ROUTINES[a.routine].done), para(n === a.run.steps.length ? 'Every step, in your own time.' : n + ' of ' + a.run.steps.length + ' steps. The rest can wait for another day.', 'muted')],
       [{ label: 'Close', primary: true, id: 'close', fn: close }], 'finished');
-    chime();
+    say(K.ROUTINES[a.routine].done);
+    if (a.routine === 'morning' && n > 0) cheer(); else chime();
+  }
+
+  /* the morning is done: a happy little double hop, a sparkle burst over her, and a jingle to start the day */
+  function cheer() {
+    if (root.EbbSound && root.EbbSound.play) root.EbbSound.play('cheer');
+    var me = doc.getElementById('me'), m = api.me();
+    if (root.EbbProps && root.EbbProps.sparkles) api.fx(root.EbbProps.sparkles(m.x, m.y - 14, 9), 1800);
+    if (!me || doc.documentElement.getAttribute('data-motion') === 'reduce' || (root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    me.classList.remove('hop'); void me.getBoundingClientRect(); me.classList.add('hop');
+    setTimeout(function () { me.classList.remove('hop'); }, 1900);
   }
 
   /* ---------- the gentle card when the app opens in the morning or evening ---------- */
@@ -283,11 +312,12 @@
     no.addEventListener('click', function (e) { e.stopPropagation(); K.notNow(data(), api.today(), routine); api.save(); hideCard(); });
     var yes = el('button', 'btn small primary', resume ? 'Carry on' : 'Start'); yes.type = 'button'; yes.dataset.act = 'start';
     yes.addEventListener('click', function (e) { e.stopPropagation(); begin(routine); });
-    row.appendChild(no); row.appendChild(yes); card.appendChild(row);
+    row.appendChild(no); row.appendChild(yes); if (clipFor(K.promptLine(routine, resume))) row.insertBefore(voiceBtn(), no); card.appendChild(row);
+    say(K.promptLine(routine, resume)); /* Erin asks; a browser that blocks sound before the first tap simply stays quiet */
     card.addEventListener('click', function (e) { e.stopPropagation(); });
     var app = doc.querySelector('.app'); (app || doc.body).appendChild(card);
   }
-  function hideCard() { if (card) { card.remove(); card = null; } }
+  function hideCard() { if (card) { card.remove(); card = null; hush(); } }
   function maybePrompt(hour) {
     clearTimeout(promptTimer);
     if (!R() || active || card) return;

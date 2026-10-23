@@ -16,9 +16,10 @@
     stretch: { routine: 'morning', label: 'Stretch by the window', where: 'Bedroom', scene: 'bedroom', spot: 'cushion', kind: 'timed', secs: 60, options: [45, 60, 90], pose: 'stretch', poseAt: { x: 65, y: 75 }, /* she stands on the rug beside the cushion and reaches up (art/chars/genz/stretch) */
       blurb: 'A gentle reach, a roll of the shoulders, nothing that pulls.',
       cues: [[0, 'Stand easy. Reach both arms up, slowly, and let them float down.'], [0.25, 'Roll your shoulders back a few times. Let the jaw soften.'], [0.5, 'Lean a little to one side, then the other. Only as far as feels good.'], [0.75, 'Let your head hang forward for a breath. Then come back up tall.']] },
-    water: { routine: 'morning', label: 'A glass of water', where: 'Kitchen', scene: 'living', spot: 'kettle', kind: 'timed', secs: 20, options: [20, 30],
+    water: { routine: 'morning', label: 'A glass of water', where: 'Kitchen table', scene: 'living', spot: 'table', kind: 'timed', secs: 20, options: [20, 30],
+      sit: true, pose: 'sip', /* she sits at the table and sips (art/chars/genz/sip); a standing drink pose is waiting on a render */
       blurb: 'A full glass, drunk slowly, before anything else.',
-      cues: [[0, 'Pour a glass of water and hold it a moment before you drink.'], [0.5, 'Drink it slowly. Notice the cool of it. That is the whole step.']] },
+      cues: [[0, 'Pour a glass of water and hold it a moment before you drink.'], [0.5, 'Drink it slowly. Notice the cool of it. That is the whole step.', 'gulp']] },
     sounds: { routine: 'morning', label: 'Notice three sounds', where: 'Any room', scene: null, spot: null, kind: 'timed', secs: 45, options: [30, 45, 60],
       blurb: 'Listen for three sounds, near or far. No need to name them.',
       cues: [[0, 'Let your attention rest on listening. What is the first sound you notice?'], [0.34, 'And a second, maybe further away.'], [0.67, 'A third. Let them all come and go, without holding on.']] },
@@ -138,7 +139,7 @@
   function notNow(r, date, routine) { ensure(r); if (!r.notNow[date]) r.notNow[date] = {}; r.notNow[date][routine] = true; var keys = Object.keys(r.notNow).sort(); while (keys.length > KEEP_DAYS) delete r.notNow[keys.shift()]; return r; }
   function promptLine(routine, resume) {
     if (resume) return 'Your ' + ROUTINES[routine].short.toLowerCase() + ' routine is waiting where you left it.';
-    return routine === 'morning' ? 'Good morning. A gentle start?' : 'Evening. Time to wind down?';
+    return routine === 'morning' ? 'Good morning. Shall we start the day gently, with your morning routine?' : 'Good evening. Shall we wind down together before bed?';
   }
 
   /* ---------- timer: counts only running, visible time ---------- */

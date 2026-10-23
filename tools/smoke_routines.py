@@ -45,6 +45,7 @@ def main():
     with sync_playwright() as pw:
         b = pw.chromium.launch()
         ctx = b.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2)
+        ctx.add_init_script("window.__said = []; const _play = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { window.__said.push(this.src || ''); try { return _play.call(this).catch(() => {}); } catch (e) { return Promise.resolve(); } };")  # which clips were asked to play
         ctx.add_init_script("if (!sessionStorage.getItem('seeded')) { localStorage.setItem('ebb_save_v1', %s); sessionStorage.setItem('seeded', '1'); }" % json.dumps(json.dumps(save)))
         page = ctx.new_page()
         page.on('console', lambda m: errors.append(m.text + ' ' + (m.location or {}).get('url', '')) if m.type == 'error' and 'Failed to load resource' not in m.text else None)
@@ -171,6 +172,14 @@ def main():
         box = card.bounding_box(); top = page.locator('.top').bounding_box(); sun = page.locator('#todayBtn').bounding_box() if page.locator('#todayBtn').count() else None
         check('the card sits under the bar, clear of the sun button, inside the phone', box['y'] > top['y'] + top['height'] and (not sun or box['y'] >= sun['y'] + sun['height'] - 1) and box['x'] + box['width'] <= 390)
         shot(page, 'routines-06-card')
+        check("Erin asks out loud when the card shows", any('art/routines/voice/' in u for u in page.evaluate('window.__said')))
+        card.locator('[data-act="voice"]').click()
+        check('Mute Erin is remembered in the save', page.evaluate('() => EbbGame.state().routineVoice') is False and card.locator('[data-act="voice"]').inner_text() != 'Mute Erin')
+        n_said = len(page.evaluate('window.__said'))
+        page.evaluate("() => { document.querySelectorAll('.routine-card').forEach(c => c.remove()); EbbRoutines.card('evening'); }")
+        check('muted, the card stays silent', len(page.evaluate('window.__said')) == n_said)
+        page.evaluate("() => { EbbGame.state().routineVoice = true; EbbGame.api.save(); document.querySelectorAll('.routine-card').forEach(c => c.remove()); EbbRoutines.card('evening'); }")
+        card = page.locator('.routine-card')
         card.locator('[data-act="notnow"]').click()
         check('Not now hides the card and is saved for the day', page.locator('.routine-card').count() == 0 and page.evaluate("() => EbbGame.state().routines.notNow[%s].evening" % json.dumps(today)) is True)
         page.evaluate("() => EbbRoutines.prompt(20)")

@@ -79,6 +79,7 @@
     state = R().next(state, why || 'getUp');
     clearInterval(watch); watch = 0;
     close(); setDim(false);
+    if (why === 'getUp' && root.EbbRoutines && root.EbbRoutines.prompt) setTimeout(function () { root.EbbRoutines.prompt(); }, 900); /* up in the morning: the routine card and Erin's hello */
     var me = api.me(), sp = bed; bed = null;
     if (why !== 'scene' && why !== 'stood' && sp) { api.stand(sp.stand.y); me.x = sp.stand.x; me.y = sp.stand.y; } /* beside the bed, where the walk ended */
     api.refresh();
