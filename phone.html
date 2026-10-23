@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ebb in a phone</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #1d1a22; color: #f3eee8; font: 14px/1.4 -apple-system, "Segoe UI", sans-serif; }
+  .wrap { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .bar button, .bar select { font: inherit; padding: 6px 12px; border-radius: 999px; border: 1px solid #5a5262; background: #2a2531; color: inherit; cursor: pointer; }
+  .bar button:hover { background: #37313f; }
+  .phone { position: relative; background: #0b0a0d; border-radius: 54px; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 2px #3a3540; transform-origin: top center; }
+  .phone::before { content: ""; position: absolute; left: 50%; top: 26px; width: 120px; height: 34px; margin-left: -60px; background: #0b0a0d; border-radius: 20px; z-index: 2; }
+  .phone iframe { display: block; border: 0; border-radius: 42px; background: #efe2cf; }
+  .hint { color: #b8afc2; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <select id="device" aria-label="Device">
+      <option value="390x844">iPhone 14 / 15 (390 x 844)</option>
+      <option value="393x852">iPhone 15 Pro (393 x 852)</option>
+      <option value="375x667">iPhone SE (375 x 667)</option>
+      <option value="412x915">Pixel 8 (412 x 915)</option>
+    </select>
+    <button type="button" id="zoomOut" title="Zoom out (also pinch, wheel or the minus key in the game)">Zoom out</button>
+    <button type="button" id="zoomReset">Reset</button>
+    <button type="button" id="zoomIn">Zoom in</button>
+    <button type="button" id="reload">Reload</button>
+  </div>
+  <div class="phone" id="phone"><iframe id="game" title="Ebb" src="index.html" width="390" height="844" allow="autoplay"></iframe></div>
+  <div class="hint">Inside the game: pinch with two fingers, scroll the wheel or press + / - / 0. Taps and drags work as on a phone.</div>
+</div>
+<script>
+(function () {
+  var frame = document.getElementById('game'), phone = document.getElementById('phone'), dev = document.getElementById('device');
+  function game() { try { return frame.contentWindow.EbbGame; } catch (e) { return null; } }
+  function fit() {
+    var w = +frame.width + 28, h = +frame.height + 28, avail = window.innerHeight - 110, s = Math.min(1, avail / h, (window.innerWidth - 40) / w);
+    phone.style.transform = 'scale(' + s.toFixed(3) + ')'; phone.style.marginBottom = (h * s - h) + 'px';
+  }
+  dev.addEventListener('change', function () { var p = dev.value.split('x'); frame.width = p[0]; frame.height = p[1]; fit(); });
+  document.getElementById('zoomIn').addEventListener('click', function () { var g = game(); if (g) g.api.zoom(1.2); });
+  document.getElementById('zoomOut').addEventListener('click', function () { var g = game(); if (g) g.api.zoom(1 / 1.2); });
+  document.getElementById('zoomReset').addEventListener('click', function () { var g = game(); if (g) g.api.zoom(0); });
+  document.getElementById('reload').addEventListener('click', function () { frame.contentWindow.location.reload(); });
+  window.addEventListener('resize', fit); fit();
+})();
+</script>
+</body>
+</html>

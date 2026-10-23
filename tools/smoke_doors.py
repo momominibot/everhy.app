@@ -47,5 +47,25 @@ with sync_playwright() as p:
         plan.extend([{'kind': 'live'}] * 3)
     except Exception as e:
         fails += 1; plan.append({'kind': 'live'}); print('FAIL live plate', str(e).split('\n')[0])
+    # zoom: the wheel, a two-finger pinch and the keys change the stage size within bounds, and a pinch is not a tap
+    def stage_w(): return pg.evaluate("() => document.getElementById('stage').getBoundingClientRect().width")
+    pg.evaluate("EbbGame.enter('farm')"); pg.wait_for_timeout(200); base = stage_w(); zchecks = []
+    pg.mouse.move(195, 500); pg.mouse.wheel(0, -600); pg.wait_for_timeout(100); zchecks.append(('wheel up zooms in', stage_w() > base * 1.3))
+    pg.evaluate("EbbGame.api.zoom(0)"); pg.wait_for_timeout(50); zchecks.append(('zoom(0) resets', abs(stage_w() - base) < 1))
+    pg.evaluate("EbbGame.api.zoom(100)"); zchecks.append(('zoom in is bounded', abs(stage_w() - base * 2.4) < 2))
+    pg.evaluate("EbbGame.api.zoom(0.001)"); zchecks.append(('zoom out is bounded', abs(stage_w() - base * 0.75) < 2))
+    pg.evaluate("EbbGame.api.zoom(0)")
+    before = pg.evaluate("() => ({ x: EbbGame.me().x, y: EbbGame.me().y })")
+    pg.evaluate("""() => { const sc = document.getElementById('scene'); const mk = (id, x, y) => new Touch({ identifier: id, target: sc, clientX: x, clientY: y });
+      const fire = (type, ts) => sc.dispatchEvent(new TouchEvent(type, { touches: ts, changedTouches: ts, targetTouches: ts, bubbles: true, cancelable: true }));
+      fire('touchstart', [mk(1, 150, 400), mk(2, 250, 400)]); fire('touchmove', [mk(1, 100, 400), mk(2, 300, 400)]); fire('touchend', []); }""")
+    pg.wait_for_timeout(100); zchecks.append(('pinch zooms in', stage_w() > base * 1.6))
+    pg.mouse.click(195, 600); pg.wait_for_timeout(300)
+    after = pg.evaluate("() => ({ x: EbbGame.me().x, y: EbbGame.me().y, a: EbbGame.me().action })")
+    zchecks.append(('a tap right after the pinch does not walk', after['a'] != 'walk' and abs(after['x'] - before['x']) < 0.5))
+    pg.evaluate("EbbGame.api.zoom(0)")
+    for name, ok in zchecks:
+        plan.append({'kind': 'zoom'})
+        if not ok: fails += 1; print('FAIL zoom:', name)
     print(f'smoke_doors: {len(plan) - fails} of {len(plan)} passed; page errors: {errs}')
     br.close(); sys.exit(1 if fails or errs else 0)

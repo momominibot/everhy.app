@@ -40,7 +40,7 @@
   }
 
   /* ---------- camera: the stage has the plate's shape, scaled to cover the screen; it follows her and never shows an edge ---------- */
-  var cam = { x: 0, y: 0, W: 0, H: 0, S: 0, Sh: 0, snap: true };
+  var cam = { x: 0, y: 0, W: 0, H: 0, S: 0, Sh: 0, snap: true, user: 1 }; /* user: the pinch zoom, a multiplier on the scene's own */
   var still = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function layout() {
     var r = els.scene.getBoundingClientRect();
@@ -48,7 +48,7 @@
     /* the plate always shows its full width; a tall plate on a taller screen leaves room above and below, which the
      * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
     var sc = scene(), zoom = sc.zoom || (sc.indoor ? 1.12 : 1.3); /* a little larger than the screen, so the camera has somewhere to go */
-    cam.W = r.width; cam.H = r.height; cam.S = r.width * zoom; cam.Sh = cam.S * ratio; cam.snap = true;
+    cam.W = r.width; cam.H = r.height; cam.S = r.width * zoom * cam.user; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
     if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
@@ -62,6 +62,16 @@
     else { var k = 1 - Math.exp(-dt / 0.2); cam.x += (tx - cam.x) * k; cam.y += (ty - cam.y) * k; }
     els.stage.style.transform = 'translate3d(' + cam.x.toFixed(1) + 'px,' + cam.y.toFixed(1) + 'px,0)';
   }
+
+  /* ---------- zoom: pinch, wheel or trackpad, and the +/- keys; a multiplier on the scene's own zoom, kept around her ---------- */
+  var ZOOM_MIN = 0.75, ZOOM_MAX = 2.4, pinch = null;
+  function setZoom(k) { k = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k)); if (Math.abs(k - cam.user) < 0.001) return cam.user; cam.user = k; layout(); return k; }
+  function zoomBy(f) { return setZoom(cam.user * f); }
+  function pinchDist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+  function onTouchStart(ev) { if (ev.touches.length === 2) { pinch = { d: pinchDist(ev.touches), k: cam.user }; deco.drag = null; busyUntil = Date.now() + 600; } }
+  function onTouchMove(ev) { if (pinch && ev.touches.length === 2) { ev.preventDefault(); setZoom(pinch.k * pinchDist(ev.touches) / pinch.d); busyUntil = Date.now() + 600; } }
+  function onTouchEnd(ev) { if (pinch && ev.touches.length < 2) { pinch = null; busyUntil = Date.now() + 400; } } /* the fingers lifting is not a tap */
+  function onWheel(ev) { ev.preventDefault(); zoomBy(Math.exp(-ev.deltaY * (ev.ctrlKey ? 0.01 : 0.0015))); }
 
   function drawProps() {
     var s = scene(), near = nearest(), out = '', front = '';
@@ -272,6 +282,7 @@
     var d = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, -4], ArrowDown: [0, 4] }[ev.key];
     if (d) { ev.preventDefault(); walkTo({ x: me.x + d[0], y: me.y + d[1] }, null); }
     if (ev.key === 'Enter' || ev.key === ' ') { if (!els.prompt.hidden) { ev.preventDefault(); useNear(); } }
+    if (ev.key === '+' || ev.key === '=') zoomBy(1.15); else if (ev.key === '-' || ev.key === '_') zoomBy(1 / 1.15); else if (ev.key === '0') setZoom(1);
   }
 
   function boot() {
@@ -283,6 +294,9 @@
     els.scene.addEventListener('click', onTap);
     els.scene.addEventListener('pointerdown', onPointerDown); els.scene.addEventListener('pointermove', onPointerMove);
     els.scene.addEventListener('pointerup', onPointerUp); els.scene.addEventListener('pointercancel', onPointerUp);
+    els.scene.addEventListener('touchstart', onTouchStart, { passive: true }); els.scene.addEventListener('touchmove', onTouchMove, { passive: false });
+    els.scene.addEventListener('touchend', onTouchEnd); els.scene.addEventListener('touchcancel', onTouchEnd);
+    els.scene.addEventListener('wheel', onWheel, { passive: false });
     els.prompt.addEventListener('click', function (e) { e.stopPropagation(); useNear(); });
     doc.addEventListener('keydown', keys);
     if ($('wardrobeBtn')) $('wardrobeBtn').addEventListener('click', function () { root.EbbUi.openWardrobe(st.outfit, function (o) { if (o) { st.outfit = o; S.save(); } }); });
@@ -304,6 +318,7 @@
   var api = {
     state: function () { return st; }, save: function () { S.save(); }, today: today, toast: toast, me: function () { return me; },
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
+    zoom: function (f) { return f === undefined ? cam.user : f === 0 ? setZoom(1) : zoomBy(f); }, /* zoom(): read; zoom(0): reset; zoom(1.2): in by 20 percent */
     decorate: function (on) { decorate(on !== false); }, furniture: function () { return scene().layout || null; },
     work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.view = 'front'; path = []; },
     stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }

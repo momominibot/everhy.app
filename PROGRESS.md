@@ -45,4 +45,6 @@ seed-garden panel (a parallel economy beside the farm), a full-scene video plate
 3. Trees (Phase 3), title screen, outdoor seats: slice the rendered sheets, build on main.
 4. Codex review of main; update the Ebb plan doc to the full world.
 
+Zoom: pinch, wheel/trackpad or + / - / 0 scale the camera between 0.75x and 2.4x of the scene's own zoom (EbbGame.api.zoom).
+Phone frame for desktop viewing: phone.html (device picker, zoom buttons, reload) wraps index.html in a drawn phone.
 Preview: launch entry "ebb" (port 8096) in ovumind/.claude/launch.json. Phone screenshots: python3 tools/shot.py <prefix> [scenes].
