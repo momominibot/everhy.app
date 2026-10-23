@@ -130,7 +130,7 @@
         });
         c.close();
         if (!best) { c.api.toast('Hoe a bed first, then plant.'); return; }
-        G.walkTo({ x: best.bd.x, y: best.bd.y + 4.5 }, { bed: best.i });
+        G.walkTo(W.bedStand(best.bd), { bed: best.i });
       } });
     b.registerAction({ id: 'offer', label: 'Take the basket to the pond', kinds: ['crop', 'find'],
       when: function (c) {

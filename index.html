@@ -27,10 +27,10 @@
 <main class="app">
   <header class="top">
     <span class="place" id="place">Bedroom</span>
-    <span class="counts" id="counts" aria-label="Your things">
-      <span title="Seeds">Seeds <b id="hudSeeds">0</b></span>
-      <span title="Basket">Basket <b id="hudBasket">0</b></span>
-      <span title="Offerings">Pond <b id="hudPond">0</b></span>
+    <span class="counts" id="counts" aria-label="Your things"><!-- icon chips; the word stays for screen readers -->
+      <span class="chip" title="Seeds" aria-label="Seeds"><i class="ico ico-seeds"></i><em class="sr">Seeds</em> <b id="hudSeeds">0</b></span>
+      <span class="chip" title="Basket" aria-label="Basket"><i class="ico ico-basket"></i><em class="sr">Basket</em> <b id="hudBasket">0</b></span>
+      <span class="chip" title="Offerings" aria-label="Offerings"><i class="ico ico-pond"></i><em class="sr">Pond</em> <b id="hudPond">0</b></span>
     </span>
     <button type="button" class="btn small" id="moreBtn" aria-haspopup="true">More</button>
     <nav class="menu" id="moreMenu" hidden aria-label="More"></nav>
@@ -56,7 +56,6 @@
 <script src="js/ebb-clay-sets.js"></script>
 <script src="js/ebb-clay.js"></script>
 <script src="js/ebb-world.js"></script>
-<script src="js/ebb-furniture.js"></script>
 <script src="js/ebb-farm.js"></script>
 <script src="js/ebb-store.js"></script>
 <script src="js/ebb-props.js"></script>

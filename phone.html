@@ -12,8 +12,9 @@
   .bar button, .bar select { font: inherit; padding: 6px 12px; border-radius: 999px; border: 1px solid #5a5262; background: #2a2531; color: inherit; cursor: pointer; }
   .bar button:hover { background: #37313f; }
   .phone { position: relative; background: #0b0a0d; border-radius: 54px; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 2px #3a3540; transform-origin: top center; }
-  .phone::before { content: ""; position: absolute; left: 50%; top: 26px; width: 120px; height: 34px; margin-left: -60px; background: #0b0a0d; border-radius: 20px; z-index: 2; }
-  .phone iframe { display: block; border: 0; border-radius: 42px; background: #efe2cf; }
+  .phone::before { content: ""; position: absolute; left: 50%; top: 22px; width: 120px; height: 34px; margin-left: -60px; background: #0b0a0d; border-radius: 20px; z-index: 2; }
+  .phone .status { height: 44px; background: #efe2cf; border-radius: 42px 42px 0 0; } /* the phone's own status bar: the notch sits here, above the game */
+  .phone iframe { display: block; border: 0; border-radius: 0 0 42px 42px; background: #efe2cf; }
   .hint { color: #b8afc2; font-size: 12px; }
 </style>
 </head>
@@ -31,7 +32,7 @@
     <button type="button" id="zoomIn">Zoom in</button>
     <button type="button" id="reload">Reload</button>
   </div>
-  <div class="phone" id="phone"><iframe id="game" title="Ebb" src="index.html" width="390" height="844" allow="autoplay"></iframe></div>
+  <div class="phone" id="phone"><div class="status" aria-hidden="true"></div><iframe id="game" title="Ebb" src="index.html" width="390" height="844" allow="autoplay"></iframe></div>
   <div class="hint">Inside the game: pinch with two fingers, scroll the wheel or press + / - / 0. Taps and drags work as on a phone.</div>
 </div>
 <script>
@@ -39,7 +40,7 @@
   var frame = document.getElementById('game'), phone = document.getElementById('phone'), dev = document.getElementById('device');
   function game() { try { return frame.contentWindow.EbbGame; } catch (e) { return null; } }
   function fit() {
-    var w = +frame.width + 28, h = +frame.height + 28, avail = window.innerHeight - 110, s = Math.min(1, avail / h, (window.innerWidth - 40) / w);
+    var w = +frame.width + 28, h = +frame.height + 28 + 44, avail = window.innerHeight - 110, s = Math.min(1, avail / h, (window.innerWidth - 40) / w);
     phone.style.transform = 'scale(' + s.toFixed(3) + ')'; phone.style.marginBottom = (h * s - h) + 'px';
   }
   dev.addEventListener('change', function () { var p = dev.value.split('x'); frame.width = p[0]; frame.height = p[1]; fit(); });

@@ -6,9 +6,9 @@ ctx.globalThis = ctx;
 const mem = {};
 ctx.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
 vm.createContext(ctx);
-['ebb-puppet.js', 'ebb-clay-sets.js', 'ebb-clay.js', 'ebb-world.js', 'ebb-furniture.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
+['ebb-puppet.js', 'ebb-clay-sets.js', 'ebb-clay.js', 'ebb-world.js', 'ebb-farm.js', 'ebb-store.js'].forEach(f =>
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', f), 'utf8'), ctx, { filename: f }));
-const { EbbPuppet: P, EbbClay: C, EbbClaySets: CS, EbbWorld: W, EbbFurniture: Fu, EbbFarm: F, EbbStore: S } = ctx;
+const { EbbPuppet: P, EbbClay: C, EbbClaySets: CS, EbbWorld: W, EbbFarm: F, EbbStore: S } = ctx;
 
 let pass = 0, fail = 0;
 function check(name, ok) { if (ok) pass++; else { fail++; console.log('FAIL', name); } }
@@ -46,35 +46,6 @@ check('clay sit', C.pick({ action: 'sit', view: 'front' }).strip === 'sit');
 check('every floor fits its plate', Object.keys(W.SCENES).every(id => W.SCENES[id].floor.every(p => p[0] >= 0 && p[0] <= 100 && p[1] >= 0 && p[1] <= W.units(id))));
 check('plate units follow the aspect', W.units({}) === 100 && W.units({ aspect: [4, 7] }) === 175);
 check('depth: further up is smaller in every scene', Object.keys(W.SCENES).every(id => { const d = W.SCENES[id].depth || [60, 0.17, 98, 0.28]; return W.scaleAt(d[0], id) < W.scaleAt(d[2], id); }));
-
-/* furniture: every room's default arrangement fits, every piece has art, and a moved piece obeys the floor and the others */
-Object.keys(Fu.DEFAULTS).forEach(id => { /* the redecorated room: the empty shell's floor plus her pieces, as the game switches it */
-  const s = W.SCENES[id], fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors };
-  s.floor = s.shellFloor || s.floor; s.doors = W.shellDoors(s); s.baseSolids = []; s.baseSpots = []; fixed.aspect = s.aspect; s.aspect = s.shellAspect || s.aspect; fixed.start = s.start; s.start = s.shellStart || s.start;
-  const lay = Fu.fresh(id); Fu.apply(s, lay);
-  check(`${id} furniture ids unique`, new Set(lay.map(p => p.uid)).size === lay.length);
-  lay.forEach(p => check(`${id}/${p.item} fits where it starts`, Fu.canPlace(W, id, lay, p.uid, p.x, p.y)));
-  s.spots.forEach(sp => check(`${id}/${sp.id} (redecorated) stand reachable`, W.walkable(id, sp.stand) && !!W.plan(id, s.start, sp.stand)));
-  s.doors.forEach(d => check(`${id}/${d.id} (redecorated) door reachable`, !!W.plan(id, s.start, { x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 })));
-  s.floor = fixed.floor; s.doors = fixed.doors; s.solids = fixed.solids; s.spots = fixed.spots; s.layout = null; s.baseSolids = null; s.aspect = fixed.aspect; s.start = fixed.start; /* back to the painted room */
-});
-Object.keys(Fu.CATALOG).forEach(k => {
-  const c = Fu.CATALOG[k], m = ctx.EbbPropSprites[c.sheet];
-  check(`furniture ${k} has a strip and frame`, !!m && c.frame < m.frames && (!c.dir || m.dir === c.dir));
-});
-(() => {
-  const lay = Fu.fresh('bedroom'), bed = lay.filter(p => p.item === 'bed')[0], lamp = lay.filter(p => p.item === 'lamp')[0];
-  check('cannot drop a piece off the floor', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, 50, 20));
-  check('cannot drop a piece onto another', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, bed.x, bed.y));
-  check('cannot block a door', !Fu.canPlace(W, 'bedroom', lay, lamp.uid, 8, 98));
-  check('can move to a clear spot', Fu.canPlace(W, 'bedroom', lay, lamp.uid, 60, 165));
-  const rug = lay.filter(p => p.item === 'rug')[0];
-  check('a rug may lie under other things', Fu.canPlace(W, 'bedroom', lay, rug.uid, bed.x, bed.y));
-  check('stored junk is dropped, known pieces kept', Fu.clean([{ uid: 'a', item: 'bed', x: 30, y: 95 }, { uid: 'b', item: 'spaceship', x: 1, y: 1 }, { uid: 'a', item: 'lamp', x: 2, y: 2 }], 'bedroom').length === 1);
-  check('a corrupt layout falls back to the default room', Fu.clean('nope', 'bedroom').length === Fu.DEFAULTS.bedroom.length);
-  const spots = Fu.spotsFor(lay);
-  check('furniture spots carry topics', spots.filter(s => s.kind === 'log').every(s => s.topic) && spots.some(s => s.topic === 'sleep'));
-})();
 
 /* world: every start, door arrival and stand point is walkable and reachable from the start */
 Object.keys(W.SCENES).forEach(id => {
@@ -117,6 +88,24 @@ check('plan avoids leaving the floor', (() => { const s = W.SCENES.waterfall, p 
   check('harvest into basket', F.act(f, 0, d3).action === 'harvest' && f.basket.turnip === 1 && f.beds[0].state === 'tilled');
   check('basket gives an offering', F.takeFromBasket(f) === 'turnip' && F.takeFromBasket(f) === null);
   check('watering twice in a day does not double grow', (() => { const g = F.fresh(1); F.act(g, 0, d1); g.seeds.carrot = 1; F.act(g, 0, d1); g.beds[0].watered.push(d1, d1); return F.grown(g.beds[0], d2) === 1; })());
+})();
+
+/* an older save with more beds than the painted farm: what grew in the lost beds moves to free beds, nothing is lost */
+(() => {
+  const n = W.SCENES.farm.beds.length, d1 = '2026-10-22';
+  check('the painted farm has four beds', n === 4);
+  const f = F.fresh(6); f.beds[4] = { state: 'planted', crop: 'turnip', watered: [d1] }; f.beds[5] = { state: 'tilled', crop: null, watered: [] }; f.beds[1] = { state: 'planted', crop: 'carrot', watered: [] };
+  check('fitBeds reports a change', F.fitBeds(f, n) === true);
+  check('four beds remain', f.beds.length === 4);
+  check('the fifth bed\'s turnip moved to the first free bed with its watered days', f.beds[0].state === 'planted' && f.beds[0].crop === 'turnip' && f.beds[0].watered[0] === d1);
+  check('the sixth bed\'s tilled soil took the next free bed', f.beds[2].state === 'tilled');
+  check('a bed already in use is left alone', f.beds[1].crop === 'carrot' && f.beds[3].state === 'grass');
+  const g = F.fresh(6); g.beds[4] = { state: 'planted', crop: 'turnip', watered: [] };
+  for (let i = 0; i < 4; i++) g.beds[i] = { state: 'tilled', crop: null, watered: [] };
+  F.fitBeds(g, n); check('with no free bed the extra crop is dropped rather than overwriting one', g.beds.length === 4 && g.beds.every(b => b.state === 'tilled'));
+  const h = F.fresh(4); check('a save that already fits is untouched', F.fitBeds(h, n) === false && h.beds.length === 4);
+  const k = F.fresh(2); check('a save with too few beds is padded with grass', F.fitBeds(k, n) === true && k.beds.length === 4 && k.beds[3].state === 'grass');
+  check('a broken farm is left alone', F.fitBeds(null, n) === false && F.fitBeds({ beds: 'x' }, n) === false);
 })();
 
 /* store: practice observations carry provenance and status is never invented */

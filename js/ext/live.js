@@ -1,7 +1,7 @@
 /* Ebb live plates: a scene may name a `video`, a seamless loop of its own plate in which only the water and the
  * trees move (made by tools/live_plate.py plus a mask, so the rest of the painting is pixel-identical). It is shown
- * over the still plate image in the same box, muted, looping, inline. Under reduced motion, in Decorate mode or when
- * the browser refuses autoplay the still plate simply stays. The sky's tint is a sibling above it, so night still
+ * over the still plate image in the same box, muted, looping, inline. Under reduced motion or when the browser
+ * refuses autoplay the still plate simply stays. The sky's tint is a sibling above it, so night still
  * falls on the water. */
 (function (root) {
   'use strict';
@@ -31,9 +31,8 @@
     return src;
   }
   function wanted() {
-    var id = G.api.scene(), sc = W.SCENES[id], st = G.api.state();
+    var id = G.api.scene(), sc = W.SCENES[id];
     if (!sc || !sc.video || reduced()) return '';
-    if (st && st.furniture && st.furniture[id]) return ''; /* Decorate mode shows the empty shell */
     return pickSrc(sc.video);
   }
   function tick() {

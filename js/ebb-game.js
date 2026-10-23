@@ -2,7 +2,7 @@
  * Movement, planning and rules live in the pure modules; this file wires them to the page. */
 (function (root) {
   'use strict';
-  var doc = root.document, W = root.EbbWorld, Fu = root.EbbFurniture, P = root.EbbPuppet, C = root.EbbClay, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
+  var doc = root.document, W = root.EbbWorld, P = root.EbbPuppet, C = root.EbbClay, F = root.EbbFarm, S = root.EbbStore, PR = root.EbbProps;
   var NEAR = 7, SPEED = 20;
   var els = {}, st, me = { x: 50, y: 85, view: 'front', flip: false, action: 'idle', phase: 0, tool: 'none' };
   var path = [], pending = null, busyUntil = 0, last = 0, fxHtml = '', fxUntil = 0, toastTimer = 0, sitting = false;
@@ -21,19 +21,11 @@
   function enter(id, at) {
     st.scene = id;
     var s = scene();
-    /* a room is one painted render until she rearranges it; then it is the empty shell plus her own pieces */
-    if (!s.fixed) s.fixed = { floor: s.floor, solids: s.solids.slice(), spots: s.spots.slice(), doors: s.doors, aspect: s.aspect, depth: s.depth, zoom: s.zoom, start: s.start };
-    var custom = Fu && s.shell && st.furniture && st.furniture[id];
-    if (custom) {
-      st.furniture[id] = Fu.clean(st.furniture[id], id);
-      s.floor = s.shellFloor || s.fixed.floor; s.doors = W.shellDoors(Object.assign({}, s, { doors: s.fixed.doors })); s.baseSolids = []; s.baseSpots = []; Fu.apply(s, st.furniture[id]);
-      s.aspect = s.shellAspect || s.fixed.aspect; s.depth = s.shellDepth || s.fixed.depth; s.zoom = s.shellAspect ? undefined : s.fixed.zoom; s.start = s.shellStart || s.fixed.start; /* the empty shell may have another shape */
-    } else { s.floor = s.fixed.floor; s.doors = s.fixed.doors; s.solids = s.fixed.solids.slice(); s.spots = s.fixed.spots.slice(); s.layout = null; s.baseSolids = null; s.aspect = s.fixed.aspect; s.depth = s.fixed.depth; s.zoom = s.fixed.zoom; s.start = s.fixed.start; }
     S.save();
-    els.plate.src = custom ? s.shell : s.plate; els.plate.alt = s.name;
+    els.plate.src = s.plate; els.plate.alt = s.name;
     els.place.textContent = s.name;
     if (cam.W) layout(); /* the stage takes the new plate's shape */
-    var p0 = at || s.start, q = W.walkable(id, p0) ? p0 : W.nearestWalkable(id, p0) || s.start; /* her own furniture may stand where a door lets out */
+    var p0 = at || s.start, q = W.walkable(id, p0) ? p0 : W.nearestWalkable(id, p0) || s.start;
     me.x = q.x; me.y = q.y;
     path = []; pending = null; sitting = false; me.action = 'idle'; cam.snap = true;
     drawProps();
@@ -48,7 +40,9 @@
     /* the plate always shows its full width; a tall plate on a taller screen leaves room above and below, which the
      * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
     var sc = scene(), zoom = sc.zoom || (sc.indoor ? 1.12 : 1.3); /* a little larger than the screen, so the camera has somewhere to go */
-    cam.W = r.width; cam.H = r.height; cam.S = r.width * zoom * cam.user; cam.Sh = cam.S * ratio; cam.snap = true;
+    cam.W = r.width; cam.H = r.height;
+    cam.user = Math.max(zoomFloor(), Math.min(ZOOM_MAX, cam.user)); /* a new plate or a turned phone may need more zoom to keep the screen covered */
+    cam.S = r.width * zoom * cam.user; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
     if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
@@ -65,33 +59,29 @@
 
   /* ---------- zoom: pinch, wheel or trackpad, and the +/- keys; a multiplier on the scene's own zoom, kept around her ---------- */
   var ZOOM_MIN = 0.75, ZOOM_MAX = 2.4, pinch = null;
-  function zoomFloor() { /* never so far out that the plate stops covering the screen (the scene's own zoom is always allowed) */
+  function zoomFloor() { /* never so far out that the plate stops covering the screen; a tall phone may need more than the scene's own zoom */
     var sc = scene(), z = sc.zoom || (sc.indoor ? 1.12 : 1.3), ratio = W.units(st.scene) / 100;
     if (!cam.W || !cam.H) return ZOOM_MIN;
-    return Math.min(1, Math.max(ZOOM_MIN, 1 / z, cam.H / (cam.W * z * ratio)));
+    return Math.max(ZOOM_MIN, 1 / z, cam.H / (cam.W * z * ratio));
   }
   function setZoom(k) { k = Math.max(zoomFloor(), Math.min(ZOOM_MAX, k)); if (Math.abs(k - cam.user) < 0.001) return cam.user; cam.user = k; layout(); return k; }
   function zoomBy(f) { return setZoom(cam.user * f); }
   function pinchDist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
-  function onTouchStart(ev) { if (ev.touches.length === 2) { pinch = { d: pinchDist(ev.touches), k: cam.user }; deco.drag = null; busyUntil = Date.now() + 600; } }
+  function onTouchStart(ev) { if (ev.touches.length === 2) { pinch = { d: pinchDist(ev.touches), k: cam.user }; busyUntil = Date.now() + 600; } }
   function onTouchMove(ev) { if (pinch && ev.touches.length === 2) { ev.preventDefault(); setZoom(pinch.k * pinchDist(ev.touches) / pinch.d); busyUntil = Date.now() + 600; } }
   function onTouchEnd(ev) { if (pinch && ev.touches.length < 2) { pinch = null; busyUntil = Date.now() + 400; } } /* the fingers lifting is not a tap */
   function onWheel(ev) { ev.preventDefault(); zoomBy(Math.exp(-ev.deltaY * (ev.ctrlKey ? 0.01 : 0.0015))); }
 
+  function frontBase(f) { return f.base !== undefined ? f.base : f.rect[3]; } /* where her feet pass from behind a cut-out to in front of it */
+  function frontsBehind() { var s = scene(), n = 0; (s.fronts || []).forEach(function (f) { if (me.y >= frontBase(f)) n++; }); return n; }
   function drawProps() {
     var s = scene(), near = nearest(), out = '', front = '';
     if (s.beds) s.beds.forEach(function (b, i) { if (!st.farm.beds[i]) return; out += b.w ? PR.paintedBed(st.farm.beds[i], b.x, b.y, b.w, today(), near && near.bed === i) : PR.bed(st.farm.beds[i], b.x, b.y, today(), near && near.bed === i); });
     if (s.fall && !(root.EbbLive && root.EbbLive.active())) out += PR.shimmer(s.fall); /* the live plate has real water */
-    if (s.layout) { /* furniture: pieces whose front edge is above her feet go behind her, the rest in front */
-      s.layout.slice().sort(function (a, b) { return (Fu.CATALOG[a.item].flat ? -1 : 0) - (Fu.CATALOG[b.item].flat ? -1 : 0) || a.y - b.y; }).forEach(function (p) {
-        var cat = Fu.CATALOG[p.item], d = deco.drag && deco.drag.uid === p.uid ? deco.drag : null, q = d ? { uid: p.uid, item: p.item, x: d.x, y: d.y, flip: p.flip } : p;
-        var html = PR.furniture(q, cat, { near: near && near.spot && near.spot.furniture === p.uid, ghost: !!d, bad: d && !d.ok });
-        if (cat.flat || q.y <= me.y + 0.5 || sitting) out += html; else front += html;
-      });
-    }
     (propDrawers[st.scene] || []).forEach(function (fn) { try { out += fn(api, near) || ''; } catch (e) { console.error(e); } });
-    if (s.fronts && !s.layout) s.fronts.forEach(function (f) { /* pieces of the painting cut out and laid in front of her: a bridge rail, a lamp post */
-      front += '<image href="' + f.src + '" x="' + f.rect[0] + '" y="' + f.rect[1] + '" width="' + (f.rect[2] - f.rect[0]) + '" height="' + (f.rect[3] - f.rect[1]) + '" preserveAspectRatio="none"/>';
+    if (s.fronts) s.fronts.forEach(function (f) { /* pieces of the painting cut out and laid over her: a bridge rail, an arch door. Below its base she is in front of it */
+      var html = '<image href="' + f.src + '" x="' + f.rect[0] + '" y="' + f.rect[1] + '" width="' + (f.rect[2] - f.rect[0]) + '" height="' + (f.rect[3] - f.rect[1]) + '" preserveAspectRatio="none"/>';
+      if (me.y >= frontBase(f)) out += html; else front += html;
     });
     els.props.innerHTML = out; els.front.innerHTML = front;
   }
@@ -110,7 +100,7 @@
     return { hoe: 'Hoe the soil', plant: 'Plant a seed', needSeeds: 'Seeds are in the shed', water: 'Water', harvest: 'Harvest', done: 'Watered today' }[a];
   }
   function refreshPrompt() {
-    var n = nearest(), label = !path.length && !sitting && !deco.on ? promptFor(n) : null;
+    var n = nearest(), label = !path.length && !sitting ? promptFor(n) : null;
     els.prompt.hidden = !label; if (label) els.prompt.textContent = label;
     els.prompt.dataset.near = n ? (n.spot ? 'spot:' + n.spot.id : 'bed:' + n.bed) : '';
   }
@@ -122,7 +112,7 @@
   }
   function onTap(ev) {
     if (Date.now() < busyUntil || root.EbbUi && root.EbbUi.modalOpen()) return;
-    if (sitting || deco.on) return;
+    if (sitting) return;
     var pt = scenePoint(ev), s = scene(), target = null;
     s.spots.forEach(function (sp) { if (Math.hypot(sp.at.x - pt.x, sp.at.y - pt.y) < 8) target = { pt: sp.stand, then: { spot: sp } }; });
     (s.beds || []).forEach(function (b, i) { var hw = b.w ? b.w / 2 : 7, hh = b.w ? b.w * 0.21 : 4.5; if (Math.abs(b.x - pt.x) < hw && Math.abs(b.y - pt.y) < hh) target = { pt: W.bedStand(b), then: { bed: i } }; });
@@ -178,53 +168,6 @@
   }
   function stand() { sitting = false; me.action = 'idle'; if (standBack) { me.x = standBack.x; me.y = standBack.y; } }
 
-  /* ---------- decorating: every piece of furniture can be picked up and put somewhere else ---------- */
-  var deco = { on: false, drag: null, bar: null, picked: null };
-  function pieceAt(pt) {
-    var s = scene(); if (!s.layout) return null;
-    return Fu.hit(s.layout, pt, function (p) { return PR.furnitureBox(p, Fu.CATALOG[p.item]); });
-  }
-  function decorate(on) {
-    deco.on = on; deco.drag = null; deco.picked = null; path = []; pending = null;
-    els.scene.classList.toggle('decorating', on); els.prompt.hidden = true;
-    if (deco.bar) { deco.bar.remove(); deco.bar = null; }
-    if (on) {
-      deco.bar = doc.createElement('div'); deco.bar.className = 'decobar';
-      deco.bar.innerHTML = '<button type="button" class="btn" id="decoReset">Original room</button><button type="button" class="btn" id="decoFlip">Flip</button><button type="button" class="btn primary" id="decoDone">Done</button>';
-      deco.bar.querySelector('#decoReset').addEventListener('click', function () { delete st.furniture[st.scene]; decorate(false); enter(st.scene, { x: me.x, y: me.y }); toast('Back to how it was'); });
-      els.scene.parentNode.appendChild(deco.bar);
-      deco.bar.querySelector('#decoDone').addEventListener('click', function () { decorate(false); toast('Looks lovely'); });
-      deco.bar.querySelector('#decoFlip').addEventListener('click', function () {
-        var p = deco.picked; if (!p) { toast('Tap a piece first'); return; }
-        p.flip = !p.flip; commitLayout();
-      });
-      toast('Drag anything to move it. Tap a piece, then Flip to turn it.', 3600);
-    }
-    drawProps();
-  }
-  function commitLayout() { var s = scene(); Fu.apply(s, s.layout); st.furniture[st.scene] = s.layout; S.save(); drawProps(); }
-  function onPointerDown(ev) {
-    if (!deco.on || root.EbbUi && root.EbbUi.modalOpen()) return;
-    var pt = scenePoint(ev), p = pieceAt(pt); if (!p) return;
-    ev.preventDefault(); els.scene.setPointerCapture && els.scene.setPointerCapture(ev.pointerId);
-    deco.picked = p; deco.drag = { uid: p.uid, dx: p.x - pt.x, dy: p.y - pt.y, x: p.x, y: p.y, ok: true, moved: false };
-    drawProps();
-  }
-  function onPointerMove(ev) {
-    var d = deco.drag; if (!d) return;
-    var pt = scenePoint(ev), s = scene();
-    d.x = Math.max(0, Math.min(100, pt.x + d.dx)); d.y = Math.max(0, Math.min(W.units(st.scene), pt.y + d.dy)); d.moved = true;
-    var cat = Fu.CATALOG[deco.picked.item], r = [d.x - cat.foot[0] / 2, d.y - cat.foot[1], d.x + cat.foot[0] / 2, d.y];
-    d.ok = Fu.canPlace(W, st.scene, s.layout, d.uid, d.x, d.y) && (cat.flat || !W.inRect(me, [r[0] - 2, r[1] - 2, r[2] + 2, r[3] + 1]));
-    drawProps();
-  }
-  function onPointerUp() {
-    var d = deco.drag; if (!d) return;
-    deco.drag = null;
-    if (d.moved && d.ok) { deco.picked.x = Math.round(d.x * 2) / 2; deco.picked.y = Math.round(d.y * 2) / 2; commitLayout(); }
-    else { if (d.moved) toast('It does not fit there'); drawProps(); }
-  }
-
   function offer() {
     var item = F.takeFromBasket(st.farm);
     if (!item) { toast('The pond is quiet. Bring something from the farm.'); return; }
@@ -271,9 +214,8 @@
       els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
     }
     els.fx.innerHTML = Date.now() < fxUntil ? fxHtml : '';
-    var n = nearest(), lay = scene().layout, behind = 0;
-    if (lay) for (var i = 0; i < lay.length; i++) if (lay[i].y <= me.y + 0.5) behind++;
-    var key = st.scene + (n ? JSON.stringify(n.bed !== undefined ? n.bed : n.spot.id) : '') + ':' + behind + (sitting ? 's' : '');
+    var n = nearest();
+    var key = st.scene + (n ? JSON.stringify(n.bed !== undefined ? n.bed : n.spot.id) : '') + ':' + frontsBehind() + (sitting ? 's' : '');
     if (key !== lastProps) { lastProps = key; drawProps(); }
     refreshPrompt();
   }
@@ -286,7 +228,7 @@
   }
 
   function keys(ev) {
-    if (sitting || deco.on || root.EbbUi.modalOpen()) return;
+    if (sitting || root.EbbUi.modalOpen()) return;
     var d = { ArrowLeft: [-6, 0], ArrowRight: [6, 0], ArrowUp: [0, -4], ArrowDown: [0, 4] }[ev.key];
     if (d) { ev.preventDefault(); walkTo({ x: me.x + d[0], y: me.y + d[1] }, null); }
     if (ev.key === 'Enter' || ev.key === ' ') { if (!els.prompt.hidden) { ev.preventDefault(); useNear(); } }
@@ -299,9 +241,8 @@
     root.addEventListener('resize', layout);
     st = S.load();
     if (!st.outfit) st.outfit = P.clean(null);
+    if (W.SCENES.farm && W.SCENES.farm.beds && F.fitBeds(st.farm, W.SCENES.farm.beds.length)) S.save(); /* an older save had more beds than the painted farm shows */
     els.scene.addEventListener('click', onTap);
-    els.scene.addEventListener('pointerdown', onPointerDown); els.scene.addEventListener('pointermove', onPointerMove);
-    els.scene.addEventListener('pointerup', onPointerUp); els.scene.addEventListener('pointercancel', onPointerUp);
     els.scene.addEventListener('touchstart', onTouchStart, { passive: true }); els.scene.addEventListener('touchmove', onTouchMove, { passive: false });
     els.scene.addEventListener('touchend', onTouchEnd); els.scene.addEventListener('touchcancel', onTouchEnd);
     els.scene.addEventListener('wheel', onWheel, { passive: false });
@@ -311,12 +252,6 @@
     $('moreBtn').addEventListener('click', function () { var m = $('moreMenu'); m.hidden = !m.hidden; });
     enter(st.scene && W.SCENES[st.scene] ? st.scene : 'bedroom', st.pos);
     updateHud();
-    if (Fu) registerPanel({ id: 'decorate', label: 'Decorate this room', open: function () {
-      var s = scene(); if (!s.shell || !Fu.DEFAULTS[st.scene]) { toast('Only rooms can be rearranged'); return; }
-      if (sitting) stand();
-      if (!s.layout) { st.furniture = st.furniture || {}; st.furniture[st.scene] = Fu.fresh(st.scene); enter(st.scene, s.start); }
-      decorate(true);
-    } });
     root.requestAnimationFrame(step);
     root.EbbGame._ready = true;
     doc.dispatchEvent(new CustomEvent('ebb:ready', { detail: api }));
@@ -327,7 +262,6 @@
     state: function () { return st; }, save: function () { S.save(); }, today: today, toast: toast, me: function () { return me; },
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
     zoom: function (f) { return f === undefined ? cam.user : f === 0 ? setZoom(1) : zoomBy(f); }, /* zoom(): read; zoom(0): reset; zoom(1.2): in by 20 percent */
-    decorate: function (on) { decorate(on !== false); }, furniture: function () { return scene().layout || null; },
     work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.view = 'front'; path = []; },
     stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
   };
@@ -340,8 +274,11 @@
     b.addEventListener('click', function () { menu.hidden = true; p.open(api); });
     menu.appendChild(b);
   }
-  function registerHud(label, value) { /* a small counter in the top bar */
-    var span = doc.createElement('span'); span.innerHTML = label + ' <b></b>'; $('counts').appendChild(span);
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s-7.5-4.7-9.6-9.3C.9 8.3 2.6 4.6 6.2 4.1c2.2-.3 4.1.8 5.8 2.9 1.7-2.1 3.6-3.2 5.8-2.9 3.6.5 5.3 4.2 3.8 7.6C19.5 16.3 12 21 12 21z" fill="#f08aa6" stroke="#d96d8f" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+  function registerHud(label, value, icon) { /* a small counter in the top bar: an icon and the number, the word kept for screen readers */
+    var span = doc.createElement('span'); span.className = 'chip'; span.title = label; span.setAttribute('aria-label', label);
+    span.innerHTML = (icon || HEART) + '<em class="sr"></em> <b>0</b>'; span.querySelector('.sr').textContent = label;
+    $('counts').appendChild(span);
     hudItems.push({ el: span.querySelector('b'), value: value }); updateHud();
   }
 
