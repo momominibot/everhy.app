@@ -25,3 +25,18 @@ seeds a day. A seed she cannot afford shows a disabled "Not yet" with how many m
 ## Checks
 `node tools/test-dome.js` (ledger, cap, spend, grant shape, stands and doors, map pin, page wiring);
 `python3 tools/smoke_dome.py [shots_dir]` (27 browser checks at 390x844, serves the repo itself).
+
+## The keeper and the Plants shelf (added 23 Oct, Jamie)
+The keeper is a clay auntie gardener (art/raw/dome_keeper.png keyed by tools/slice_sheet.py into art/dome/keeper.webp,
+one frame) drawn as a still prop through `registerProps('dome')` at x 90, y 116 beside the counter; she never walks.
+When she is near the stall a small speech bubble shows one of four lines, picked by the date (`keeperLine`).
+The stall sheet has two tabs, Seeds and Plants. Plants (art/raw/home_plants.png, six frames in reading order in
+art/dome/plants.webp): orchid 60, monstera 70, bonsai 80, tulips 40, pothos 50, cactus 40. Buying opens a picker of
+the fixed home places (`HOME_SPOTS`, plate percent of the square rooms): bedroom window seat corner (61, 43), kitchen
+record cabinet by the sofa (66, 46), kitchen window sill (86, 61), bathroom shelf by the basket (21, 56); or keep it
+for later. Each place holds one plant; choosing a taken place puts the earlier plant away. Under Your plants each
+plant has Move or Place, opening the same picker with Put it away for now. State: `state.homePlants = { v, plants:
+[{ id, plant, spot|null, bought }] }`, repaired on read (unknown plants dropped, unknown or doubled places put away).
+Plants are drawn in the rooms through `registerProps` for bedroom, living and bathroom at 52 x scaleAt(y) units.
+The Gardens by the Bay visitor map PDF Jamie pointed at is a single image page with no extractable text, so copy
+uses only the Flower Field name.

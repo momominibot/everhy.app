@@ -102,6 +102,46 @@ const T = day(5);
   check('a bought seed plants like any other', (() => { farm.beds[0].state = 'tilled'; const r = F.act(farm, 0, day(7)); return r.action === 'plant' && farm.seeds[r.crop] === (r.crop === 'turnip' ? 1 : 0); })());
   check('buying into a save without a seeds map makes one', (() => { const s = blank(); delete s.farm.seeds; s.log.obs.push(logObs(T), logObs(T)); R.recompute(s, T); return R.buy(s, 'turnip', T, F.CROPS).ok && s.farm.seeds.turnip === 1; })());
 }
+/* ---------- plants for the home ---------- */
+{
+  const names = Object.keys(R.PLANTS);
+  check('six plants: orchid, monstera, bonsai, tulips, pothos, cactus', names.join() === 'orchid,monstera,bonsai,tulips,pothos,cactus');
+  check('every plant costs 40 to 80 points and has a frame and a line', names.every(k => R.PLANTS[k].price >= 40 && R.PLANTS[k].price <= 80 && typeof R.PLANTS[k].frame === 'number' && R.PLANTS[k].line));
+  check('frames match the keyed strip in reading order', names.map(k => R.PLANTS[k].frame).join() === '0,1,2,3,4,5' && JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'art/dome/plants.json'), 'utf8')).frames === 6);
+  check('keeper and plant strips are on disk', ['art/dome/keeper.webp', 'art/dome/keeper.json', 'art/dome/plants.webp'].every(f => fs.existsSync(path.join(__dirname, '..', f))));
+  const spots = Object.keys(R.HOME_SPOTS);
+  check('four places across the three rooms, one or two each', spots.length === 4 && ['bedroom', 'living', 'bathroom'].every(r => { const n = spots.filter(k => R.HOME_SPOTS[k].scene === r).length; return n >= 1 && n <= 2; }));
+  check('every place names a room the engine has and sits on its square plate', spots.every(k => { const sp = R.HOME_SPOTS[k]; return W.SCENES[sp.scene] && !W.SCENES[sp.scene].aspect && sp.x > 0 && sp.x < 100 && sp.y > 0 && sp.y < 100 && sp.label; }));
+  check('a place is on a surface, not on the walkable floor', spots.every(k => { const sp = R.HOME_SPOTS[k]; return !W.walkable(sp.scene, { x: sp.x, y: sp.y }); }));
+  const st = blank();
+  for (let i = 0; i < 6; i++) st.log.obs.push(logObs(day(1)), logObs(day(2)), logObs(day(3)));
+  R.recompute(st, day(3));
+  check('180 points to garden with', R.balance(st.points) === 180);
+  const hearts = JSON.stringify(st.daily);
+  let b = R.buyPlant(st, 'orchid', day(2), 'bedroom.window');
+  check('buy an orchid for the window seat: 60 spent, it stands there', b.ok && b.price === 60 && b.balance === 120 && st.homePlants.plants.length === 1 && st.homePlants.plants[0].plant === 'orchid' && st.homePlants.plants[0].spot === 'bedroom.window');
+  check('the plant is drawn in the bedroom only', R.plantsIn(st.homePlants, 'bedroom').length === 1 && R.plantsIn(st.homePlants, 'bedroom')[0].x === 61 && R.plantsIn(st.homePlants, 'living').length === 0);
+  check('the spend is a plant entry', st.points.entries[st.points.entries.length - 1].n === -60 && /plant:orchid/.test(st.points.entries[st.points.entries.length - 1].source));
+  b = R.buyPlant(st, 'cactus', day(2), 'bedroom.window');
+  check('a cactus in the same place puts the orchid away', b.ok && R.occupant(st.homePlants, 'bedroom.window').plant === 'cactus' && st.homePlants.plants[0].spot === null && R.balance(st.points) === 80);
+  check('the list shows the place taken and the orchid put away', R.spotList(st.homePlants).find(s => s.spot === 'bedroom.window').occupantName === 'Cactus' && R.spotList(st.homePlants).filter(s => s.occupant).length === 1);
+  check('move the orchid to the bathroom shelf', R.place(st.homePlants, st.homePlants.plants[0].id, 'bathroom.shelf') && R.plantsIn(st.homePlants, 'bathroom').length === 1);
+  check('put the cactus away', R.place(st.homePlants, st.homePlants.plants[1].id, null) && R.plantsIn(st.homePlants, 'bedroom').length === 0 && st.homePlants.plants[1].spot === null);
+  check('a place that does not exist is refused', !R.place(st.homePlants, st.homePlants.plants[0].id, 'attic.window') && !R.buyPlant(st, 'tulips', day(2), 'attic.window').ok && R.balance(st.points) === 80);
+  check('an unknown plant or id is refused', !R.buyPlant(st, 'triffid', day(2), null).ok && !R.place(st.homePlants, 'nope', null));
+  b = R.buyPlant(st, 'monstera', day(2), null);
+  check('buy a monstera and keep it for later', b.ok && b.spot === null && st.homePlants.plants[2].spot === null && R.balance(st.points) === 10);
+  b = R.buyPlant(st, 'bonsai', day(2), 'living.sill');
+  check('a bonsai at 80 with 10 left is refused and nothing changes', !b.ok && b.reason === 'short' && b.need === 70 && st.homePlants.plants.length === 3 && !R.occupant(st.homePlants, 'living.sill'));
+  check('ids are unique', new Set(st.homePlants.plants.map(p => p.id)).size === 3);
+  check('buying plants never touches hearts or seeds', JSON.stringify(st.daily) === hearts && Object.keys(st.farm.seeds).length === 0);
+  check('recompute after plants changes nothing', R.recompute(st, day(3)).gained === 0 && R.balance(st.points) === 10);
+  const broken = R.ensureHome({ plants: [{ id: 'a', plant: 'orchid', spot: 'living.sill' }, { id: 'b', plant: 'orchid', spot: 'living.sill' }, { id: 'c', plant: 'weed', spot: null }, null, { id: 'd', plant: 'cactus', spot: 'nowhere' }] });
+  check('a mangled plant list is repaired: one per place, unknown plants dropped, unknown places put away', broken.plants.length === 3 && broken.plants[0].spot === 'living.sill' && broken.plants[1].spot === null && broken.plants[2].spot === null);
+  check('the keeper has a line for every day, none with an em dash', [day(0), day(1), day(2), day(3), 'x'].every(d => typeof R.keeperLine(d) === 'string' && R.keeperLine(d).length > 0) && R.KEEPER_LINES.every(l => !/—/.test(l)));
+  check('plant copy has no em dash', names.every(k => !/—/.test(R.PLANTS[k].line + R.PLANTS[k].name)) && spots.every(k => !/—/.test(R.HOME_SPOTS[k].label)));
+}
+
 /* ---------- the rules never read what she wrote ---------- */
 {
   const src = fs.readFileSync(path.join(__dirname, '..', 'js/dome/rules.js'), 'utf8');
@@ -179,6 +219,8 @@ check('the pin keeps apart from the others', M.PINS.every(p => p.id === 'dome' |
   const ext = fs.readFileSync(path.join(__dirname, '..', 'js/ext/dome.js'), 'utf8');
   check('the extension never reads hearts or the daily record', !/\.daily\b|hearts/i.test(ext.replace(/\/\*[\s\S]*?\*\//g, '')));
   check('the map icon exists', /dome: '<path/.test(fs.readFileSync(path.join(__dirname, '..', 'js/ext/map.js'), 'utf8')));
+  check('the keeper is a still prop beside the stall, never a walker', /registerProps\('dome'/.test(ext) && !/walkTo|setInterval\([^)]*keeper/i.test(ext.replace(/\/\*[\s\S]*?\*\//g, '').replace(/pollTimer = setInterval[^;]*;/, '')));
+  check('plants are drawn in the three rooms', /\['bedroom', 'living', 'bathroom'\]\.forEach/.test(ext));
 }
 
 process.on('beforeExit', () => { console.log(`test-dome: ${pass} passed, ${fail} failed`); process.exitCode = fail ? 1 : 0; });

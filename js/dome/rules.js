@@ -3,7 +3,8 @@
  * the day it was saved. The ledger is recomputed from the data whenever asked and never counts an entry twice: each
  * entry is remembered by the id of the record it came from, so a retracted or edited record keeps the points it earned
  * and a repeat recompute changes nothing. Spending is its own entry. Hearts (the Today loop) are never touched.
- * Seeds bought here land in state.farm.seeds exactly as the shed's free seeds do, so the farm needs no change. */
+ * Seeds bought here land in state.farm.seeds exactly as the shed's free seeds do, so the farm needs no change.
+ * Plants for the home live in state.homePlants, each standing in one of a few fixed places in the rooms, or put away. */
 (function (root) {
   'use strict';
 
@@ -94,11 +95,86 @@
     return { ok: true, price: cost, balance: p.total - p.spent, seeds: st.farm.seeds[crop] };
   }
 
+  /* ---------- plants for the home ---------- */
+  /* the stall's second shelf: frame is the plant's place in art/dome/plants.webp (reading order of the render) */
+  var PLANTS = {
+    orchid: { name: 'Orchid', price: 60, frame: 0, line: 'A pink moth orchid in a cream pot. It likes a bright corner and a drink once a week.' },
+    monstera: { name: 'Monstera', price: 70, frame: 1, line: 'A monstera in a terracotta pot, leaves like open hands.' },
+    bonsai: { name: 'Bonsai', price: 80, frame: 2, line: 'A little bonsai on a blue dish. Slow, patient, and very old for its size.' },
+    tulips: { name: 'Tulips', price: 40, frame: 3, line: 'Yellow tulips in a glass jar, fresh from the Flower Field.' },
+    pothos: { name: 'Pothos', price: 50, frame: 4, line: 'A hanging pothos. It trails a little further every week.' },
+    cactus: { name: 'Cactus', price: 40, frame: 5, line: 'A round cactus with one pink flower, in a striped pot. It asks for almost nothing.' }
+  };
+  /* fixed places in the rooms where a plant can stand, in plate percent of the square rooms (y 0..100) */
+  var HOME_SPOTS = {
+    'bedroom.window': { scene: 'bedroom', x: 61, y: 43, label: 'Bedroom, window seat corner' },
+    'living.cabinet': { scene: 'living', x: 66, y: 46, label: 'Kitchen, record cabinet by the sofa' },
+    'living.sill': { scene: 'living', x: 86, y: 61, label: 'Kitchen, window sill' },
+    'bathroom.shelf': { scene: 'bathroom', x: 21, y: 56, label: 'Bathroom, shelf by the basket' }
+  };
+  function ensureHome(h) {
+    if (!h || typeof h !== 'object') h = {};
+    h.v = 1;
+    if (!Array.isArray(h.plants)) h.plants = [];
+    var taken = {};
+    h.plants = h.plants.filter(function (p) { return p && typeof p === 'object' && typeof p.id === 'string' && PLANTS[p.plant]; });
+    h.plants.forEach(function (p) { /* one plant per place; a second one there is simply put away */
+      if (p.spot && (!HOME_SPOTS[p.spot] || taken[p.spot])) p.spot = null;
+      if (p.spot) taken[p.spot] = p.id; else p.spot = null;
+    });
+    return h;
+  }
+  function occupant(h, spot) { h = ensureHome(h); for (var i = 0; i < h.plants.length; i++) if (h.plants[i].spot === spot) return h.plants[i]; return null; }
+  /* put a plant somewhere (or away with spot null); whatever stood there before is put away */
+  function place(h, id, spot) {
+    h = ensureHome(h);
+    var me = null; h.plants.forEach(function (p) { if (p.id === id) me = p; });
+    if (!me) return false;
+    if (spot !== null && spot !== undefined && !HOME_SPOTS[spot]) return false;
+    spot = spot || null;
+    if (spot) h.plants.forEach(function (p) { if (p !== me && p.spot === spot) p.spot = null; });
+    me.spot = spot;
+    return true;
+  }
+  function plantPrice(plant) { return PLANTS[plant] ? PLANTS[plant].price : null; }
+  function plantCatalog() { return Object.keys(PLANTS).map(function (k) { return { plant: k, name: PLANTS[k].name, price: PLANTS[k].price, frame: PLANTS[k].frame, line: PLANTS[k].line }; }); }
+  /* buy a plant and stand it in a place (or keep it for later with spot null) */
+  function buyPlant(st, plant, today, spot) {
+    if (!st || !PLANTS[plant]) return { ok: false, reason: 'unknown' };
+    if (spot && !HOME_SPOTS[spot]) return { ok: false, reason: 'nospot' };
+    var p = st.points = ensure(st.points), h = st.homePlants = ensureHome(st.homePlants), cost = PLANTS[plant].price, have = p.total - p.spent;
+    if (have < cost) return { ok: false, reason: 'short', need: cost - have, price: cost, balance: have };
+    spend(p, cost, 'plant:' + plant, today);
+    var id = 'h' + (h.plants.length + 1) + '-' + today;
+    while (h.plants.some(function (q) { return q.id === id; })) id += 'x';
+    h.plants.push({ id: id, plant: plant, spot: null, bought: today });
+    place(h, id, spot || null);
+    return { ok: true, id: id, price: cost, balance: p.total - p.spent, spot: spot || null };
+  }
+  function plantsIn(h, scene) { /* what to draw in a room: each placed plant with its place */
+    h = ensureHome(h);
+    return h.plants.filter(function (p) { return p.spot && HOME_SPOTS[p.spot].scene === scene; })
+      .map(function (p) { return { id: p.id, plant: p.plant, frame: PLANTS[p.plant].frame, spot: p.spot, x: HOME_SPOTS[p.spot].x, y: HOME_SPOTS[p.spot].y }; });
+  }
+  function spotList(h) { /* the picker: every place with what stands there now */
+    h = ensureHome(h);
+    return Object.keys(HOME_SPOTS).map(function (k) { var o = occupant(h, k); return { spot: k, scene: HOME_SPOTS[k].scene, label: HOME_SPOTS[k].label, occupant: o ? o.id : null, occupantName: o ? PLANTS[o.plant].name : null }; });
+  }
+  var KEEPER_LINES = [
+    'Hello, dear. Seeds for the garden, or a plant for your home?',
+    'Fresh from the Flower Field this morning.',
+    'Take your time. Nothing here wilts while you look.',
+    'A plant on the window sill makes a room smile.'
+  ];
+  function keeperLine(date) { var n = 0; String(date || '').split('').forEach(function (c) { n += c.charCodeAt(0); }); return KEEPER_LINES[n % KEEPER_LINES.length]; }
+
   /* words */
   function shortLine(need) { return need === 1 ? 'One more point and this is yours.' : need + ' more points and this is yours.'; }
   var EARN_LINE = 'Logging earns points: 10 for each entry you confirm, 15 for a practice that runs to the end, up to 60 a day.';
 
   root.EbbDomeRules = { EARN: EARN, CAP_PER_DAY: CAP_PER_DAY, PRICES: PRICES, DEFAULT_PRICE: DEFAULT_PRICE, EARN_LINE: EARN_LINE,
     ensure: ensure, balance: balance, earnable: earnable, recompute: recompute, spend: spend, price: price, catalog: catalog, buy: buy,
-    localDate: localDate, shortLine: shortLine };
+    localDate: localDate, shortLine: shortLine,
+    PLANTS: PLANTS, HOME_SPOTS: HOME_SPOTS, KEEPER_LINES: KEEPER_LINES, ensureHome: ensureHome, occupant: occupant, place: place, plantPrice: plantPrice,
+    plantCatalog: plantCatalog, buyPlant: buyPlant, plantsIn: plantsIn, spotList: spotList, keeperLine: keeperLine };
 })(typeof window !== 'undefined' ? window : globalThis);
