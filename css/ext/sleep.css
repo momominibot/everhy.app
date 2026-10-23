@@ -1,0 +1,13 @@
+/* Ebb sleep: the room while she is tucked in (js/ext/sleep.js). .sleep-dim is the last child of #stage, so it moves
+ * with the camera and multiplies over the plate, the props layer and the asleep overlay alike; it must not get a
+ * wrapper with opacity, transform, filter or z-index of its own (see css/ext/sky.css). */
+.sleep-dim { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; background: rgb(186 176 206);
+  opacity: 0; transition: opacity 1.4s ease; }
+.sleep-dim.on { opacity: 0.55; }
+/* her walking sprite is hidden while the painted bed shows her asleep */
+#scene.ebb-asleep #me { display: none; }
+/* the Good night sheet: a light scrim, so the dimmed room and the bed stay in view behind it */
+.sleep-wrap { background: rgba(40, 30, 30, 0.12); }
+.sleep-body p { margin: 0; }
+@media (prefers-reduced-motion: reduce) { .sleep-dim { transition: none; } }
+html[data-motion="reduce"] .sleep-dim { transition: none; }
