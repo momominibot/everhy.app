@@ -131,3 +131,27 @@ Still to do, from Jamie's later notes:
     for garlic and spices, cooking as in Rhythme.
 18. Map: the whole of Singapore including Sentosa, with its iconic buildings, and our places hidden until tapped
     (a tap reveals the place with a prompt to go there). Needs a new map render.
+
+## 23 Oct, late: FHIR prep, agents, sparkles (in progress)
+Done: FHIR export now covers every record she owns (practices, log entries not retracted, the profile's last period),
+with LOINC codes checked on NLM's LOINC lookup (8665-2 LMP, 93832-4 sleep, 8310-5 temperature, 80296-7 mood,
+93038-8 stress, 72514-3 pain 0-10, 41950-7 steps, 55411-3 exercise), UCUM units, self reports as category survey.
+Flow, mucus, clots, energy, sleep quality and mindfulness keep Ebb's own codes until mapped to SNOMED.
+Agents (agents/monitors.js, UMD, runs in Node and the admin page): Ovia the orchestrator; Bloom (cycle), Snooze (sleep),
+Breezy (mood, stress and mindfulness), Sprout (food and movement: not collected yet, says so). Only people with the
+`research` consent are analysed; warning signs only from js/safety/rules.js. agents/demo.js writes synthetic people
+(admin/data/demo-exports.json; P03 trips R-LONG-PERIOD, P05 has no research consent).
+Yellow sparkle over every tappable spot (js/ext/sparkles.js) plus a jetty fishing hint. tools/devserver.py serves with
+no-store; the preview entry in ovumind/.claude/launch.json uses it; sw.js VERSION bumped to 2026-10-23b.
+NEXT (in order):
+1. admin/admin.js: load demo-exports.json (or dropped exports), EbbAgents.report, draw team strip, tiles, coverage bars,
+   people table, detail cards with 28-day bar charts (series blue, 4px rounded tops, 2px gaps, hover tooltip, table
+   toggle), flags with status colour + icon + word. admin/index.html and admin/admin.css are written.
+   Then tools/test-agents.js and a Playwright check of admin/, then publish the dashboard (synthetic data) as an
+   artifact so Jamie can share it (quickstart intent other first).
+2. agents/run.js: Node runner over admin/data/exports/ (gitignored) -> report.json; optional Codex summary step off by
+   default, only for research-consented people, guarded (lock, no retry, block file); test with a fake codex on PATH.
+3. Fishing: she should stand at the jetty end, not sit; Erin voices a short mindful fishing script (tools/voice_*.py).
+4. Transit choice sheet: two pictures (train, bus) and "Just arrive" at the bottom; few words.
+5. Scoring answer for Jamie: no single composite score (no validated basis); per-area levels on the bedroom desk
+   journal; a computer needs new art.

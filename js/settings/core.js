@@ -82,7 +82,22 @@
     else c.valueString = typeof value === 'object' ? JSON.stringify(value) : String(value);
     return c;
   }
-  var CORE = ['id', 'type', 'date', 'start', 'end', 'source', 'confirmed', 'activeSec'];
+  /* FHIR prep: standard LOINC codes where one exists for what Ebb records (each checked on NLM's LOINC lookup,
+   * clinicaltables.nlm.nih.gov, 23 Oct 2026). The rest keep Ebb's own code until they are mapped (SNOMED CT) for a real
+   * exchange. unit: UCUM for numeric values. lmp is the profile's last period start, exported as its own record. */
+  var LOINC = 'http://loinc.org', UCUM = 'http://unitsofmeasure.org';
+  var STANDARD = {
+    lmp: { code: '8665-2', display: 'Last menstrual period start date' },
+    sleep: { code: '93832-4', display: 'Sleep duration', unit: 'h' },
+    temperature: { code: '8310-5', display: 'Body temperature', unit: 'Cel' },
+    mood: { code: '80296-7', display: 'Patient Mood' },
+    stress: { code: '93038-8', display: 'Stress level' },
+    painScore: { code: '72514-3', display: 'Pain severity - 0-10 verbal numeric rating [Score] - Reported', unit: '{score}' },
+    steps: { code: '41950-7', display: 'Number of steps in 24 hour Measured', unit: '/d' },
+    exercise: { code: '55411-3', display: 'Exercise duration', unit: 'min' }
+  };
+  var SELF_REPORTED = ['bleeding', 'clots', 'pain', 'painScore', 'sensation', 'symptom', 'temperature', 'mucus', 'mood', 'stress', 'energy', 'sleep', 'sleepQuality', 'note', 'lmp', 'steps', 'exercise', 'food'];
+  var CORE = ['id', 'type', 'date', 'start', 'end', 'source', 'confirmed', 'activeSec', 'value', 'unit'];
   function observationResource(o) {
     var id = String(o.id || ''), type = String(o.type || 'observation');
     var r = {
@@ -90,15 +105,37 @@
       meta: { source: EBB + 'source/' + encodeURIComponent(String(o.source || 'unknown')) },
       identifier: [{ system: EBB + 'observation-id', value: id }],
       status: o.confirmed === true ? 'final' : o.confirmed === false ? 'preliminary' : 'unknown',
-      category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
+      category: [{ coding: [SELF_REPORTED.indexOf(type) >= 0
+        ? { system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'survey', display: 'Survey' }
+        : { system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'activity', display: 'Activity' }] }],
       code: { coding: [{ system: EBB + 'CodeSystem/observation-type', code: type }], text: type === 'mindfulness' ? 'Mindfulness practice' : type }
     };
+    var std = STANDARD[type];
+    if (std) { r.code.coding.push({ system: LOINC, code: std.code, display: std.display }); r.code.text = std.display; }
+    /* the value itself: a number with its UCUM unit, a date, or the words she chose */
+    if (o.value !== undefined && o.value !== null && type !== 'mindfulness') {
+      var unit = (std && std.unit) || (o.unit ? String(o.unit) : null);
+      if (typeof o.value === 'number' && isFinite(o.value)) r.valueQuantity = unit ? { value: o.value, unit: unit, system: UCUM, code: unit } : { value: o.value };
+      else if (type === 'lmp') r.valueDateTime = String(o.value);
+      else r.valueString = String(o.value);
+    }
     if (o.start && o.end) r.effectivePeriod = { start: o.start, end: o.end };
     else if (o.start || o.date) r.effectiveDateTime = o.start || o.date;
-    if (typeof o.activeSec === 'number' && isFinite(o.activeSec)) r.valueQuantity = sec(o.activeSec);
+    if (typeof o.activeSec === 'number' && isFinite(o.activeSec) && !r.valueQuantity) r.valueQuantity = sec(o.activeSec);
     var parts = Object.keys(o).filter(function (k) { return CORE.indexOf(k) < 0 && o[k] !== null && o[k] !== undefined; });
     if (parts.length) r.component = parts.map(function (k) { return component(k, o[k]); });
     return r;
+  }
+  /* every record she owns, for the FHIR export: finished and partial practices, every log entry she has not taken back,
+   * and the profile's last period start */
+  function recordsFor(save) {
+    save = save || {};
+    var out = (Array.isArray(save.observations) ? save.observations : []).slice();
+    var logs = save.log && Array.isArray(save.log.obs) ? save.log.obs : [];
+    logs.forEach(function (o) { if (o && !o.retracted) out.push(o); });
+    var p = save.profile || {};
+    if (p.lastPeriodStart) out.push({ id: 'profile-lmp', type: 'lmp', value: p.lastPeriodStart, date: p.lastPeriodStart, source: 'profile', confirmed: true });
+    return out;
   }
   function observationsFhir(obs, now) {
     obs = Array.isArray(obs) ? obs.filter(function (o) { return o && typeof o === 'object'; }) : [];
@@ -166,6 +203,6 @@
   }
 
   root.EbbSettingsCore = { DEFAULTS: DEFAULTS, cleanPrefs: cleanPrefs, inQuiet: inQuiet, mayNudge: mayNudge, noteNudge: noteNudge,
-    csvCell: csvCell, observationsCsv: observationsCsv, observationsFhir: observationsFhir, exportAll: exportAll,
+    csvCell: csvCell, observationsCsv: observationsCsv, observationsFhir: observationsFhir, recordsFor: recordsFor, STANDARD: STANDARD, exportAll: exportAll,
     deleteEverything: deleteEverything, uuidFor: uuidFor };
 })(typeof window !== 'undefined' ? window : globalThis);

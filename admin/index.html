@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ebb Study Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="viz-root">
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">O</span>
+      <div><h1>Ebb study dashboard</h1><p class="muted">Ovia, the orchestrator, and her four agents read what each person logged. Descriptions only: no advice, no diagnosis.</p></div>
+    </div>
+    <div class="top-actions">
+      <span id="source" class="pill-tag">Synthetic demo data</span>
+      <label class="btn"><input id="files" type="file" accept="application/json,.json" multiple hidden>Load exports</label>
+    </div>
+  </header>
+
+  <section class="team" aria-label="The agents"><ul id="team"></ul></section>
+
+  <section class="cohort" aria-label="Everyone at a glance">
+    <div id="tiles" class="tiles"></div>
+    <div class="card coverage"><h2>Who has data, by agent</h2><div id="coverage"></div></div>
+  </section>
+
+  <section class="people-wrap">
+    <div class="card people">
+      <h2>People</h2>
+      <p class="muted small">Only people who said yes to "Help the research study" are listed. <span id="excluded"></span></p>
+      <table id="people"><thead><tr><th scope="col">Person</th><th scope="col">Last active</th><th scope="col">Active days (28)</th><th scope="col">Warning signs</th><th scope="col">Agents</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="detail" class="detail" aria-live="polite"></div>
+  </section>
+
+  <footer class="foot muted small">
+    Warning signs come only from the app's own safety rules (the same table the phone uses), never from a model. Areas the app does not collect say so.
+    Exports dropped here stay in this browser tab; nothing is uploaded.
+  </footer>
+</div>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<script src="../js/log/cycle.js"></script>
+<script src="../js/safety/rules.js"></script>
+<script src="../agents/monitors.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

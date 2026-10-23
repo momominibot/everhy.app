@@ -133,7 +133,7 @@
       var x = b.dataset.x, st = api.state(), day = api.today();
       if (x === 'json') { download('ebb-export-' + day + '.json', JSON.stringify(C.exportAll(st, storage()), null, 2), 'application/json'); api.toast('Saved a copy of everything'); }
       else if (x === 'csv') { download('ebb-records-' + day + '.csv', C.observationsCsv(st.observations), 'text/csv'); api.toast('Saved your records as CSV'); }
-      else if (x === 'fhir') { download('ebb-records-fhir-' + day + '.json', JSON.stringify(C.observationsFhir(st.observations), null, 2), 'application/fhir+json'); api.toast('Saved your records as a FHIR bundle'); }
+      else if (x === 'fhir') { download('ebb-records-fhir-' + day + '.json', JSON.stringify(C.observationsFhir(C.recordsFor(st)), null, 2), 'application/fhir+json'); api.toast('Saved your records as a FHIR bundle'); }
       else if (x === 'delete') { confirmBox.hidden = false; delBtn.hidden = true; confirmBox.querySelector('[data-x="keep"]').focus(); }
       else if (x === 'keep') { confirmBox.hidden = true; delBtn.hidden = false; delBtn.focus(); }
       else if (x === 'really') {

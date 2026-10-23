@@ -205,5 +205,29 @@ const plain = v => JSON.parse(JSON.stringify(v)); /* objects from the vm realm, 
   check('manifest colours match css', fs.readFileSync(path.join(ROOT, 'css/ebb.css'), 'utf8').includes('--bg: ' + manifest.background_color));
 })();
 
+/* FHIR prep: every record she owns, standard LOINC codes where they exist, UCUM units, self reports as survey */
+(() => {
+  const save = { observations: [{ id: 'p1', type: 'mindfulness', date: '2026-10-22', start: '2026-10-22T08:00:00Z', end: '2026-10-22T08:03:00Z', activeSec: 180, status: 'finished', confirmed: true, source: 'course' }],
+    log: { obs: [
+      { id: 'o1', type: 'sleep', value: 7.5, unit: 'h', start: '2026-10-22', end: '2026-10-22', confirmed: true, source: 'chat' },
+      { id: 'o2', type: 'mood', value: 'stressed', start: '2026-10-22', confirmed: true, source: 'chat' },
+      { id: 'o3', type: 'bleeding', value: 'heavy', start: '2026-10-21', confirmed: true, source: 'calendar' },
+      { id: 'o4', type: 'temperature', value: 36.6, unit: 'C', start: '2026-10-22', confirmed: true, source: 'chat' },
+      { id: 'o5', type: 'mood', value: 'low', start: '2026-10-20', confirmed: true, retracted: true, source: 'chat' }] },
+    profile: { lastPeriodStart: '2026-10-01' } };
+  const recs = plain(C.recordsFor(save));
+  check('the export holds practices, logs and the last period, never a retracted entry', recs.length === 6 && !recs.some(r => r.id === 'o5') && recs.some(r => r.type === 'lmp'));
+  const res = plain(C.observationsFhir(C.recordsFor(save), new Date('2026-10-23T00:00:00Z'))).entry.filter(e => e.resource.resourceType === 'Observation').map(e => e.resource);
+  const by = id => res.find(r => r.identifier[0].value === id), loinc = r => (r.code.coding.find(c => c.system === 'http://loinc.org') || {}).code;
+  check('sleep carries LOINC 93832-4 with hours in UCUM', loinc(by('o1')) === '93832-4' && by('o1').valueQuantity.value === 7.5 && by('o1').valueQuantity.code === 'h' && by('o1').valueQuantity.system === 'http://unitsofmeasure.org');
+  check('temperature carries LOINC 8310-5 in Cel', loinc(by('o4')) === '8310-5' && by('o4').valueQuantity.code === 'Cel');
+  check('mood carries LOINC 80296-7 and her word', loinc(by('o2')) === '80296-7' && by('o2').valueString === 'stressed');
+  check('the last period start carries LOINC 8665-2 as a date', loinc(by('profile-lmp')) === '8665-2' && by('profile-lmp').valueDateTime === '2026-10-01');
+  check('flow keeps Ebb code only (no LOINC claimed) with its value', !loinc(by('o3')) && by('o3').valueString === 'heavy');
+  check('her own reports are survey, practices stay activity', by('o1').category[0].coding[0].code === 'survey' && by('p1').category[0].coding[0].code === 'activity');
+  check('a practice keeps its active seconds', by('p1').valueQuantity.code === 's' && by('p1').valueQuantity.value === 180);
+  check('every LOINC code in the table is the checked one', JSON.stringify(Object.values(plain(C.STANDARD)).map(x => x.code)) === JSON.stringify(['8665-2', '93832-4', '8310-5', '80296-7', '93038-8', '72514-3', '41950-7', '55411-3']));
+})();
+
 const timer = setInterval(() => { if (!pending) { clearInterval(timer); console.log(`${pass} passed, ${fail} failed`); process.exitCode = fail ? 1 : 0; } }, 20);
 setTimeout(() => { if (pending) { console.log('FAIL', pending, 'async checks never settled'); process.exit(1); } }, 12000);
