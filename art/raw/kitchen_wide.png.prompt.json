@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Isometric cut-away room render, two walls and a floor like a dollhouse corner, for a cosy phone game. A big modern Singapore HDB kitchen with lots of open floor to walk on: along the back-left wall a long pastel mint counter with an induction hob and a slim cooker hood above it, a built-in oven, a white Thermomix on the counter, a ceramic basin with a brass tap under a window; along the back-right wall a tall cream double-door fridge, open shelves with jars and bowls, a small dining table with two chairs near the front right, a potted plant, a round rug on light wood floor, an arched doorway in the left wall. Pastel cream, mint, blush pink and honey wood. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, soft warm light, pastel colours. No people, no readable text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 66.2,
+ "bytes": 1667440
+}
