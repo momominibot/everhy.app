@@ -76,6 +76,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .life-petal { fill: #f6c6d3; animation: petal 7s ease-in-out infinite; }
 @keyframes petal { 0% { opacity: 0; transform: translate(0, 0) rotate(0deg); } 10% { opacity: 1; } 50% { transform: translate(-4px, 20px) rotate(160deg); } 90% { opacity: 0.9; } 100% { opacity: 0; transform: translate(3px, 42px) rotate(330deg); } }
 .life-steam { fill: #ffffff; opacity: 0; animation: steam 4.5s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.life-sakura { fill: #f6c6d3; opacity: 0; animation: sakura 10s ease-in infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes sakura { 0% { opacity: 0; transform: translate(0, 0) rotate(0deg); } 8% { opacity: 1; } 55% { transform: translate(calc(var(--drift) * 0.5), calc(var(--fall) * 0.6)) rotate(180deg); } 80% { opacity: 1; transform: translate(var(--drift), var(--fall)) rotate(330deg) scale(1); } 100% { opacity: 0; transform: translate(var(--drift), calc(var(--fall) + 3px)) rotate(360deg) scale(0.35); } } /* lands at 80 percent, then sinks */
 @keyframes steam { 0% { opacity: 0; transform: translate(0, 0) scale(0.6); } 25% { opacity: 0.55; } 100% { opacity: 0; transform: translate(2px, -22px) scale(1.5); } }
 .life-pop { animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both; transform-box: fill-box; transform-origin: 50% 100%; }
 @keyframes pop { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }

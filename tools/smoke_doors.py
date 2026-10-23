@@ -53,7 +53,7 @@ with sync_playwright() as p:
     pg.mouse.move(195, 500); pg.mouse.wheel(0, -600); pg.wait_for_timeout(100); zchecks.append(('wheel up zooms in', stage_w() > base * 1.3))
     pg.evaluate("EbbGame.api.zoom(0)"); pg.wait_for_timeout(50); zchecks.append(('zoom(0) resets', abs(stage_w() - base) < 1))
     pg.evaluate("EbbGame.api.zoom(100)"); zchecks.append(('zoom in is bounded', abs(stage_w() - base * 2.4) < 2))
-    pg.evaluate("EbbGame.api.zoom(0.001)"); zchecks.append(('zoom out is bounded', abs(stage_w() - base * 0.75) < 2))
+    pg.evaluate("EbbGame.api.zoom(0.001)"); zchecks.append(('zoom out never uncovers the screen', stage_w() >= 389 and pg.evaluate("() => document.getElementById('stage').getBoundingClientRect().height") >= 843))
     pg.evaluate("EbbGame.api.zoom(0)")
     before = pg.evaluate("() => ({ x: EbbGame.me().x, y: EbbGame.me().y })")
     pg.evaluate("""() => { const sc = document.getElementById('scene'); const mk = (id, x, y) => new Touch({ identifier: id, target: sc, clientX: x, clientY: y });

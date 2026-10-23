@@ -38,6 +38,17 @@
     return out;
   }
   function glow(x, y, r) { return '<circle class="life-glow" cx="' + x + '" cy="' + y + '" r="' + r + '" fill="url(#lifeGlow)"/>'; }
+  /* sakura that drift down from a crown and sink where they meet the water: pool is an ellipse [cx, cy, rx, ry] */
+  function sinkPetals(x0, x1, yTop, pool, n) {
+    var out = '', seed = 31;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var i = 0; i < n; i++) {
+      var x = x0 + rnd() * (x1 - x0), drift = -3 - rnd() * 5, xw = Math.max(pool[0] - pool[2] + 2, Math.min(pool[0] + pool[2] - 2, x + drift));
+      var span = pool[3] * Math.sqrt(Math.max(0, 1 - Math.pow((xw - pool[0]) / pool[2], 2))), yw = pool[1] - span + rnd() * 2 * span;
+      out += '<ellipse class="life-sakura" cx="' + x.toFixed(1) + '" cy="' + yTop.toFixed(1) + '" rx="1.1" ry="0.7" style="--drift:' + drift.toFixed(1) + 'px;--fall:' + (yw - yTop).toFixed(1) + 'px;animation-duration:' + (8 + rnd() * 5).toFixed(1) + 's;animation-delay:-' + (rnd() * 12).toFixed(1) + 's"/>';
+    }
+    return out;
+  }
 
   var AMBIENT = {
     /* the isometric rooms (23 Oct): round window with its fairy lights, the lamps, motes over the floor */
@@ -45,7 +56,8 @@
     bathroom: function () { return steam(36, 44, 4) + glow(36, 21, 10) + glow(8, 37, 2.5) + glow(26, 38, 2) + glow(46, 80, 2) + motes(10, 50, 90, 86, 7); },
     living: function () { return glow(28, 25, 9) + ring(28, 25, 8, 10, 'life-twinkle') + glow(65, 25, 6) + glow(33, 22, 4) + glow(73, 64, 4) + motes(20, 48, 92, 90, 9); },
     farm: function () { return petals(44, 62, 8) + motes(5, 95, 95, 170, 8, 'life-pollen'); },
-    waterfall: function () { return motes(40, 80, 62, 100, 12, 'life-mist') + petals(84, 40, 6) + petals(8, 60, 5); }
+    waterfall: function () { return motes(40, 80, 62, 100, 12, 'life-mist') + petals(84, 40, 6) + petals(8, 60, 5); },
+    spring: function () { return sinkPetals(58, 92, 48, [48, 90, 38, 20], 9); } /* steam and ripples come from the living plate */
   };
   var layer = doc.getElementById('layer'), meG = doc.getElementById('me');
   var amb = doc.createElementNS('http://www.w3.org/2000/svg', 'g'); amb.setAttribute('id', 'life');

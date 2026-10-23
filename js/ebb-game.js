@@ -65,7 +65,12 @@
 
   /* ---------- zoom: pinch, wheel or trackpad, and the +/- keys; a multiplier on the scene's own zoom, kept around her ---------- */
   var ZOOM_MIN = 0.75, ZOOM_MAX = 2.4, pinch = null;
-  function setZoom(k) { k = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k)); if (Math.abs(k - cam.user) < 0.001) return cam.user; cam.user = k; layout(); return k; }
+  function zoomFloor() { /* never so far out that the plate stops covering the screen (the scene's own zoom is always allowed) */
+    var sc = scene(), z = sc.zoom || (sc.indoor ? 1.12 : 1.3), ratio = W.units(st.scene) / 100;
+    if (!cam.W || !cam.H) return ZOOM_MIN;
+    return Math.min(1, Math.max(ZOOM_MIN, 1 / z, cam.H / (cam.W * z * ratio)));
+  }
+  function setZoom(k) { k = Math.max(zoomFloor(), Math.min(ZOOM_MAX, k)); if (Math.abs(k - cam.user) < 0.001) return cam.user; cam.user = k; layout(); return k; }
   function zoomBy(f) { return setZoom(cam.user * f); }
   function pinchDist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
   function onTouchStart(ev) { if (ev.touches.length === 2) { pinch = { d: pinchDist(ev.touches), k: cam.user }; deco.drag = null; busyUntil = Date.now() + 600; } }
@@ -85,6 +90,9 @@
       });
     }
     (propDrawers[st.scene] || []).forEach(function (fn) { try { out += fn(api, near) || ''; } catch (e) { console.error(e); } });
+    if (s.fronts && !s.layout) s.fronts.forEach(function (f) { /* pieces of the painting cut out and laid in front of her: a bridge rail, a lamp post */
+      front += '<image href="' + f.src + '" x="' + f.rect[0] + '" y="' + f.rect[1] + '" width="' + (f.rect[2] - f.rect[0]) + '" height="' + (f.rect[3] - f.rect[1]) + '" preserveAspectRatio="none"/>';
+    });
     els.props.innerHTML = out; els.front.innerHTML = front;
   }
 

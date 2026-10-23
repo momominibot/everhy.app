@@ -1,0 +1,12 @@
+{
+ "model": "doubao-seedance-2-0-260128",
+ "prompt": "Locked static camera, no camera movement, no zoom, no pan. Cosy clay style game scene of a stone hot spring: only the hot spring water moves, its surface rippling gently while soft white steam rises and drifts slowly from the warm water, and the big pink cherry blossom tree sways very slightly in a light breeze while a few sakura petals drift down, land on the water, float for a moment and sink. Everything else stays perfectly still and unchanged: the wooden hut, rocks, stone lanterns, wooden deck, stepping stones, well, bonsai, pink lamp, bushes and sky. Soft even lighting that does not change. Calm seamless loop.",
+ "plate": "art/raw/spring_ac.png",
+ "size": [
+  768,
+  1344
+ ],
+ "ratio": "adaptive",
+ "resolution": "720p",
+ "duration": 5
+}
