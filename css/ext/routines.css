@@ -1,0 +1,49 @@
+/* Routines: the morning and evening sheets, the editor, a running step, and the gentle card under the top bar. */
+.routine-body { display: flex; flex-direction: column; gap: 12px; }
+.routine-body p { margin: 0; }
+.routine-body .small { font-size: 13px; }
+.routine-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rt-step { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.rt-step.done { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); }
+.rt-step.next { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.rt-step.skipped { opacity: 0.7; }
+.rt-mark { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; background: var(--card); color: var(--soft); border: 1px solid var(--line); }
+.rt-step.done .rt-mark { background: var(--teal); border-color: var(--teal); color: #fff; }
+.rt-step.next .rt-mark { color: var(--accent); border-color: var(--accent); }
+.rt-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.rt-text b { font-size: 15px; }
+.rt-text small { color: var(--soft); font-size: 12px; }
+.rt-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.rt-status { font-weight: 700; }
+/* editing: a row of small controls per step, length pills under timed steps, a list of steps to add */
+.routine-steps.editing .rt-step { flex-direction: column; align-items: stretch; gap: 8px; }
+.rt-row { display: flex; align-items: center; gap: 10px; }
+.rt-controls { display: flex; gap: 6px; flex: none; }
+.rt-ctl { min-height: 40px; min-width: 40px; padding: 4px 10px; font-size: 17px; line-height: 1; }
+.rt-ctl:disabled { opacity: 0.35; cursor: default; }
+.rt-secs .pill { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+.rt-add { display: flex; flex-direction: column; gap: 8px; }
+.rt-addbtn { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; width: 100%; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 14px; background: var(--card); color: var(--ink); font: inherit; cursor: pointer; }
+.rt-addbtn b { font-size: 15px; }
+.rt-addbtn b::before { content: "+ "; color: var(--teal); }
+.rt-addbtn small { color: var(--soft); font-size: 12px; }
+.rt-addbtn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+/* a running step */
+.rt-head { display: flex; flex-direction: column; gap: 2px; }
+.rt-head b { font-size: 17px; }
+.rt-cue { font-size: 20px; font-weight: 600; line-height: 1.4; min-height: 4.2em; }
+.rt-clock { color: var(--soft); font-variant-numeric: tabular-nums; font-weight: 700; }
+.rt-back { min-height: 1.2em; }
+.rt-input { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 48px; font: 16px var(--font); background: var(--bg); color: var(--ink); }
+.routine-sheet .sheet-actions .btn { flex: 1 1 auto; }
+/* the card: under the top bar, clear of the sun button on the left and the toast's row */
+.routine-card { position: absolute; z-index: 5; left: max(14px, env(safe-area-inset-left)); right: max(14px, env(safe-area-inset-right)); top: calc(max(10px, env(safe-area-inset-top)) + 118px);
+  padding: 12px 14px; border-radius: 16px; background: color-mix(in srgb, var(--card) 92%, transparent); box-shadow: 0 4px 14px rgba(40, 30, 30, 0.16);
+  display: flex; flex-direction: column; gap: 10px; animation: rt-card 0.4s ease both; }
+.routine-card p { margin: 0; font-weight: 700; }
+.rt-cardrow { display: flex; gap: 8px; justify-content: flex-end; }
+.rt-cardrow .btn { min-height: 40px; }
+@keyframes rt-card { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .routine-card { animation: none; } }
+html[data-text="large"] .rt-text b { font-size: 17px; }
+html[data-text="larger"] .rt-text b { font-size: 19px; }
