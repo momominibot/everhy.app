@@ -83,7 +83,7 @@
       start: { x: 50, y: 160 }
     },
     hawker: { /* a small hawker centre (23 Oct render): kopi stall, chicken rice stall and a fruit stall across the back, marble tables on the tiles, the open side at the bottom */
-      name: 'Hawker centre', plate: 'art/plates/hawker.webp', aspect: [4, 7], indoor: true, depth: [114, 0.24, 175, 0.33], surface: 'tile', sound: 'room',
+      name: 'Hawker centre', plate: 'art/plates/hawker.webp', aspect: [4, 7], indoor: true, zoom: 1.3, depth: [114, 0.24, 175, 0.33], surface: 'tile', sound: 'room', /* an indoor place on a tall plate: outdoor zoom so it fills the phone */
       lamps: [{ x: 18, y: 86 }, { x: 48, y: 86 }, { x: 78, y: 86 }],
       floor: [[4, 114], [96, 114], [96, 175], [4, 175]],
       /* the tables with their stools, the potted plant */

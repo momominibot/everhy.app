@@ -32,7 +32,7 @@
   }
 
   /* ---------- camera: the stage has the plate's shape, scaled to cover the screen; it follows her and never shows an edge ---------- */
-  var cam = { x: 0, y: 0, W: 0, H: 0, S: 0, Sh: 0, snap: true, user: 1 }; /* user: the pinch zoom, a multiplier on the scene's own */
+  var cam = { x: 0, y: 0, W: 0, H: 0, S: 0, Sh: 0, snap: true, user: 1, want: 1 }; /* want: the zoom she asked for; user: what is applied once the coverage floor is enforced */
   var still = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function layout() {
     var r = els.scene.getBoundingClientRect();
@@ -41,7 +41,7 @@
      * blurred backdrop fills, and a square plate on a phone is taller than the screen so the camera pans */
     var sc = scene(), zoom = sc.zoom || (sc.indoor ? 1.12 : 1.3); /* a little larger than the screen, so the camera has somewhere to go */
     cam.W = r.width; cam.H = r.height;
-    cam.user = Math.max(zoomFloor(), Math.min(ZOOM_MAX, cam.user)); /* a new plate or a turned phone may need more zoom to keep the screen covered */
+    cam.user = Math.max(zoomFloor(), Math.min(ZOOM_MAX, cam.want)); /* a new plate or a turned phone may need more zoom to keep the screen covered; the floor never follows her to the next scene */
     cam.S = r.width * zoom * cam.user; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
     if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
@@ -64,7 +64,7 @@
     if (!cam.W || !cam.H) return ZOOM_MIN;
     return Math.max(ZOOM_MIN, 1 / z, cam.H / (cam.W * z * ratio));
   }
-  function setZoom(k) { k = Math.max(zoomFloor(), Math.min(ZOOM_MAX, k)); if (Math.abs(k - cam.user) < 0.001) return cam.user; cam.user = k; layout(); return k; }
+  function setZoom(k) { cam.want = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, k)); var u = Math.max(zoomFloor(), cam.want); if (Math.abs(u - cam.user) < 0.001) return cam.user; cam.user = u; layout(); return u; }
   function zoomBy(f) { return setZoom(cam.user * f); }
   function pinchDist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
   function onTouchStart(ev) { if (ev.touches.length === 2) { pinch = { d: pinchDist(ev.touches), k: cam.user }; busyUntil = Date.now() + 600; } }
