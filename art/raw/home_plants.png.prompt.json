@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Sprite sheet of six different potted plants for a cosy clay phone game, in a two by three grid, evenly spaced, each isolated on a flat pure magenta #FF00FF background, front view: a pink orchid in a white pot, a small monstera in a terracotta pot, a bonsai in a blue dish, a bunch of yellow tulips in a glass vase, a trailing pothos in a hanging cream pot, a little cactus in a striped pot. Smooth matte clay, rounded chunky shapes, soft warm light, pastel colours. No text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 59.0,
+ "bytes": 1875861
+}

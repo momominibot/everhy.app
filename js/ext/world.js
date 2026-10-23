@@ -9,7 +9,7 @@
 
   /* ---------- places ---------- */
   W.register('spring', { /* Sembawang hot spring park (23 Oct render): the two-tier stone foot bath steaming in the upper middle, the egg-cooking station with pails on the left, benches, a pinwheel and a notice board on the right, the plaza below */
-    name: 'Hot spring', plate: 'art/plates/hotspring.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], water: '#9fd0e0', surface: 'tile',
+    name: 'Hot spring', plate: 'art/plates/hotspring.webp', video: 'art/plates/hotspring-live.mp4', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], water: '#9fd0e0', surface: 'tile',
     floor: [[4, 100], [20, 100], [20, 106], [84, 106], [84, 100], [96, 100], [96, 175], [4, 175]],
     solids: [[20, 66, 84, 106], [4, 80, 33, 118], [84, 86, 100, 110], [78, 106, 92, 126], [10, 120, 28, 136], [84, 122, 92, 136]], /* pool and rim, egg station, pinwheel, notice board, bench, stone */
     doors: [{ id: 'toFalls', rect: [34, 170, 64, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
@@ -125,7 +125,7 @@
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
     var me = api.me();
-    soaking = true; api.sit(SIT_IN_WATER); api.fx(waterOver(), 36e5);
+    soaking = true; api.sit(SIT_IN_WATER, 'soak'); api.fx(waterOver(), 36e5);
     function out() {
       if (!soaking) return; soaking = false;
       api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x;
@@ -168,7 +168,7 @@
   }
   root.EbbGame.registerKind('fish', function (spot, api) {
     var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.float ? spot.float.x : spot.at.x + 9, fy = spot.float ? spot.float.y : spot.at.y - 5.5;
-    api.work('none', 36e5, 'back');
+    api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }, 'fish'); /* she sits on the jetty edge with the rod */
     function clear() { timers.forEach(clearTimeout); timers = []; }
     sheet('Fishing', function (body, buttons) {
       body.innerHTML = '<p class="world-status" id="fishStatus" role="status"></p>';
@@ -194,7 +194,7 @@
         buttons([{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }]);
       }
       castLine();
-    }, function () { clear(); state = 'done'; api.fx('', 1); api.work('none', 0, 'front'); }, 'world-mini');
+    }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, 'world-mini');
   });
 
 })(typeof window !== 'undefined' ? window : globalThis);

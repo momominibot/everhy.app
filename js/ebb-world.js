@@ -62,7 +62,7 @@
       arriveFix: {}, start: { x: 46, y: 76 }
     },
     farm: { /* the community garden (23 Oct render): an HDB block with laundry across the back, a rain tree and the mosaic dragon playground on the left, the seed shed on the right, four planter beds in a tight block on the sand. Scene id kept for saves */
-      name: 'Garden', plate: 'art/plates/garden.webp', aspect: [4, 7], depth: [112, 0.24, 175, 0.33], surface: 'soil',
+      name: 'Garden', plate: 'art/plates/garden.webp', video: 'art/plates/garden-live.mp4', aspect: [4, 7], depth: [112, 0.24, 175, 0.33], surface: 'soil', /* the video: the rain tree and the laundry move */
       floor: [[4, 112], [96, 112], [96, 175], [4, 175]],
       /* dragon, little bridge, shed, the four beds (each with a margin above), a stone */
       solids: [[0, 90, 34, 114], [36, 98, 58, 112], [60, 80, 97, 114], [21, 116, 49, 132], [51, 116, 79, 132], [15, 128, 47, 149], [51, 128, 83, 149], [9, 162, 15, 168]],
@@ -83,7 +83,7 @@
       start: { x: 50, y: 160 }
     },
     hawker: { /* a small hawker centre (23 Oct render): kopi stall, chicken rice stall and a fruit stall across the back, marble tables on the tiles, the open side at the bottom */
-      name: 'Hawker centre', plate: 'art/plates/hawker.webp', aspect: [4, 7], indoor: true, depth: [114, 0.24, 175, 0.33], surface: 'tile', sound: 'room',
+      name: 'Hawker', plate: 'art/plates/hawker.webp', video: 'art/plates/hawker-live.mp4', aspect: [4, 7], indoor: true, zoom: 1.3, /* the video: the ceiling fans turn */ depth: [114, 0.24, 175, 0.33], surface: 'tile', sound: 'room', /* an indoor place on a tall plate: outdoor zoom so it fills the phone */
       lamps: [{ x: 18, y: 86 }, { x: 48, y: 86 }, { x: 78, y: 86 }],
       floor: [[4, 114], [96, 114], [96, 175], [4, 175]],
       /* the tables with their stools, the potted plant */
@@ -116,7 +116,7 @@
       start: { x: 40, y: 136 }
     },
     jetty: { /* Bedok Jetty at East Coast Park (23 Oct render): the sea with ships on the horizon, the lamp-lit jetty reaching out on the right, a beach, the park connector path curving down. The world extension adds the fishing spot on the deck */
-      name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass',
+      name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', video: 'art/plates/jetty-live.mp4', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass', /* the video: waves and palms */
       soundSources: { birds: [[8, 80, 36], [92, 72, 36]], hush: [] },
       floor: [[10, 100], [60, 100], [60, 108], [72, 108], [72, 98], [62, 88], [66, 82], [90, 89], [90, 100], [84, 100], [84, 108], [97, 108], [97, 175], [3, 175], [3, 108], [10, 108]],
       /* left and right palms, the bicycle, bollards */
@@ -126,7 +126,7 @@
       start: { x: 44, y: 165 }
     },
     waterfall: { /* Little Guilin, Bukit Gombak (23 Oct render): granite cliff mirrored in the jade quarry lake, a wooden viewing deck on the right, a bench on the lawn, a stone path out at the bottom. Scene id kept for saves and extensions */
-      name: 'Little Guilin', plate: 'art/plates/guilin.webp', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], surface: 'grass',
+      name: 'Little Guilin', plate: 'art/plates/guilin.webp', video: 'art/plates/guilin-live.mp4', aspect: [4, 7], depth: [100, 0.22, 175, 0.33], surface: 'grass', /* the video: mist and ripples on the lake, the rain tree sways */
       floor: [[18, 110], [56, 112], [60, 118], [60, 102], [98, 102], [98, 175], [18, 175]], /* the lawn and path, plus the deck */
       solids: [[20, 102, 42, 124], [56, 90, 61, 104], [8, 134, 25, 147], [86, 116, 100, 175], [33, 142, 37, 150], [48, 136, 52, 144], [63, 126, 67, 134], [83, 139, 87, 147], [68, 153, 72, 161]], /* bench, deck's left rail, rock, right bushes, bollards */
       soundSources: { birds: [[82, 30, 50], [10, 40, 42]], hush: [] },
