@@ -155,3 +155,16 @@ NEXT (in order):
 4. Transit choice sheet: two pictures (train, bus) and "Just arrive" at the bottom; few words.
 5. Scoring answer for Jamie: no single composite score (no validated basis); per-area levels on the bedroom desk
    journal; a computer needs new art.
+
+## 24 Oct, early (main 788cee3, check_all ALL GREEN)
+Done: the app is called EveRhy (visible text; storage keys and export format unchanged); Ovia drawn (art/ovia/ovia.svg) in the
+welcome, beside her chat lines and on the dashboard; Change clothes is the wardrobe beside the bed (planner avoids doorways it
+is not heading for); a logging spot's sparkle rests once today's entry from it is saved and paid; hearts are the one currency
+(logging, practices, Today's invitations; spent at the Flower Dome), top bar = place + Hearts (tap explains); flow and cycle are
+one chat at the toilet, the bathroom cabinet no longer logs; the fridge is food and drink only; iPhone: live video plates now
+play only in untinted daylight (the night tint over a video blanked the whole plate in iOS Safari).
+Night: Jamie rejected any overlay on the day art ("cover up is obvious"). Plan: repaint each room at night from its day plate
+(tools/jobs_night_rooms.json, one guarded run_batch.py run) and crossfade (js/ext/sky.js NIGHT_ROOMS, art/plates/night/).
+Blocked on the Seedream key (401, art/BLOCKED.json) and Jamie's OK to rerun.
+NEXT: journal look-back on the phone (no AI on journal text; Jamie agreed it is personal), bathtub soak with a mindful
+practice, night plates once the key works.
