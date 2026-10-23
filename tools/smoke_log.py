@@ -27,6 +27,10 @@ def check(name, ok):
 def open_log(page):
     page.goto(URL)
     page.wait_for_function('window.EbbGame && window.EbbGame._ready')
+    page.wait_for_timeout(300)
+    if page.locator('.sf-onboard').count():  # the safety workstream's first-run welcome: skip it, as a returning player would
+        page.locator('.sf-onboard').get_by_role('button', name='Skip all').click()
+    page.evaluate("document.querySelectorAll('.routines-card').forEach(w => w.remove())")  # the morning card is not the log's business
     page.click('#moreBtn'); page.click('#panel-log')
     page.wait_for_selector('.ebb-log #lgInput')
 
@@ -147,11 +151,12 @@ with sync_playwright() as pw:
 
     # safety hooks: crisis text shows nothing from logging; a confirmed write calls check and showAlert
     ctx2 = b.new_context(viewport={'width': 390, 'height': 844})
-    ctx2.add_init_script("""window.__alerts = []; window.__checks = [];
+    STUB = ("""() => { window.__alerts = []; window.__checks = [];
       window.EbbSafety = { crisis: t => /hurt myself/.test(t), check: (o, all, p) => { window.__checks.push([o.type, all.length, typeof p]); return o.value === 'heavy' ? [{ id: 'heavy' }] : []; },
-        showAlert: a => window.__alerts.push(a.id) };""")
+        showAlert: a => window.__alerts.push(a.id) }; }""")
     p2 = ctx2.new_page()
     open_log(p2)
+    p2.evaluate(STUB)  # after load: the real safety module (merged since) would otherwise replace the stand-in; the log reads it at call time
     before = p2.inner_text('.lg-thread')
     say(p2, 'i want to hurt myself and heavy flow')
     p2.wait_for_timeout(150)

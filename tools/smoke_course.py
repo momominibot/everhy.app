@@ -57,9 +57,9 @@ def main():
         if page.locator('.sf-onboard').count():  # the safety workstream's first-run welcome: skip it
             page.locator('.sf-onboard').get_by_role('button', name='Skip all').click()
 
-        # the cushion before the course: the simple practice, as before
+        # the cushion before the course: three short voice-guided practices, with simple sitting still one tap away
         page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
-        check('cushion before course opens the simple practice', page.locator('.sheet h2', has_text='Practice').count() == 1 and page.locator('.course-wrap').count() == 0)
+        check('cushion before course offers three guided practices and simple sitting', page.locator('.course-wrap h2', has_text='On the cushion').count() == 1 and page.locator('.course-card').count() == 3 and [d for d in page.eval_on_selector_all('.course-card', 'els => els.map(e => e.dataset.practice)')] == ['arrive', 'breath', 'sound'] and page.locator('.course-wrap [data-act="simple"]').count() == 1)
         check('she sits on the cushion', page.evaluate('EbbGame.me().action') == 'sit')
         page.get_by_role('button', name='Not now').click()
         check('she stands again', page.evaluate('EbbGame.me().action') == 'idle')
@@ -147,7 +147,7 @@ def main():
         check('not saved when she chose not to', page.evaluate('EbbGame.state().observations.length') == 1)
         check('she stands after the cushion', page.evaluate('EbbGame.me().action') == 'idle' and page.locator('.course-wrap').count() == 0)
         page.evaluate(f'EbbGame.act({{ spot: {cushion} }})')
-        check('paused course: cushion back to the simple practice', page.locator('.course-wrap').count() == 0 and page.locator('.sheet h2', has_text='Practice').count() == 1)
+        check('paused course: cushion back to the guided practices and simple sitting', page.locator('.course-wrap h2', has_text='On the cushion').count() == 1 and page.locator('.course-card').count() == 3 and [d for d in page.eval_on_selector_all('.course-card', 'els => els.map(e => e.dataset.practice)')] == ['arrive', 'breath', 'sound'] and page.locator('.course-wrap [data-act="simple"]').count() == 1)
         page.get_by_role('button', name='Not now').click()
 
         # carry on, history and the opt-in summary

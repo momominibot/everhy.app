@@ -27,6 +27,9 @@ with sync_playwright() as p:
     errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and '404' not in m.text else None)
+    def just_arrive():  # transit asks how she gets to an away place; Just arrive is the plain map travel this smoke tests
+        if pg.locator('.transit-wrap').count():
+            pg.eval_on_selector('.transit-card[data-choice="walk"]', 'e => e.click()')
     pg.goto(base)
     pg.evaluate('localStorage.clear()')
     pg.reload()
@@ -58,19 +61,22 @@ with sync_playwright() as p:
     pg.wait_for_timeout(250)
     check('map opens from the button', pg.locator('.map-wrap').is_visible())
     check('tapping the button does not walk her', pg.evaluate('EbbGame.me().action') != 'walk' and pg.evaluate('({ x: EbbGame.me().x, y: EbbGame.me().y })') == before)
-    check('six pins', pg.locator('.map-pin').count() == 6)
+    check('one pin per place', pg.locator('.map-pin').count() == pg.evaluate('EbbMap.PINS.length'))
     check('home is here', pg.get_attribute('.map-pin[data-pin=home]', 'class').find('is-here') >= 0)
     check('list marks her place', pg.get_attribute('.map-place[data-pin=home]', 'aria-current') == 'location')
-    soon = [pid for pid in ['barn', 'spring', 'pier'] if 'is-soon' in pg.get_attribute(f'.map-pin[data-pin={pid}]', 'class')]
-    registered = pg.evaluate("['barn', 'spring'].filter(id => !!EbbWorld.SCENES[id]).concat(EbbWorld.SCENES.waterfall.spots.some(s => s.id === 'fishing') ? ['pier'] : [])")
-    check('missing places say coming soon', sorted(soon) == sorted(set(['barn', 'spring', 'pier']) - set(registered)))
+    soon = pg.evaluate("[...document.querySelectorAll('.map-pin.is-soon')].map(e => e.dataset.pin)")
+    want_soon = pg.evaluate("EbbMap.PINS.filter(p => EbbMap.status(p, EbbWorld.SCENES, EbbGame.api.scene()) === 'soon').map(p => p.id)")
+    check('missing places say coming soon', sorted(soon) == sorted(want_soon))
     check('focus starts on Close', pg.evaluate("document.activeElement && document.activeElement.classList.contains('map-close')"))
     art = pg.locator('.map-art').bounding_box()
     check('map fits the phone width', art['x'] >= 0 and art['x'] + art['width'] <= 390 and art['width'] >= 300)
     pins_in = pg.evaluate("[...document.querySelectorAll('.map-pin')].every(e => { const r = e.getBoundingClientRect(), a = document.querySelector('.map-art').getBoundingClientRect(); return r.left >= a.left - 2 && r.right <= a.right + 2 && r.top >= a.top - 2 && r.bottom <= a.bottom + 2; })")
     check('pins and labels stay inside the map', pins_in)
-    labels_apart = pg.evaluate("(() => { const r = [...document.querySelectorAll('.map-pin')].map(e => e.getBoundingClientRect()); return r.every((a, i) => r.every((b, j) => j <= i || a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top)); })()")
-    check('pins do not cover each other', labels_apart)
+    labels_apart = pg.evaluate("(() => { const r = [...document.querySelectorAll('.map-pin, .map-pin-label')].map(e => [e.closest('.map-pin'), e.getBoundingClientRect()]); return r.every((a, i) => r.every((b, j) => j <= i || a[0] === b[0] || a[1].right <= b[1].left || b[1].right <= a[1].left || a[1].bottom <= b[1].top || b[1].bottom <= a[1].top)); })()")
+    check('no pin or name tag covers another place', labels_apart)
+    tags_in = pg.evaluate("[...document.querySelectorAll('.map-pin-label')].every(e => { const r = e.getBoundingClientRect(), a = document.querySelector('.map-art').getBoundingClientRect(); return r.left >= a.left - 1 && r.right <= a.right + 1 && r.top >= a.top - 1 && r.bottom <= a.bottom + 1; })")
+    check("every name tag stays on the map", tags_in)
+    if not tags_in: print("     tags:", pg.evaluate("[...document.querySelectorAll('.map-pin-label')].map(e => e.closest('.map-pin').dataset.pin + ' ' + e.closest('.map-pin').dataset.lab + ' ' + JSON.stringify(e.getBoundingClientRect())).concat([JSON.stringify(document.querySelector('.map-art').getBoundingClientRect())])"))
     if shots:
         pg.screenshot(path=f'{shots}_open.png')
 
@@ -85,8 +91,9 @@ with sync_playwright() as p:
 
     pg.click('.map-pin[data-pin=farm]')
     check('the sheet closes first', pg.locator('.map-wrap').count() == 0)
+    just_arrive()
     pg.wait_for_timeout(700)
-    check('travel reaches the farm', pg.evaluate('EbbGame.api.scene()') == 'farm' and pg.inner_text('#place') == 'Farm')
+    check('travel reaches the garden', pg.evaluate('EbbGame.api.scene()') == 'farm' and pg.inner_text('#place') == pg.evaluate('EbbWorld.SCENES.farm.name'))
     check('the fade is over', not pg.evaluate("document.getElementById('scene').classList.contains('fading')"))
     check('focus returns to the map button', pg.evaluate("document.activeElement && document.activeElement.id === 'mapBtn'"))
     check('the page behind is usable again', not pg.evaluate("document.querySelector('.app').inert"))
@@ -103,6 +110,7 @@ with sync_playwright() as p:
     check('Escape closes', pg.locator('.map-wrap').count() == 0)
     btn.click()
     pg.click('.map-place[data-pin=waterfall]')
+    just_arrive()
     pg.wait_for_timeout(700)
     check('travel from the list', pg.evaluate('EbbGame.api.scene()') == 'waterfall')
     btn.click()
@@ -111,7 +119,7 @@ with sync_playwright() as p:
     check('her own place just closes the map', pg.locator('.map-wrap').count() == 0 and pg.evaluate('EbbGame.api.scene()') == 'waterfall')
 
     # every open pin that is not her place takes her there; the pier puts her at the fishing spot
-    for pid in ['barn', 'spring', 'pier', 'waterfall', 'farm']:
+    for pid in [p for p in pg.evaluate('EbbMap.PINS.map(p => p.id)') if p != 'home'] + ['waterfall', 'farm']:
         btn.click()
         pg.wait_for_timeout(150)
         cls = pg.get_attribute(f'.map-pin[data-pin={pid}]', 'class')
@@ -120,6 +128,7 @@ with sync_playwright() as p:
             continue
         want = pg.evaluate(f"EbbMap.pin('{pid}').scene")
         pg.click(f'.map-pin[data-pin={pid}]')
+        just_arrive()
         pg.wait_for_timeout(700)
         check(f'travel to {pid}', pg.evaluate('EbbGame.api.scene()') == want and pg.locator('.map-wrap').count() == 0)
         if pid == 'pier':

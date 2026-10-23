@@ -77,3 +77,12 @@ art/raw/sg_train.png, sg_bus.png (ebb-transit), sg_flowerdome.png (ebb-flower-do
 Zoom: pinch, wheel/trackpad or + / - / 0 scale the camera between 0.75x and 2.4x of the scene's own zoom (EbbGame.api.zoom).
 Phone frame for desktop viewing: phone.html (device picker, zoom buttons, reload) wraps index.html in a drawn phone.
 Preview: launch entry "ebb" (port 8096) in ovumind/.claude/launch.json. Phone screenshots: python3 tools/shot.py <prefix> [scenes].
+
+## 23 Oct, late afternoon: everything green in one command
+`bash tools/check_all.sh` runs all 17 node suites and 16 browser smokes and ends with ALL GREEN (each judged by its exit
+code). Six older smokes still expected the pre-Singapore world (barn, hens, tall bathroom, the old waterfall, six map
+pins) and were brought up to date. Real fixes found on the way: map name tags covered other places (Hawker centre was
+hidden under the Flower Dome pin): tags now pick a free side and the Dome pin sits at Gardens by the Bay; long action
+labels ran 2 px under the Map button; focus was lost after the transit sheet closed; bathroom footsteps were tile on a
+painted plank floor. `tools/grid.py` draws the game's coordinate grid on any plate. docs/DOUBAO-PLAYBOOK.md holds the
+step by step build guide for when Jamie hands work to Doubao (later).

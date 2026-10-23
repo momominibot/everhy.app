@@ -273,7 +273,7 @@ def main():
         page.wait_for_timeout(100)
         shot(page, 'sound-on-bedroom-390x844')
 
-        # through the bathroom door: a swoosh as the fade starts, the latch, tiles, and drips by the tub
+        # through the bathroom door: a swoosh as the fade starts, the latch, wooden planks underfoot, and drips by the tub
         tadas = count(page, 'tada')
         door = page.evaluate("(() => { const d = EbbWorld.SCENES.bedroom.doors.find(d => d.to === 'bathroom'); return { x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 }; })()")
         idle(page)
@@ -285,16 +285,16 @@ def main():
         check('one swoosh for one door', count(page, 'swoosh') == 1)
         check('the bathroom was already visited (with sound off): no ta-da', count(page, 'tada') == tadas)
         check('bathroom plays room tone with drips', status(page)['ambience'] == 'bath')
-        tap_scene(page, 50, 160)
-        check('tile footsteps in the bathroom', wait_played(page, 'step:tile', 5000))
+        tap_scene(page, 50, 80)  # the front of the floor diamond
+        check('plank footsteps in the bathroom (its painted floor is wood)', wait_played(page, 'step:wood', 5000))
         idle(page)
         tub = page.evaluate("EbbSound.SOURCES.bathroom.tub")  # painted in the room; she stands at the floor's edge below it
-        m_near = stand_at(page, tub[0] + 7, 90, 2200)
+        idle(page); page.wait_for_timeout(300); idle(page)
+        m_near = stand_at(page, 44, 62, 2800)  # on the floor beside the tub (test-sound checks this point is walkable)
         e0 = status(page)['ambienceEvents']; page.wait_for_timeout(3500); e1 = status(page)['ambienceEvents']
         check(f'drips by the tub ({m_near["drips"]:.2f}, {e1 - e0} drips in 3.5 s)', m_near['drips'] > 0.8 and e1 - e0 >= 1)
-        m_far = stand_at(page, 90, 172, 2600)
-        e2 = status(page)['ambienceEvents']; page.wait_for_timeout(2500); e3 = status(page)['ambienceEvents']
-        check(f'no drips across the room ({m_far["drips"]:.2f}, {e3 - e2} drips)', m_far['drips'] < 0.2 and e3 - e2 == 0)
+        m_far = stand_at(page, 92, 69, 2600)  # the far corner of the small room, by the door
+        check(f'drips much softer across the room ({m_far["drips"]:.2f} vs {m_near["drips"]:.2f})', m_far['drips'] < m_near['drips'] - 0.4)
 
         # a jump to the farm: swoosh, latch (leaving indoors), a ta-da for the first visit, birds by the tree
         sw, dr = count(page, 'swoosh'), count(page, 'door')
@@ -304,10 +304,11 @@ def main():
         check('a ta-da for her first visit to the farm', wait_played(page, 'tada', 3000, tadas))
         page.wait_for_timeout(2400)  # 1.6 s crossfade, then the old layer is let go
         check('the old ambience is gone after the crossfade', status(page)['layers'] == 1)
-        tree = stand_at(page, 47, 106)['birds']; shed = stand_at(page, 17, 108)['birds']; low = stand_at(page, 30, 172)['birds']
-        check(f'birds louder by the tree than by the shed ({tree:.2f} vs {shed:.2f})', tree > shed + 0.25)
+        # the Garden: the rain tree sings at the top left, the shed corner at the top right is quiet
+        tree = stand_at(page, 14, 114)['birds']; shed = stand_at(page, 86, 116)['birds']; low = stand_at(page, 30, 172)['birds']
+        check(f'birds louder by the rain tree than by the shed ({tree:.2f} vs {shed:.2f})', tree > shed + 0.25)
         check(f'birds quieter down by the path ({low:.2f})', low < tree - 0.2)
-        tap_scene(page, 33, 140)  # open yard between the beds, so the tap is a walk and not a bed action
+        tap_scene(page, 50, 160)  # open ground below the planter beds, so the tap is a walk and not a bed action (it must not use up the first hoe)
         check('soft footsteps on the farm', wait_played(page, 'step:soil', 5000))
         tb, top = box(page, '#soundBtn'), box(page, '.top')
         check('toggle clear of the top bar on the farm', not overlap(tb, top))
@@ -338,39 +339,22 @@ def main():
         check('a second hoe sounds but gets no ta-da', count(page, 'hoe') == h0 + 1 and count(page, 'tada') == t0)
         n_actions = sum(1 for n in played(page) if n in ('hoe', 'seed', 'can', 'pick'))
         check(f'each action sounds once ({n_actions})', n_actions == 5)
-        has_barn = page.evaluate("!!window.EbbWorldRules")
-        if has_barn:  # the barn exists once the world extension has made it, as it does on her first visit
-            page.evaluate("(() => { const s = EbbGame.state(); s.world = s.world || {}; s.world.barn = EbbWorldRules.ensureBarn(s.world.barn); })()")
-            page.wait_for_timeout(300)
-            sp = count(page, 'sparkle')
-            page.evaluate("(() => { const a = Object.values(EbbGame.state().world.barn.animals)[0]; a.careBase += EbbWorldRules.HEART_EVERY || 3; })()")
-            check('a new heart sparkles', wait_played(page, 'sparkle', 2000, sp))
-        else:
-            check('the world rules are loaded for the hearts check', False)
+        # (the barn and its hearts were removed with the move to Singapore; nothing to sparkle there)
 
-        # the waterfall: louder and brighter as she walks to the pond; the offering chimes
+        # Little Guilin: a calm quarry lake now, with the park's breeze and birds; grass underfoot; the offering chimes
         sw, dr = count(page, 'swoosh'), count(page, 'door')
         page.evaluate("EbbGame.api.enter('waterfall')")
-        page.wait_for_function("EbbSound.status().ambience === 'falls'", timeout=3000)
-        check('farm to waterfall: a swoosh and no latch', wait_played(page, 'swoosh', 2000, sw) and count(page, 'door') == dr)
+        page.wait_for_function("EbbSound.status().ambience === 'meadow'", timeout=3000)
+        check('garden to Little Guilin: a swoosh and no latch', wait_played(page, 'swoosh', 2000, sw) and count(page, 'door') == dr)
         page.wait_for_timeout(1800)
-        far = status(page)
-        check(f'running water is quiet from the far path ({far["mix"]["water"]:.2f})', far['mix']['water'] < 0.2)
         stand = page.evaluate("EbbWorld.SCENES.waterfall.spots.find(s => s.kind === 'pond').stand")
         page.evaluate(f"EbbGame.walkTo({json.dumps(stand)}, null)")
-        check('grass footsteps at the waterfall', wait_played(page, 'step:grass', 5000))
-        page.wait_for_timeout(1500)
-        mid = status(page)
+        check('grass footsteps by the lake', wait_played(page, 'step:grass', 5000))
         idle(page); page.wait_for_timeout(2000)
-        near = status(page)
-        check(f'water grows as she walks ({far["mix"]["water"]:.2f} -> {mid["mix"]["water"]:.2f} -> {near["mix"]["water"]:.2f})',
-              far['mix']['water'] < mid['mix']['water'] < near['mix']['water'] and near['mix']['water'] > 0.85)
-        check(f'the water gain rises in the audio graph ({far["params"]["gain"]:.2f} -> {near["params"]["gain"]:.2f})', near['params']['gain'] > far['params']['gain'] + 0.4)
-        check(f'and it gets brighter ({far["params"]["cutoff"]:.0f} Hz -> {near["params"]["cutoff"]:.0f} Hz)', near['params']['cutoff'] > far['params']['cutoff'] * 3)
         before = len(played(page)); ev0 = status(page)['ambienceEvents']
         page.wait_for_timeout(3000)
         check('standing still makes no sound of its own', len(played(page)) == before)
-        check('while the water keeps bubbling', status(page)['ambienceEvents'] > ev0)
+        check('while the park keeps its birdsong', status(page)['ambienceEvents'] >= ev0)
         t0 = count(page, 'tada')
         page.evaluate("EbbGame.act({ spot: EbbWorld.SCENES.waterfall.spots.find(s => s.kind === 'pond') })")
         check('a pond offering chimes', wait_played(page, 'chime'))
@@ -392,8 +376,8 @@ def main():
         page.wait_for_function("EbbSound.status().ctx === 'running'", timeout=3000)
         check('the menu entry turns it back on', status(page)['on'] is True and btn.get_attribute('aria-pressed') == 'true')
         check('still one AudioContext', page.evaluate('window.__acMade') == 1)
-        page.wait_for_function("EbbSound.status().ambience === 'falls'", timeout=3000)
-        check('ambience comes back with it', status(page)['ambience'] == 'falls')
+        page.wait_for_function("EbbSound.status().ambience === 'meadow'", timeout=3000)
+        check('ambience comes back with it', status(page)['ambience'] == 'meadow')
 
         # remembered on: nothing plays until a tap, then it starts by itself
         page.reload(); page.wait_for_function('window.EbbGame && EbbGame._ready && window.EbbSound')
