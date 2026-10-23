@@ -41,7 +41,7 @@
       solids: [[23, 34, 50, 57], [3, 44, 20, 60], [8, 52, 29, 73], [22, 58, 41, 82], [54, 34, 78, 59], [43, 76, 50, 87], [70, 60, 94, 81]],
       shellFloor: [[15, 80], [62, 80], [90, 100], [100, 110], [100, 175], [0, 175], [0, 100]],
       shellDoors: [{ id: 'toBedroom', rect: [66, 90, 86, 104] }],
-      doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 72, y: 68 }, label: 'Back to the bedroom' }],
+      doors: [{ id: 'toBedroom', rect: [62, 58, 70, 64], to: 'bedroom', arrive: { x: 75.5, y: 67 }, label: 'Back to the bedroom' }], /* clear of the moved lamp */
       spots: [
         { id: 'toilet', kind: 'log', topic: 'bleeding', at: { x: 30, y: 70 }, stand: { x: 46, y: 72 }, label: 'Log bleeding or mucus' },
         { id: 'sink', kind: 'log', topic: 'body', at: { x: 64, y: 46 }, stand: { x: 60, y: 66 }, label: 'How does your body feel?' },
