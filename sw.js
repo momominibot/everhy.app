@@ -2,7 +2,7 @@
  * device's cache when offline; art is served from the cache first. Each build has its own cache name, and an
  * upgrade deletes every older Ebb cache once the new one is complete. The cache holds app files only, never her data. */
 'use strict';
-var VERSION = 'ebb-shell-2026-10-22b';
+var VERSION = 'ebb-shell-2026-10-23a';
 var SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/ebb.css',
   'js/ebb-puppet.js', 'js/ebb-world.js', 'js/ebb-farm.js', 'js/ebb-store.js', 'js/ebb-props.js', 'js/ebb-ui.js', 'js/ebb-game.js',
@@ -71,5 +71,8 @@ function cacheFirst(e) {
 self.addEventListener('fetch', function (e) {
   var req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  /* video and any byte-range request go straight to the network: Safari streams video with Range headers, and a cached
+     whole-file answer to a Range request breaks playback */
+  if (/\.(mp4|webm)$/i.test(url.pathname) || (req.headers && req.headers.get && req.headers.get('range'))) return;
   e.respondWith(/\.(png|webp|jpe?g|svg|gif|mp3|m4a|ogg|woff2?)$/i.test(url.pathname) ? cacheFirst(e) : networkFirst(e));
 });
