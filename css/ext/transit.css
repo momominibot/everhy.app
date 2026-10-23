@@ -1,0 +1,30 @@
+/* Transit: the "How will you get there?" sheet, the seat sheet with its breath count, and the Arrive and Get up buttons in the action area. */
+.transit-cards { display: flex; flex-direction: column; gap: 8px; }
+.transit-card { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px 14px; min-height: 56px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); font: inherit; cursor: pointer; }
+.transit-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.transit-card b { font-size: 15px; }
+.transit-card small { color: var(--soft); font-size: 13px; }
+.transit-cue { font-size: 22px; font-weight: 600; line-height: 1.4; min-height: 3.2em; margin: 0; }
+.transit-dots { display: flex; gap: 8px; margin: 0; min-height: 14px; }
+.transit-dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--line); transition: background 0.25s ease, transform 0.25s ease; }
+.transit-dots i.on { background: var(--teal); transform: scale(1.15); }
+.transit-clock { color: var(--soft); font-variant-numeric: tabular-nums; margin: 0; }
+.transit-back { margin: 0; min-height: 1.2em; }
+/* the action area: Arrive stays while she rides, Get up joins it while she sits; its own row above the hint, clear of the corner buttons */
+.transit-bar { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); bottom: max(178px, calc(env(safe-area-inset-bottom) + 168px)); display: flex; gap: 8px; align-items: center; justify-content: center; max-width: calc(100% - 24px); }
+.transit-bar .btn { white-space: nowrap; }
+.transit-bar .btn { box-shadow: 0 4px 14px rgba(40, 30, 30, 0.18); font-weight: 800; font-size: 15px; padding: 12px 20px; min-height: 50px; }
+.transit-bar .btn.primary { background: var(--teal); border-color: var(--teal); }
+html[data-motion="reduce"] .transit-dots i { transition: none; }
+@media (prefers-reduced-motion: reduce) { .transit-dots i { transition: none; } }
+/* the windows: a soft light drifting by, blended into the painted glass; the plate itself never moves */
+.transit-glide { position: absolute; left: 0; width: 100%; pointer-events: none; mix-blend-mode: soft-light; opacity: 0.55; overflow: hidden; }
+.transit-glide[data-mode="train"] { top: 26%; height: 16%; }
+.transit-glide[data-mode="bus"] { top: 28%; height: 25%; }
+.transit-glide::before { content: ""; position: absolute; inset: 0; width: 300%; left: 0;
+  background: linear-gradient(100deg, transparent 0 12%, rgba(255, 248, 230, 0.9) 22%, transparent 30%, transparent 48%, rgba(220, 240, 255, 0.8) 58%, transparent 66%, transparent 100%);
+  animation: transit-glide 9s linear infinite; }
+@keyframes transit-glide { from { transform: translateX(0); } to { transform: translateX(-66.67%); } }
+html[data-motion="reduce"] .transit-glide { display: none; }
+@media (prefers-reduced-motion: reduce) { .transit-glide { display: none; } }

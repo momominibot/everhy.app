@@ -41,6 +41,7 @@
   function travel(pin, api, close, later) {
     var st = status(pin, W.SCENES, api.scene());
     if (st === 'soon') return 'soon';
+    if (st !== 'here' && root.EbbTransit && root.EbbTransit.offer(pin, api, close)) return 'offered'; /* the transit sheet asks how she gets there and takes over */
     if (close) close();
     if (st === 'here') return 'here';
     var at = arrival(pin, W.SCENES), go = function () { api.enter(pin.scene, at); };
