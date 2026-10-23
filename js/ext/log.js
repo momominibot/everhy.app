@@ -1,4 +1,4 @@
-/* Ebb Log: a bottom-sheet chat where she says how things are in her own words. It opens from things in her rooms
+/* Ebb Log: a bottom-sheet chat with Ovia, the mascot (the 'ebb' speaker key in saved threads is kept as is) where she says how things are in her own words. It opens from things in her rooms
  * (spot kind 'log' with a topic: toilet, mirror, cabinet, bedside table, bed, desk) or from the More menu. A local
  * parser suggests entries, every write waits for her on an editable card (calendar changes too), "undo" reverses the
  * last write for 24 hours, and the ring and calendar read confirmed entries only. Nothing is ever required, and
@@ -162,14 +162,14 @@
       if (wrap) wrap.remove();
       topic = want; reset(); view = 'chat'; picked = null; month = null;
       var T = TOPICS[topic];
-      if (topic === 'general' && !L().thread.length) M.say(st(), 'ebb', 'Hi. Tell me how today is going, in your own words. For example: “light flow, mild cramps, slept 6 hours”. Nothing is saved until you tap Save.');
+      if (topic === 'general' && !L().thread.length) M.say(st(), 'ebb', 'Hi, it’s Ovia. Tell me how today is going, in your own words. For example: “light flow, mild cramps, slept 6 hours”. Nothing is saved until you tap Save.');
       since = topic === 'general' ? Math.max(0, L().thread.length - 60) : L().thread.length;
       wrap = doc.createElement('div'); wrap.className = 'ebb-log'; wrap.dataset.topic = topic;
       wrap.innerHTML = '<div class="lg-sheet" role="dialog" aria-modal="true" aria-labelledby="lgTitle"><div class="lg-grab" aria-hidden="true"></div><header class="lg-top"><h2 id="lgTitle">' + esc(T.title) + '</h2>' +
         (T.tabs ? '<div class="lg-tabs" role="tablist"><button type="button" role="tab" data-view="chat">Chat</button><button type="button" role="tab" data-view="calendar">Calendar</button></div>' : '') +
         '<button type="button" class="btn small lg-close" aria-label="Close">Close</button></header>' +
         (T.ring ? '<section class="lg-ring" aria-live="polite"></section>' : '') + '<section class="lg-body"></section>' +
-        '<footer class="lg-foot"><div class="lg-chips"></div><form class="lg-form"><label class="lg-sr" for="lgInput">Tell Ebb in your own words</label><input id="lgInput" autocomplete="off" maxlength="' + (T.journal ? 2000 : 400) + '" placeholder="' + (T.journal ? 'Write anything…' : 'Or type it your way…') + '"><button type="submit" class="btn primary">Send</button></form></footer></div>';
+        '<footer class="lg-foot"><div class="lg-chips"></div><form class="lg-form"><label class="lg-sr" for="lgInput">Tell Ovia in your own words</label><input id="lgInput" autocomplete="off" maxlength="' + (T.journal ? 2000 : 400) + '" placeholder="' + (T.journal ? 'Write anything…' : 'Or type it your way…') + '"><button type="submit" class="btn primary">Send</button></form></footer></div>';
       doc.body.appendChild(wrap);
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === wrap) close(); });

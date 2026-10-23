@@ -70,7 +70,7 @@
         a.appendChild(el('b', null, x.label)); a.appendChild(el('span', null, x.note)); list.appendChild(a);
       });
       box.appendChild(list);
-      box.appendChild(el('p', 'muted small', 'If you can, tell someone you trust how you are feeling. Ebb will be here when you come back.'));
+      box.appendChild(el('p', 'muted small', 'If you can, tell someone you trust how you are feeling. Ovia will be here when you come back.'));
       var acts = el('div', 'sheet-actions'); acts.appendChild(button('I’m safe for now', 'btn', function () { close(); if (after) after(); })); box.appendChild(acts);
     });
   }
@@ -161,7 +161,7 @@
 
       steps.push(function (nx) {
         say(opts.redo ? 'Let’s go through your answers again. Skip anything you like; skipped answers stay as they were.' :
-          'Hi, I’m Ebb. I’ll ask a few quick things so the app fits you. It takes about a minute, and you can skip any question.', !opts.redo);
+          'Hi, I’m Ovia. I’ll ask a few quick things so the app fits you. It takes about a minute, and you can skip any question.', !opts.redo);
         chips([['Let’s start', 1]], function (v) { if (v === '__later') finish(true); else nx(); }, [['Not now', '__later']]);
       });
       steps.push(function (nx) { consentStep('core', 'onboarding', nx); });
