@@ -1,0 +1,128 @@
+[
+ {
+  "id": "merlion",
+  "plate": "art/raw/sg_merlion.png",
+  "mask": [
+   [
+    "rect",
+    0,
+    66,
+    100,
+    108
+   ],
+   [
+    "ellipse",
+    22,
+    56,
+    66,
+    104
+   ]
+  ],
+  "prompt": "Cosy clay style game scene of Merlion Park: only the water moves. The Merlion keeps spouting a steady arc of water that splashes softly into the bay, the bay surface ripples gently, the little boats bob very slightly. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ },
+ {
+  "id": "hotspring",
+  "plate": "art/raw/sg_hotspring.png",
+  "mask": [
+   [
+    "ellipse",
+    16,
+    56,
+    88,
+    110
+   ],
+   [
+    "rect",
+    26,
+    40,
+    80,
+    80
+   ]
+  ],
+  "prompt": "Cosy clay style game scene of a hot spring foot bath: only the water moves. Soft white steam rises and drifts slowly from the two warm pools, the little cascade between the tiers keeps flowing, the water surface ripples gently. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ },
+ {
+  "id": "jetty",
+  "plate": "art/raw/sg_jetty.png",
+  "mask": [
+   [
+    "rect",
+    0,
+    46,
+    100,
+    100
+   ],
+   [
+    "ellipse",
+    70,
+    56,
+    102,
+    102
+   ],
+   [
+    "ellipse",
+    -4,
+    64,
+    30,
+    100
+   ]
+  ],
+  "prompt": "Cosy clay style game scene of a beach with a jetty: only the sea and the palms move. Gentle turquoise waves roll slowly toward the sand and lap at the shore with soft foam, the water glitters, the coconut palm fronds sway very slightly in a sea breeze. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ },
+ {
+  "id": "guilin",
+  "plate": "art/raw/sg_guilin.png",
+  "mask": [
+   [
+    "rect",
+    0,
+    74,
+    100,
+    110
+   ],
+   [
+    "ellipse",
+    54,
+    0,
+    104,
+    58
+   ]
+  ],
+  "prompt": "Cosy clay style game scene of a quarry lake under a granite cliff: only the water and the big tree move. The jade lake surface ripples very gently with soft mist drifting slowly over it, the mirrored cliff wavers in the reflection, the big rain tree's leaves sway slightly in a light breeze. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ },
+ {
+  "id": "garden",
+  "plate": "art/raw/sg_garden.png",
+  "mask": [
+   [
+    "ellipse",
+    -4,
+    36,
+    50,
+    98
+   ],
+   [
+    "rect",
+    30,
+    46,
+    96,
+    92
+   ]
+  ],
+  "prompt": "Cosy clay style game scene of a community garden by an HDB block: only the tree and the laundry move. The big rain tree's leaves sway gently in a light breeze, the clothes and towels hanging on the bamboo poles along the balconies flutter softly. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ },
+ {
+  "id": "hawker",
+  "plate": "art/raw/sg_hawker.png",
+  "mask": [
+   [
+    "rect",
+    6,
+    52,
+    94,
+    72
+   ]
+  ],
+  "prompt": "Cosy clay style game scene inside a hawker centre: only the three ceiling fans move, spinning slowly and steadily under the zinc roof. Everything else stays perfectly still and unchanged. Locked static camera, no camera movement, no zoom, no pan. Soft even lighting that does not change. Calm seamless loop."
+ }
+]

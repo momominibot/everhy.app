@@ -107,7 +107,7 @@
       start: { x: 50, y: 152 }
     },
     merlion: { /* Merlion Park (23 Oct render): the Merlion spouting into the bay with Marina Bay Sands behind, a railed promenade, a stone bench, a bridge leaving bottom right */
-      name: 'Merlion Park', plate: 'art/plates/merlion.webp', aspect: [4, 7], depth: [108, 0.22, 175, 0.33], surface: 'tile',
+      name: 'Merlion Park', plate: 'art/plates/merlion.webp', video: 'art/plates/merlion-live.mp4', aspect: [4, 7], depth: [108, 0.22, 175, 0.33], surface: 'tile', /* the video: the spout and the bay moving, the rest still */
       soundSources: { birds: [[8, 92, 30], [92, 92, 30]], hush: [] },
       floor: [[6, 108], [94, 108], [94, 146], [46, 146], [46, 175], [22, 175], [22, 146], [6, 146]],
       /* stone bench, planter and bench on the left, planter and info board and lamp on the right, flower beds, the bridge parapets */

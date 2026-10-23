@@ -38,8 +38,9 @@ with sync_playwright() as p:
     # the live plate: the waterfall's loop plays over the still plate, and stays away under reduced motion
     live = 0
     live_scene = pg.evaluate("() => Object.keys(EbbWorld.SCENES).find(id => EbbWorld.SCENES[id].video) || ''")
-    pg.evaluate("id => EbbGame.enter(id)", live_scene)
+    if live_scene: pg.evaluate("id => EbbGame.enter(id)", live_scene)
     try:
+        if not live_scene: raise Exception('no scene has a video yet')
         pg.wait_for_function("() => { const v = document.querySelector('video.live-plate'); return v && !v.hidden && v.currentTime > 0.4 && EbbLive.active(); }", timeout=15000)
         if pg.evaluate("() => document.querySelectorAll('#props .atmo-waterfall').length") != 0: fails += 1; print('FAIL drawn water still shown over the live plate')
         pg.evaluate("document.documentElement.setAttribute('data-motion', 'reduce')")
