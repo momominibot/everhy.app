@@ -13,9 +13,8 @@ function world() { /* a fresh copy of the core world plus the map module, with n
   ['js/ebb-world.js', 'js/ext/map.js'].forEach(f => vm.runInContext(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'), ctx, { filename: f }));
   return ctx;
 }
-/* what the world workstream adds (js/ext/world.js on its branch): two places and a fishing spot by the pond */
+/* what the world workstream adds (js/ext/world.js): the hot spring and a fishing spot by the pond */
 function addWorld(W) {
-  W.register('barn', { name: 'Barn', plate: '', floor: [[10, 53], [17, 46], [27, 44], [78, 45], [92, 65], [90, 84], [60, 96], [8, 77]], start: { x: 22, y: 58 } });
   W.register('spring', { name: 'Hot spring', plate: '', floor: [[2, 56], [12, 58], [16, 76], [98, 76], [98, 98], [2, 98]], start: { x: 12, y: 82 } });
   W.SCENES.waterfall.spots.push({ id: 'fishing', kind: 'fish', at: { x: 70, y: 100 }, stand: { x: 70, y: 116 }, label: 'Fish by the pond' });
 }
@@ -28,7 +27,7 @@ function fakeApi(scene, log) {
   const { EbbMap: M, EbbWorld: W } = world();
   const ids = M.PINS.map(p => p.id);
   check('pin ids are unique', new Set(ids).size === ids.length);
-  check('the six places are on the map', ['home', 'farm', 'waterfall', 'barn', 'spring', 'pier'].every(id => ids.includes(id)));
+  check('the five places are on the map', ['home', 'farm', 'waterfall', 'spring', 'pier'].every(id => ids.includes(id)));
   M.PINS.forEach(p => {
     check(`${p.id} has a label and a scene id`, typeof p.label === 'string' && p.label.length > 0 && typeof p.scene === 'string' && p.scene.length > 0);
     check(`${p.id} sits on the map`, p.x >= 4 && p.x <= 96 && p.y >= 8 && p.y <= 94);
@@ -44,7 +43,7 @@ function fakeApi(scene, log) {
   const at = id => M.status(M.pin(id), W.SCENES, 'farm');
   check('core places open', at('home') === 'open' && at('waterfall') === 'open');
   check('her place is highlighted', at('farm') === 'here');
-  check('barn, spring and pier are coming soon', at('barn') === 'soon' && at('spring') === 'soon' && at('pier') === 'soon');
+  check('spring and pier are coming soon', at('spring') === 'soon' && at('pier') === 'soon');
 
   /* travel: the sheet closes first, then enter with a known scene */
   let log = [];
@@ -62,14 +61,13 @@ function fakeApi(scene, log) {
   check('enter after the fade', log.length === 2 && log[1][0] === 'enter' && log[1][1] === 'bedroom');
 
   log = [];
-  check('coming soon does nothing', M.travel(M.pin('barn'), fakeApi('farm', log), close) === 'soon' && log.length === 0);
+  check('coming soon does nothing', M.travel(M.pin('spring'), fakeApi('farm', log), close) === 'soon' && log.length === 0);
   check('coming soon pier does nothing', M.travel(M.pin('pier'), fakeApi('farm', log), close) === 'soon' && log.length === 0);
   log = [];
   check('her own place just closes', M.travel(M.pin('farm'), fakeApi('farm', log), close) === 'here' && log.length === 1 && log[0][0] === 'close');
 
   /* once the world workstream registers its places, the same pins open and every arrival is walkable */
   addWorld(W);
-  check('barn opens', M.status(M.pin('barn'), W.SCENES, 'farm') === 'open');
   check('spring opens', M.status(M.pin('spring'), W.SCENES, 'farm') === 'open');
   check('pier opens', M.status(M.pin('pier'), W.SCENES, 'farm') === 'open');
   check('pier is never "here", even by the waterfall', M.status(M.pin('pier'), W.SCENES, 'waterfall') === 'open');
@@ -86,7 +84,7 @@ function fakeApi(scene, log) {
   check('pier arrives at the fishing stand point', !!arr && !!fishSpot && log[1][1] === 'waterfall' && arr.x === fishSpot.stand.x && arr.y === fishSpot.stand.y);
   if (arr) arr.x = 0;
   check('arrival is a copy, not the spot itself', W.SCENES.waterfall.spots.filter(s => s.id === 'fishing')[0].stand.x === 70);
-  check('travel reads the world at tap time', M.status(M.pin('barn'), W.SCENES, 'barn') === 'here');
+  check('travel reads the world at tap time', M.status(M.pin('spring'), W.SCENES, 'spring') === 'here');
 })();
 
 /* art: once a picture is set it exists on disk; until then the placeholder island is used */
@@ -96,7 +94,7 @@ function fakeApi(scene, log) {
   check('map art is unset or on disk', art === null || fs.existsSync(path.join(__dirname, '..', art)));
 })();
 
-/* with the real world workstream loaded (when merged), its barn, spring and fishing spot open the same pins */
+/* with the real world workstream loaded, its spring and fishing spot open the same pins */
 (() => {
   const f = path.join(__dirname, '..', 'js/ext/world.js');
   if (!fs.existsSync(f)) { console.log('note: js/ext/world.js not here, real-world check skipped'); return; }

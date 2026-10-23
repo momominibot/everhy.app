@@ -1,4 +1,4 @@
-/* Ebb world extension: the barn (two hens and a cow), a hidden hot spring past the waterfall, and fishing at the pond
+/* Ebb world extension: a hidden hot spring past the waterfall, and fishing at the pond
  * edge. Places register with EbbWorld (pure, so the node harness checks every door and stand point); the page part
  * below only runs in a browser. Rules live in js/world/rules.js. Floors and spots were read from each plate on a 10%
  * grid (tall 4:7 plates: x 0..100 across, y 0..175 down). Nothing here gets sick, wilts or dies, and nothing asks about health. */
@@ -8,18 +8,6 @@
   if (!W) return;
 
   /* ---------- places ---------- */
-  W.register('barn', { /* tall bird's-eye barn: back wall across the top, plank floor from y 83, wide doorway in the right wall */
-    name: 'Barn', plate: 'art/plates/barn-tall.webp', aspect: [4, 7], indoor: true, depth: [83, 0.27, 175, 0.34],
-    floor: [[0, 101], [30, 83], [64, 83], [80, 85], [94, 87], [100, 95], [100, 175], [0, 175]],
-    solids: [[21, 80, 43, 90], [45, 86, 62, 95], [85, 95, 98, 104], [59, 110, 89, 128], [16, 141, 40, 149]],
-    doors: [{ id: 'toFarm', rect: [81, 86, 93, 92], to: 'farm', arrive: { x: 10, y: 126 }, label: 'Out to the farm' }],
-    spots: [
-      { id: 'hen1', kind: 'hen', at: { x: 14, y: 100 }, stand: { x: 24, y: 106 }, label: 'Say hello to Pip', flip: true },
-      { id: 'hen2', kind: 'hen', at: { x: 52, y: 101 }, stand: { x: 52, y: 109 }, label: 'Say hello to Clover' },
-      { id: 'cow', kind: 'cow', at: { x: 28, y: 148 }, stand: { x: 46, y: 148 }, label: 'Say hello to Mochi', flip: true }
-    ],
-    start: { x: 60, y: 140 }
-  });
   W.register('spring', { /* 23 Oct render: bathing hut top left, the stone pool in the upper middle, a wooden deck below, stepping stones out at the bottom */
     name: 'Hot spring', plate: 'art/plates/spring_ac.webp', video: 'art/plates/spring-live.mp4', aspect: [4, 7], depth: [76, 0.2, 175, 0.33], water: '#a9dbe8', /* sampled from the pool; the video: steam and ripples, the cherry tree swaying */
     floor: [[4, 76], [88, 76], [88, 175], [4, 175]],
@@ -28,7 +16,6 @@
     spots: [{ id: 'soak', kind: 'soak', at: { x: 48, y: 92 }, stand: { x: 46, y: 116 }, label: 'Slip into the warm water' }],
     start: { x: 48, y: 160 }
   });
-  W.addDoor('farm', { id: 'toBarn', rect: [0, 118, 6, 134], to: 'barn', arrive: { x: 78, y: 99 }, label: 'Path to the barn' });
   W.addDoor('waterfall', { id: 'toSpring', rect: [94, 99, 100, 105], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Over the little bridge' }); /* the far end of the bridge deck */
   /* no addSpot hook yet: appended after the pond, so the engine's own spots keep their order */
   if (W.SCENES.waterfall && !W.SCENES.waterfall.spots.some(function (s) { return s.id === 'fishing'; })) {
@@ -45,14 +32,13 @@
   function data(api) {
     var st = api.state();
     st.world = st.world && typeof st.world === 'object' ? st.world : {};
-    st.world.barn = R().ensureBarn(st.world.barn);
     return st.world;
   }
   function itemName(key) {
     var r = R(), F = root.EbbFarm;
     return (r && r.ITEMS[key] ? r.ITEMS[key].name : F && F.CROPS[key] ? F.CROPS[key].name : key).toLowerCase();
   }
-  /* the engine's pond names an offering from EbbFarm.CROPS. Barn and fishing items are added as non-enumerable entries,
+  /* the engine's pond names an offering from EbbFarm.CROPS. World and fishing items are added as non-enumerable entries,
    * so seeds, planting and every Object.keys(CROPS) loop stay exactly as they were. (Integrator: a shared item-name table
    * in the engine would replace this.) */
   function nameItemsForPond() {
@@ -65,8 +51,6 @@
 
   /* ---------- sprites (Seedream clay, keyed and sized by tools/slice_sheet.py) ---------- */
   var SPR = {
-    hen: { src: 'art/world/hen.webp', frames: 4, w: 203, h: 210 },
-    cow: { src: 'art/world/cow.webp', frames: 3, w: 399, h: 320 },
     items: { src: 'art/world/items.webp', frames: 6, w: 195, h: 189 }
   };
   var ITEM_FRAME = { egg: 0, milk: 1, fishSmall: 2, fishMedium: 3, fishLarge: 4, spaEgg: 5 };
@@ -126,71 +110,6 @@
     return close;
   }
   function p(text, cls) { var el = doc.createElement('p'); el.textContent = text; if (cls) el.className = cls; return el; }
-
-  /* ---------- barn ---------- */
-  var ACT_WORDS = {
-    hen: { feed: ['Scatter some grain', 'pecks happily at the grain.'], talk: ['Have a chat', 'tilts her head and listens.'], brush: ['Smooth her feathers', 'fluffs up, pleased.'] },
-    cow: { feed: ['Offer some hay', 'munches the hay slowly.'], talk: ['Have a chat', 'blinks her long lashes at you.'], brush: ['Brush her coat', 'leans into the brush.'] }
-  };
-  var flashUntil = {};
-  function careSheet(spot, api) {
-    var w = data(api), R0 = R(), a = w.barn.animals[spot.id], day = api.today();
-    R0.settle(w.barn, day); api.save();
-    var words = ACT_WORDS[a.kind];
-    api.work('none', 400, 'back');
-    sheet(a.name, function (body, buttons, close) {
-      function draw(line) {
-        body.innerHTML = '';
-        var hearts = R0.hearts(a);
-        body.appendChild(p(line || (R0.caredOn(a, day) ? a.name + ' has had some kindness today.' : 'What would you like to do?')));
-        body.appendChild(p('Hearts ' + hearts + ' of ' + R0.HEART_MAX + '. A heart grows every ' + R0.HEART_EVERY + ' days you visit. Days away take nothing away.', 'muted'));
-        var list = [];
-        if (a.kind === 'hen' && a.nest > 0) list.push({ id: 'collectEgg', label: 'Collect ' + (a.nest > 1 ? a.nest + ' eggs' : 'the egg'), primary: true, fn: function () {
-          var n = R0.collectEggs(w.barn, spot.id, day); R0.addToBasket(api.state().farm, 'egg', n); api.save(); api.refresh();
-          draw('You found ' + (n > 1 ? n + ' warm eggs' : 'a warm egg') + ' in the straw. Into the basket.');
-        } });
-        if (a.kind === 'cow' && R0.canMilk(w.barn, spot.id, day)) list.push({ id: 'milkCow', label: 'Milk', primary: true, fn: function () {
-          if (R0.milk(w.barn, spot.id, day)) { R0.addToBasket(api.state().farm, 'milk', 1); api.save(); api.refresh(); draw('A bottle of fresh milk for the basket.'); }
-        } });
-        R0.ACTS.forEach(function (act) {
-          list.push({ id: 'care-' + act, label: words[act][0], fn: function () {
-            var res = R0.care(w.barn, spot.id, act, day); api.save(); flashUntil[spot.id] = Date.now() + 1600; api.refresh(); setTimeout(api.refresh, 1700);
-            var line = a.name + ' ' + words[act][1];
-            if (res.heart) line += ' A new heart.';
-            if (res.fed) line += ' There may be an egg tomorrow.';
-            if (a.kind === 'cow' && R0.canMilk(w.barn, spot.id, day)) line += ' She is ready to be milked.';
-            draw(line);
-          } });
-        });
-        list.push({ label: 'Done', fn: close });
-        buttons(list);
-      }
-      draw();
-    });
-  }
-  root.EbbGame.registerKind('hen', careSheet);
-  root.EbbGame.registerKind('cow', careSheet);
-  root.EbbGame.registerProps('barn', function (api, near) {
-    if (!R()) return '';
-    var w = data(api), day = api.today(), out = '', s = W.SCENES.barn;
-    R().settle(w.barn, day);
-    s.spots.forEach(function (sp) {
-      var a = w.barn.animals[sp.id], x = sp.at.x, y = sp.at.y, isNear = near && near.spot === sp, flash = Date.now() < (flashUntil[sp.id] || 0);
-      if (a.kind === 'hen') {
-        var hf = flash ? 3 : a.nest > 0 ? 2 : R().fedOn(a, day) ? 1 : 0, hh = her(y, 'barn') * 0.38;
-        out += shadow(x, y + 0.3, hh * 0.38) + sprite('hen', hf, x, y + 0.6, hh, !!sp.flip, 'world-animal');
-        if (a.nest > 0) out += sprite('items', ITEM_FRAME.egg, x + hh * 0.55, y + 0.8, hh * 0.3);
-        if (isNear) out += ring(x, y + 0.4, hh * 0.6) + heartsRow(x, y - hh - 2, R().hearts(a));
-      } else {
-        var cared = R().caredOn(a, day), cf = a.milkDay === day ? 2 : cared && a.lastAct === 'feed' ? 1 : 0, ch = her(y, 'barn') * 0.75;
-        out += shadow(x, y + 0.4, ch * 0.55) + sprite('cow', cf, x, y + 0.8, ch, !!sp.flip, 'world-animal');
-        if (R().canMilk(w.barn, sp.id, day)) out += sprite('items', ITEM_FRAME.milk, x - ch * 0.7, y + 0.6, ch * 0.2);
-        if (isNear) out += ring(x, y + 0.6, ch * 0.65) + heartsRow(x, y - ch - 2, R().hearts(a));
-      }
-    });
-    return out;
-  });
-  root.EbbGame.registerProps('farm', function () { return sign(10, 142, 'Barn', true); });
 
   /* ---------- hot spring ---------- */
   var soaking = false;

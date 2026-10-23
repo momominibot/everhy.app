@@ -1,5 +1,5 @@
 /* Ebb daily loop, pure rules: three gentle invitations a day chosen from the date, a check for each that reads game state
- * only (watered beds, saved practice time, offerings, barn care, places she walked to, whether a journal line exists),
+ * only (watered beds, saved practice time, offerings, places she walked to, whether a journal line exists),
  * hearts that only ever go up, and a count of days with a heart that pauses on a missed day and never resets.
  * Nothing here reads what she logged about her body. A practice counts as time spent, never by what was noticed.
  * Nothing here is owed: an invitation left alone costs nothing. */
@@ -12,11 +12,10 @@
     water: { label: 'Water the garden', where: 'Farm', icon: 0 },
     sit: { label: 'Sit for a short practice', where: 'Bedroom cushion', icon: 4 },
     pond: { label: 'Visit the pond', where: 'Waterfall', icon: 2 },
-    hens: { label: 'Say good morning to the hens', where: 'Barn', icon: 8 },
     walk: { label: 'Take a slow walk to the waterfall', where: 'Waterfall', icon: 5 },
     journal: { label: 'Write a line in the journal', where: 'Bedroom desk', icon: 3 }
   };
-  var ORDER = ['water', 'sit', 'pond', 'hens', 'walk', 'journal'];
+  var ORDER = ['water', 'sit', 'pond', 'walk', 'journal'];
 
   /* ---------- picking: the same three all day, different on other days ---------- */
   function hash(str) { /* FNV-1a, 32-bit */
@@ -69,10 +68,6 @@
       }));
     },
     pond: function (st, today, day) { return !!(st.pond && Number(st.pond.offerings) > (day ? day.pondStart : 0)); },
-    hens: function (st, today) {
-      var barn = st.world && st.world.barn && st.world.barn.animals; if (!barn) return false;
-      return Object.keys(barn).some(function (id) { var a = barn[id]; return a && a.kind === 'hen' && Array.isArray(a.careDates) && a.careDates.indexOf(today) >= 0; });
-    },
     walk: function (st, today, day) { return !!(day && day.visits && day.visits.waterfall); },
     journal: function (st, today) { /* a note exists for today; its words are never read */
       var obs = st.log && Array.isArray(st.log.obs) ? st.log.obs : [];

@@ -64,14 +64,6 @@ const T = day(5), Y = day(4);
   check('pond: without a day record a positive count is not assumed', !R.check('pond', { pond: { offerings: 0 } }, T, null));
 }
 {
-  const st = blank();
-  check('hens: no barn yet', !R.check('hens', st, T));
-  st.world = { barn: { animals: { hen1: { kind: 'hen', careDates: [Y] }, cow: { kind: 'cow', careDates: [T] } } } };
-  check('hens: the cow alone does not count, yesterday does not count', !R.check('hens', st, T));
-  st.world.barn.animals.hen1.careDates.push(T);
-  check('hens: a hen cared for today counts', R.check('hens', st, T));
-}
-{
   const d = R.ensure({}); const st = blank(); const today = R.begin(d, st, T);
   check('walk: not yet', !R.check('walk', st, T, today));
   R.visit(d, T, 'farm');
@@ -95,14 +87,13 @@ const T = day(5), Y = day(4);
   check('rules never read a note\'s value or sourceText', !/\.value\b|sourceText/.test(src));
 }
 check('check of an unknown id is false', !R.check('nope', blank(), T));
-check('check survives broken state', !R.check('water', { farm: { beds: [null, 3, {}] } }, T) && !R.check('hens', { world: { barn: { animals: { a: null } } } }, T));
+check('check survives broken state', !R.check('water', { farm: { beds: [null, 3, {}] } }, T) && !R.check('pond', { pond: 'x' }, T, null));
 
 /* ---------- hearts ---------- */
 function stateDoing(ids, today, d) { /* a save in which exactly these invitations are complete today */
   const st = blank();
   if (ids.includes('water')) st.farm.beds[0].watered.push(today);
   if (ids.includes('sit')) st.observations.push({ id: 'p', type: 'mindfulness', date: today, activeSec: 120, status: 'finished' });
-  if (ids.includes('hens')) st.world = { barn: { animals: { hen1: { kind: 'hen', careDates: [today] } } } };
   if (ids.includes('journal')) st.log = { obs: [{ id: 'n', type: 'note', start: today, end: today, confirmed: true }] };
   if (d) { R.begin(d, st, today); if (ids.includes('walk')) R.visit(d, today, 'waterfall'); if (ids.includes('pond')) st.pond.offerings = d.days[today].pondStart + 1; }
   return st;

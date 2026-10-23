@@ -16,7 +16,6 @@
     water: 'The garden is watered. A heart for you.',
     sit: 'You sat for a while. A heart for you.',
     pond: 'You visited the pond. A heart for you.',
-    hens: 'The hens have been greeted. A heart for you.',
     walk: 'A slow walk to the waterfall. A heart for you.',
     journal: 'A line in the journal. A heart for you.'
   };

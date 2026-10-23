@@ -29,7 +29,6 @@ check('farm is birds and breeze', S.placeSound('farm', W.SCENES.farm) === 'meado
 check('waterfall is running water', S.placeSound('waterfall', W.SCENES.waterfall) === 'falls');
 check('bathroom is room tone with drips', S.placeSound('bathroom', W.SCENES.bathroom) === 'bath');
 check('an indoor scene reads as a room', S.placeSound('library', { name: 'Library', indoor: true }) === 'room');
-check('barn has its own indoor tone', S.placeSound('barn', { name: 'Barn' }) === 'barn');
 check('hot spring is lapping water', S.placeSound('spring', { name: 'Hot spring' }) === 'spring');
 check('a scene can name its sound', S.placeSound('cave', { name: 'Cave', sound: 'falls' }) === 'falls');
 check('an unknown sound name is ignored', S.placeSound('kitchen', { name: 'Kitchen', sound: 'disco' }) === 'room');
@@ -42,7 +41,7 @@ Object.keys(W.SCENES).forEach(id => {
   check(`scene ${id} has a real ambience`, !!S.AMBIENCES[a]);
   check(`scene ${id} has a footstep`, !!S.VOICES['step:' + f]);
 });
-check('wooden floors indoors', S.surfaceFor('bedroom', W.SCENES.bedroom) === 'wood' && S.surfaceFor('barn', { name: 'Barn' }) === 'wood');
+check('wooden floors indoors', S.surfaceFor('bedroom', W.SCENES.bedroom) === 'wood' && S.surfaceFor('living', W.SCENES.living) === 'wood');
 check('tiles in the bathroom', S.surfaceFor('bathroom', W.SCENES.bathroom) === 'tile');
 check('soil on the farm', S.surfaceFor('farm', W.SCENES.farm) === 'soil');
 check('grass at the falls and spring', S.surfaceFor('waterfall', W.SCENES.waterfall) === 'grass' && S.surfaceFor('spring', {}) === 'grass');
@@ -236,7 +235,7 @@ Object.keys(S.AMBIENCES).forEach(name => {
   check(`ambience ${name}: a long gap does not flood`, g.sources.length - n2 <= 12);
 });
 ['step:wood', 'step:tile', 'step:soil', 'step:grass', 'can', 'hoe', 'seed', 'pick', 'door', 'swoosh', 'tick', 'pop', 'sparkle', 'tada', 'chime', 'gift'].forEach(n => check(`has sound ${n}`, !!S.VOICES[n]));
-['room', 'bath', 'barn', 'meadow', 'falls', 'spring'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
+['room', 'bath', 'meadow', 'falls', 'spring'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
 ['tick', 'pop', 'sparkle', 'swoosh', 'door', 'tada'].forEach(n => check(`${n} is short`, S.VOICES[n].dur <= 1.3));
 let unknownThrows = false; try { S.render(fakeContext().c, 'trumpet'); } catch (e) { unknownThrows = true; }
 check('an unknown sound name is refused', unknownThrows);

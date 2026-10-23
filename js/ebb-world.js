@@ -73,7 +73,7 @@
       floor: [[2, 74], [98, 74], [98, 175], [2, 175]],
       /* the shed, then each bed box with a margin above it so she never stands "behind" painted soil */
       solids: [[5, 55, 33, 76], [24, 80, 57, 101], [55, 91, 91, 116], [6, 97, 41, 124], [36, 110, 78, 143]],
-      doorFix: { toBarn: { rect: [0, 163, 6, 175], arrive: { x: 10, y: 170 } } }, arriveFix: { barn: { x: 10, y: 170 }, waterfall: { x: 88, y: 150 } }, /* the world extension's barn door, moved onto this plate's free left edge */
+      arriveFix: { waterfall: { x: 88, y: 150 } },
       doors: [
         { id: 'toHouse', rect: [78, 74, 98, 78], to: 'living', arrive: { x: 56, y: 80 }, label: 'Back inside' },
         { id: 'toFalls', rect: [92, 140, 100, 160], to: 'waterfall', arrive: { x: 46, y: 166 }, label: 'Path to the waterfall' }

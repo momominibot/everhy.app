@@ -28,9 +28,9 @@
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   /* ---------- places: which ambience and which floor ---------- */
-  var PLACES = { bedroom: 'room', bathroom: 'bath', barn: 'barn', farm: 'meadow', waterfall: 'falls', spring: 'spring' };
-  var FLOORS = { room: 'wood', bath: 'tile', barn: 'wood', meadow: 'soil', falls: 'grass', spring: 'grass' };
-  var INDOOR = { room: true, bath: true, barn: true };
+  var PLACES = { bedroom: 'room', bathroom: 'bath', farm: 'meadow', waterfall: 'falls', spring: 'spring' };
+  var FLOORS = { room: 'wood', bath: 'tile', meadow: 'soil', falls: 'grass', spring: 'grass' };
+  var INDOOR = { room: true, bath: true };
   function placeSound(id, scene) {
     if (scene && scene.sound && AMBIENCES[scene.sound]) return scene.sound; /* a scene can name its own */
     if (PLACES[id]) return PLACES[id];
@@ -340,13 +340,6 @@
       a.set = function (mix, now) { Object.assign(a.mix, mix); };
       return a;
     } },
-    barn: { make: function (ctx, out, r, t) { /* room tone with a little wind through the boards */
-      return ambience(bed(ctx, out, [
-        ['pink', [['highpass', 140, 0.6], ['lowpass', 1100, 0.5]], 0.38, [0.05, 0.06]],
-        ['brown', [['lowpass', 200, 0.7]], 0.28],
-        ['pink', [['bandpass', 750, 0.6]], 0.16, [0.09, 0.08], [0.06, 220]]
-      ], t));
-    } },
     meadow: { make: function (ctx, out, r, t) { /* breeze that swells and settles, and birds, louder by the trees */
       var srcs = bed(ctx, out, [
         ['pink', [['bandpass', 700, 0.6]], 0.5, [0.08, 0.22], [0.05, 260]],
@@ -499,11 +492,11 @@
   function sumOf(obj, fn) { var n = 0; if (obj && typeof obj === 'object') Object.keys(obj).forEach(function (k) { var v = fn(obj[k]); if (isFinite(v)) n += +v; }); return n; }
   function snapshot() {
     var api = G.api, me = api.me(), id = api.scene(), st = api.state() || {}, pond = st.pond || {}, sc = W && W.SCENES[id], el = doc.getElementById('scene');
-    var R = root.EbbWorldRules, barn = st.world && st.world.barn && st.world.barn.animals, amb = placeSound(id, sc);
+    var amb = placeSound(id, sc), today = st.today && st.today.hearts;
     return { scene: id, amb: amb, indoor: !!(INDOOR[amb] || sc && sc.indoor), surface: surfaceFor(id, sc), action: me.action, tool: me.tool, phase: +me.phase || 0,
       x: +me.x, y: +me.y, fading: !!(el && el.classList.contains('fading')), offerings: +pond.offerings || 0, gift: !!pond.gift,
       basket: sumOf(st.farm && st.farm.basket, function (v) { return v; }),
-      hearts: R && R.hearts ? sumOf(barn, function (a) { try { return R.hearts(a); } catch (e) { return 0; } }) : 0 };
+      hearts: isFinite(+today) ? +today : 0 }; /* the Today workstream's hearts total, when it is there */
   }
   function firsts() { /* her first times, kept in the game save so Settings exports and deletes them with it */
     var st = G.api.state();
