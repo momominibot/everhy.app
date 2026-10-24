@@ -46,6 +46,7 @@
     if (close) close();
     if (st === 'here') return 'here';
     var at = arrival(pin, W.SCENES), go = function () { api.enter(pin.scene, at); };
+    if (api.warm) api.warm(pin.scene); /* start decoding the place while the sheet closes and the screen fades */
     if (later) later(go); else go();
     return 'went';
   }

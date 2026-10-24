@@ -161,6 +161,7 @@
     if (openSheet) openSheet();
     if (seated) getUp(true);
     api.save(); retarget();
+    if (api.warm) api.warm(scene); /* decode the destination during the fade */
     fade(function () { api.enter(scene, at); api.toast('You are here. ' + sceneName(scene), 2000); paintBar(); });
   }
   function getUp(quiet) {

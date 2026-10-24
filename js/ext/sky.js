@@ -129,7 +129,7 @@
   function parseWeather(search) { var v = param(search, 'weather'); return v === 'rain' || v === 'clear' ? v : null; }
 
   var api = null, lampHooks = {}, current = {};
-  root.EbbSky = { vignetteAt: vignetteAt, cutMatrix: cutMatrix, PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
+  root.EbbSky = { nightSrc: function (sc) { return nightFor(sc); }, vignetteAt: vignetteAt, cutMatrix: cutMatrix, PHASES: PHASES, LABELS: LABELS, now: function () { var m = minuteOf(new Date()); return { phase: phaseAt(m), label: LABELS[phaseAt(m)] }; }, BOUNDS: BOUNDS, LOOKS: LOOKS, phaseAt: phaseAt, look: look, paint: paint, minuteOf: minuteOf,
     dateKey: dateKey, weatherFor: weatherFor, weatherAt: weatherAt, liveWeather: liveWeather, parseForecast: parseForecast, AREAS: AREAS, isIndoor: isIndoor, effects: effects,
     parseTime: parseTime, parseWeather: parseWeather,
     /* other modules: where the lamps are in a room, e.g. from its furniture. fn(api) -> [{ x, y }] in scene percent */

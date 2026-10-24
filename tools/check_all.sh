@@ -2,6 +2,8 @@
 # Every check Ebb has, in one go: all node suites, then every browser smoke. Prints one line per check and a total.
 # Usage: bash tools/check_all.sh          (about 8 minutes; nothing leaves the machine; no model calls)
 cd "$(dirname "$0")/.." || exit 1
+# the test browsers live outside ~/Library/Caches, which a nightly cleanup on this Mac empties
+PW="$HOME/Library/Application Support/ms-playwright"; [ -d "$PW" ] && export PLAYWRIGHT_BROWSERS_PATH="$PW"
 fail=0
 LOG=$(mktemp)
 # a check passes when it exits 0; its last line is shown for reading
@@ -18,5 +20,6 @@ for s in tools/smoke_*.py; do
   case "$s" in tools/smoke_doors.py|tools/smoke_map.py) continue;; esac
   run "$(basename "$s" .py)" python3 "$s"
 done
+run smoothness python3 tools/perf.py --engine webkit --warm --gate --scenes bedroom,farm,hawker,merlion
 kill $SRV 2>/dev/null
 [ $fail = 0 ] && echo "ALL GREEN" || { echo "SOMETHING FAILED: fix it before committing"; exit 1; }

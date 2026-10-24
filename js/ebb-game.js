@@ -18,6 +18,21 @@
   }
 
   /* ---------- scene ---------- */
+  /* ---------- warm pictures: decode the next places' plates in the background, so changing place never freezes on a decode ---------- */
+  var warmed = {}, warmOrder = [];
+  function warmSrc(src) {
+    if (!src || warmed[src]) return;
+    var im = new Image(); im.decoding = 'async'; im.src = src; warmed[src] = im; warmOrder.push(src);
+    if (im.decode) im.decode().catch(function () { });
+    while (warmOrder.length > 8) delete warmed[warmOrder.shift()]; /* a phone keeps a few decoded plates, not all of them */
+  }
+  function warm(id) {
+    var s = W.SCENES[id]; if (!s || !s.plate) return;
+    warmSrc(s.plate); warmSrc(backdropFor(s.plate));
+    if (doc.documentElement.dataset.daylight === 'night' && root.EbbSky && root.EbbSky.nightSrc) warmSrc(root.EbbSky.nightSrc(s)); /* after dark its night picture too */
+  }
+  function backdropFor(src) { return String(src || '').replace(/^art\/plates\/([\w-]+\.webp)$/, 'art/plates/blur/$1'); } /* tools/backdrops.py: tiny, already blurred */
+  function warmNeighbours(id) { var s = W.SCENES[id]; ((s && s.doors) || []).forEach(function (d) { warm(d.to); }); }
   function enter(id, at) {
     st.scene = id;
     var s = scene();
@@ -29,6 +44,7 @@
     me.x = q.x; me.y = q.y;
     path = []; pending = null; sitting = false; me.action = 'idle'; cam.snap = true;
     drawProps();
+    setTimeout(function () { warmNeighbours(id); }, 400); /* after the new place is up: the rooms through its doors */
   }
 
   /* ---------- camera: the stage has the plate's shape, scaled to cover the screen; it follows her and never shows an edge ---------- */
@@ -44,7 +60,7 @@
     cam.user = Math.max(zoomFloor(), Math.min(ZOOM_MAX, cam.want)); /* a new plate or a turned phone may need more zoom to keep the screen covered; the floor never follows her to the next scene */
     cam.S = r.width * zoom * cam.user; cam.Sh = cam.S * ratio; cam.snap = true;
     els.stage.style.width = cam.S + 'px'; els.stage.style.height = cam.Sh + 'px';
-    if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + els.plate.getAttribute('src') + '")';
+    if (els.backdrop) els.backdrop.style.backgroundImage = 'url("' + backdropFor(els.plate.getAttribute('src')) + '")';
     els.layer.setAttribute('viewBox', '0 0 100 ' + (100 * ratio).toFixed(3));
   }
   /* how much of the screen's bottom an open bottom sheet covers, in px (0 when none, or when it is a full-screen sheet);
@@ -215,7 +231,7 @@
     root.requestAnimationFrame(step);
   }
   function fadeTo(door) {
-    path = []; busyUntil = Date.now() + 600;
+    path = []; busyUntil = Date.now() + 600; warm(door.to);
     els.scene.classList.add('fading');
     setTimeout(function () { enter(door.to, door.arrive); toast(scene().name, 1400); els.scene.classList.remove('fading'); }, 320);
   }
@@ -246,7 +262,8 @@
       els.me._clay = null;
       els.me.innerHTML = '<ellipse cx="0" cy="0" rx="15" ry="4" fill="rgba(40,30,30,0.16)"/>' + P.svg(st.outfit, me);
     }
-    els.fx.innerHTML = Date.now() < fxUntil ? fxHtml : '';
+    var fxNow = Date.now() < fxUntil ? fxHtml : ''; /* written only when it changes: a rewrite every frame repaints the scene */
+    if (fxNow !== els.fx._html) { els.fx._html = fxNow; els.fx.innerHTML = fxNow; }
     var n = nearest();
     var key = st.scene + (n ? JSON.stringify(n.bed !== undefined ? n.bed : n.spot.id) : '') + ':' + frontsBehind() + (sitting ? 's' : '');
     if (key !== lastProps) { lastProps = key; drawProps(); }
@@ -296,7 +313,7 @@
     scene: function () { return st.scene; }, enter: function (id, at) { enter(id, at); }, refresh: function () { updateHud(); drawProps(); },
     zoom: function (f) { return f === undefined ? cam.user : f === 0 ? setZoom(1) : zoomBy(f); }, /* zoom(): read; zoom(0): reset; zoom(1.2): in by 20 percent */
     work: function (tool, ms, view) { work(tool, ms, view); }, sit: function (at, pose) { sitting = true; me.x = at.x; me.y = at.y; me.action = 'sit'; me.pose = pose || null; me.view = 'front'; path = []; },
-    spin: spin, spinning: function () { return !!spinning; },
+    spin: spin, spinning: function () { return !!spinning; }, warm: warm,
     pose: function (name) { if (sitting) me.pose = name || null; }, /* switch the seated action strip: sip, soak, fish, or null for the plain seat */
     stand: function (y) { stand(); if (y && !standBack) me.y = y; }, fx: function (html, ms) { fxHtml = html; fxUntil = Date.now() + (ms || 3000); }
   };
