@@ -119,7 +119,11 @@
   function waterOver() { /* the pool surface drawn over her lower half so she sits in the water */
     var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y, sc = W.scaleAt(y, 'spring'), h = 247 * 104 / 300 * sc, w = 169 * 104 / 300 * sc;
     var f = function (v) { return v.toFixed(2); };
-    return '<g class="world-water"><ellipse cx="' + x + '" cy="' + f(y - h * 0.2) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.25) + '" fill="' + (W.SCENES.spring.water || '#b2e0d4') + '" opacity="0.9"/>' +
+    var col = W.SCENES.spring.water || '#b2e0d4';
+    /* soft see-through water round her middle, fading out at its edges so it melts into the painted pool */
+    return '<g class="world-water"><defs><radialGradient id="springWater" cx="50%" cy="45%" r="50%"><stop offset="0" stop-color="' + col + '" stop-opacity="0.82"/>' +
+      '<stop offset="0.7" stop-color="' + col + '" stop-opacity="0.6"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs>' +
+      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.95) + '" ry="' + f(h * 0.24) + '" fill="url(#springWater)"/>' +
       '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.25" opacity="0.55"/>' +
       '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
   }

@@ -6,7 +6,7 @@ Starts as a returning player (the saved onboarding record) and checks that no on
 import sys
 from playwright.sync_api import sync_playwright
 port = sys.argv[1] if len(sys.argv) > 1 else '8096'
-URL = f'http://localhost:{port}/?time=14:00'
+URL = f'http://localhost:{port}/?time=14:00&weather=clear'
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))

@@ -191,3 +191,10 @@ dropped: it looked unclothed, not a towel.
   dishes (seats action 'eat'); pond = quiet wish.
 NEXT: parallax/shader water (offered), Erin voice for bath and eating (one TTS run on OK), standing fishing pose art and
 night plates via renders once the key is fixed, a rules page from the playbook (palette, easing).
+
+## 24 Oct, towel tube
+- Soaking (bath and hot spring) now shows her in a pink towel tube: a rendered strip `soak_tube` for genz, default and lilac (never tudung). She spins into it and out of it.
+- The hot spring water is soft and see-through around her.
+- Image renders: the key in `~/.config/volcengine/api_key` returns 401. Run with the working Ark key from `~/.hermes/.env` as env, never printed:
+  `ARK_API_KEY="$(grep '^VOLCENGINE_ARK_API_KEY=' ~/.hermes/.env | sed 's/^[^=]*=//' | tr -d '"\n')" python3 tools/run_batch.py <jobs.json>`
+- smoke_doors pins `&weather=clear`: on rain days the tint rightly keeps the waterfall video off.

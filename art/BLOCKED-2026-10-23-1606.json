@@ -1,0 +1,7 @@
+{
+ "item": "pose_drink",
+ "rc": 2,
+ "stdout": "",
+ "stderr": "HTTP 401: {\"error\":{\"code\":\"AuthenticationError\",\"message\":\"The API key or AK/SK in the request is missing or invalid. Request id: 021792742802796cbe31712b8a2594f4e458beea699b0faf5c1ef\",\"param\":\"\",\"type\":\"Unauthorized\"}}\n",
+ "at": "Fri Oct 23 16:06:43 2026"
+}

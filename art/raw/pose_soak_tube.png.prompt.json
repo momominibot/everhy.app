@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin) in exactly the same two soaking poses, smooth matte clay style, size and spacing as reference 2, with the small folded white towel on her head. Change only her clothes: no hoodie, no jeans, no sneakers; she wears a soft pastel pink towel tube wrapped around her body from under the arms to her knees, bare shoulders and arms, a cute modest bath look. Two frames side by side on a flat pure green #00FF00 background, no shadow, no text. Frame 1: hands resting on her knees. Frame 2: arms stretched out to the sides.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/genz_soak_ref.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 31.8,
+ "bytes": 1324784
+}

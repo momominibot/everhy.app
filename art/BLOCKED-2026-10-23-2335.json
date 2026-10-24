@@ -1,0 +1,7 @@
+{
+ "item": "pose_soak_tube",
+ "rc": 2,
+ "stdout": "",
+ "stderr": "HTTP 401: {\"error\":{\"code\":\"AuthenticationError\",\"message\":\"The API key or AK/SK in the request is missing or invalid. Request id: 02179276973829258f1497fbd9e03fa5d60a1e5b6b4655bd855fc\",\"param\":\"\",\"type\":\"Unauthorized\"}}\n",
+ "at": "Fri Oct 23 23:35:55 2026"
+}
