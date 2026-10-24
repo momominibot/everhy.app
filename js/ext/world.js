@@ -13,7 +13,7 @@
     floor: [[4, 100], [20, 100], [20, 106], [84, 106], [84, 100], [96, 100], [96, 175], [4, 175]],
     solids: [[20, 66, 84, 106], [4, 80, 33, 118], [84, 86, 100, 110], [78, 106, 92, 126], [10, 120, 28, 136], [84, 122, 92, 136]], /* pool and rim, egg station, pinwheel, notice board, bench, stone */
     doors: [{ id: 'toFalls', rect: [34, 170, 64, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
-    spots: [{ id: 'soak', kind: 'soak', at: { x: 52, y: 93 }, stand: { x: 52, y: 110 }, label: 'Slip into the warm water' }],
+    spots: [{ id: 'soak', kind: 'soak', at: { x: 70, y: 96 }, stand: { x: 70, y: 110 }, label: 'Slip into the warm water' }],
     start: { x: 50, y: 160 }
   });
   W.addDoor('waterfall', { id: 'toSpring', rect: [57, 170, 78, 175], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Path to the hot spring' }); /* the right half of the stone path */
@@ -24,7 +24,7 @@
       ? { id: 'fishing', kind: 'fish', at: { x: 80, y: 88 }, stand: { x: 76, y: 92 }, float: { x: 66, y: 98 }, label: 'Fish from the jetty' }
       : { id: 'fishing', kind: 'fish', at: { x: 80, y: 103 }, stand: { x: 80, y: 109 }, float: { x: 66, y: 88 }, label: 'Fish from the deck' });
   }
-  var SIT_IN_WATER = { x: 52, y: 93 }; /* in the lower pool, the water drawn over her legs */
+  var SIT_IN_WATER = { x: 70, y: 96 }; /* in the open water of the lower pool, right of the little waterfall; her figure is cut at the waterline */
 
   var doc = root.document;
   if (!doc || !root.EbbGame) return; /* the node harness stops here */
@@ -116,25 +116,50 @@
 
   /* ---------- hot spring ---------- */
   var soaking = false;
-  function waterOver() { /* the pool surface drawn over her lower half so she sits in the water */
+  /* she sits in the water the way games do it: her figure is cut off at the waterline with a soft edge (a mask on #me),
+   * and a light ring and a thin veil of water sit on the surface. Nothing is painted over her legs. */
+  function waterGeom() {
     var x = SIT_IN_WATER.x, y = SIT_IN_WATER.y, sc = W.scaleAt(y, 'spring'), h = 247 * 104 / 300 * sc, w = 169 * 104 / 300 * sc;
+    return { x: x, y: y, h: h, w: w, sc: sc, line: y - h * 0.34, local: -247 * 104 / 300 * 0.34 }; /* local: the waterline in her own units (#me is translated and scaled) */
+  }
+  var NS = 'http://www.w3.org/2000/svg';
+  function cutAtWater(on) {
+    var meEl = doc.getElementById('me'); if (!meEl) return;
+    if (!on) { meEl.removeAttribute('mask'); return; }
+    var svg = meEl.ownerSVGElement, m = doc.getElementById('soakCut');
+    if (!m && svg) {
+      var defs = svg.querySelector('defs') || svg.insertBefore(doc.createElementNS(NS, 'defs'), svg.firstChild);
+      defs.insertAdjacentHTML('beforeend', '<linearGradient id="soakFade" gradientUnits="userSpaceOnUse" x1="0" x2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>' +
+        '<mask id="soakCut" maskUnits="userSpaceOnUse" x="-1000" y="-1000" width="3000" height="3000"><rect id="soakCutRect" x="-1000" y="-1000" width="3000" height="3000" fill="url(#soakFade)"/></mask>');
+    }
+    var g = waterGeom(), fade = doc.getElementById('soakFade');
+    if (fade) { var soft = 0.8 / g.sc; fade.setAttribute('y1', (g.local - soft).toFixed(2)); fade.setAttribute('y2', (g.local + soft).toFixed(2)); }
+    meEl.setAttribute('mask', 'url(#soakCut)');
+  }
+  function waterOver() {
+    var g = waterGeom(), x = g.x, h = g.h, w = g.w, line = g.line;
     var f = function (v) { return v.toFixed(2); };
     var col = W.SCENES.spring.water || '#b2e0d4';
-    /* soft see-through water round her middle, fading out at its edges so it melts into the painted pool */
-    return '<g class="world-water"><defs><radialGradient id="springWater" cx="50%" cy="45%" r="50%"><stop offset="0" stop-color="' + col + '" stop-opacity="0.82"/>' +
-      '<stop offset="0.7" stop-color="' + col + '" stop-opacity="0.6"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></radialGradient></defs>' +
-      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.16) + '" rx="' + f(w * 0.95) + '" ry="' + f(h * 0.24) + '" fill="url(#springWater)"/>' +
-      '<ellipse cx="' + x + '" cy="' + f(y - h * 0.42) + '" rx="' + f(w * 0.72) + '" ry="' + f(h * 0.06) + '" fill="none" stroke="#f4fffb" stroke-width="0.25" opacity="0.55"/>' +
-      '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
+    return '<g class="world-water">' +
+      '<ellipse cx="' + x + '" cy="' + f(line + h * 0.02) + '" rx="' + f(w * 0.8) + '" ry="' + f(h * 0.07) + '" fill="' + col + '" opacity="0.5"/>' +
+      '<ellipse cx="' + x + '" cy="' + f(line) + '" rx="' + f(w * 0.62) + '" ry="' + f(h * 0.045) + '" fill="none" stroke="#f4fffb" stroke-width="0.35" opacity="0.7"/>' +
+      '<ellipse cx="' + x + '" cy="' + f(line + h * 0.01) + '" rx="' + f(w * 0.9) + '" ry="' + f(h * 0.075) + '" fill="none" stroke="#f4fffb" stroke-width="0.2" opacity="0.35"/>' +
+      '<path class="world-steam" d="M' + f(x - w * 0.45) + ' ' + f(g.y - h * 0.8) + ' q-1.2 -2 0 -4 q1.2 -2 0 -4 M' + f(x + w * 0.5) + ' ' + f(g.y - h * 0.7) + ' q1.2 -2 0 -4 q-1.2 -2 0 -4" stroke="#ffffff" stroke-width="0.5" fill="none" stroke-linecap="round" opacity="0.6"/></g>';
   }
   root.EbbGame.registerKind('soak', function (spot, api) {
     var me = api.me();
     soaking = true; api.fx(waterOver(), 36e5);
+    /* the waterline cut follows her only while she is really sitting in the spring */
+    var watch = setInterval(function () {
+      var m = api.me(), inWater = soaking && api.scene() === 'spring' && m.action === 'sit' && Math.abs(m.y - SIT_IN_WATER.y) < 0.5;
+      cutAtWater(inWater);
+      if (!soaking) { clearInterval(watch); cutAtWater(false); }
+    }, 120);
     /* in she goes with a little spin, changing for the water as she turns (her towel tube once that art exists) */
     if (api.spin) { api.sit(SIT_IN_WATER, null); api.spin(function () { if (soaking && api.pose) api.pose('soak'); }); } else api.sit(SIT_IN_WATER, 'soak');
     function out() {
       if (!soaking) return; soaking = false;
-      function up() { api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x; }
+      function up() { cutAtWater(false); api.fx('', 1); api.stand(spot.stand.y); me.x = spot.stand.x; }
       if (api.spin) api.spin(up); else up(); /* and out again with a spin, back in her own clothes */
     }
     sheet('Hot spring', function (body, buttons, close) {
