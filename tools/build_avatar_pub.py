@@ -2,7 +2,7 @@
 """Turn proto/avatar3d.html into the self-contained page published as an artifact.
 The artifact host serves no .glb, so the models go as base64 .txt and the page decodes them.
 Usage: build_avatar_pub.py <out dir> [avatar, default avatar_white]
-The avatar's <name>_moves GLB is required; <name>_idles is added only when it exists (older sets kept the calm idle there)."""
+The avatar's <name>_fixed GLB (weights repaired by fix_weights.py) is used when present, else <name>_moves; <name>_idles is added only when it exists (older sets kept the calm idle there)."""
 import base64, re, shutil, sys
 from pathlib import Path
 
@@ -14,7 +14,7 @@ shutil.copy(ROOT / 'art/plates/bedroom-dream-wide.webp', D / 'bedroom.webp')
 shutil.copy(ROOT / 'art/chars/genz/idle.webp', D / 'sprite.webp')
 shutil.copy(ROOT / 'art/chars/genz/idle.json', D / 'sprite.json')
 for f in D.glob('*.glb.txt'): f.unlink()
-for src, name in [(AV + '_moves', 'moves.glb')] + ([(AV + '_idles', 'idles.glb')] if IDLES else []):
+for src, name in [((AV + '_fixed') if (ROOT / 'art/meshy' / (AV + '_fixed')).exists() else (AV + '_moves'), 'moves.glb')] + ([(AV + '_idles', 'idles.glb')] if IDLES else []):
     (D / (name + '.txt')).write_bytes(base64.encodebytes((ROOT / 'art/meshy' / src / 'animation_glb_url.glb').read_bytes()))
 s = (ROOT / 'proto/avatar3d.html').read_text()
 s = re.sub(r'<!doctype html>\s*<html[^>]*>\s*<head>\s*', '', s)
@@ -24,7 +24,7 @@ assert s.count('../art/plates/bedroom-dream-wide.webp') == 2
 s = s.replace('../art/plates/bedroom-dream-wide.webp', 'bedroom.webp')
 REP = [
     ('<title>EveRhy 3D Avatar Test</title>', '<title>EveRhy 3D Avatar</title>\n<meta name="claude:viewport-fit-sides" content="cover">'),
-    ("SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_white_moves') + '/animation_glb_url.glb';", "SRC = 'moves.glb';"),
+    ("SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_white_fixed') + '/animation_glb_url.glb';", "SRC = 'moves.glb';"),
     ("if (!q.get('model') && !names.includes('Idle_7')) new GLTFLoader().load(SRC.replace(/avatar_(\\w+?)_moves\\//, 'avatar_$1_idles/'), g2 => {", "if (" + ('true' if IDLES else 'false') + ") loadGlb('idles.glb', g2 => {"),
     ("current = null; play('idle'); } }, undefined, () => {});", "current = null; play('idle'); } }, () => {});"),
     ("'../art/chars/genz/idle.json'", "'sprite.json'"), ("'../art/chars/genz/idle.webp'", "'sprite.webp'"),
