@@ -8,7 +8,13 @@ from PIL import Image
 src, prefix = sys.argv[1], sys.argv[2]
 im = np.array(Image.open(src).convert('RGB')).astype(int)
 bg = np.median(np.concatenate([im[:20].reshape(-1, 3), im[-20:].reshape(-1, 3)]), axis=0)
-fg = np.abs(im - bg).sum(2) > 90
+r, g, b = im[..., 0], im[..., 1], im[..., 2]
+greenish = (g > r + 40) & (g > b + 40)  # the green screen, speckles and all
+fg = (np.abs(im - bg).sum(2) > 90) & ~greenish
+from scipy import ndimage
+lab, n = ndimage.label(ndimage.binary_opening(fg, iterations=2))
+sizes = ndimage.sum(fg, lab, range(1, n + 1))
+fg = np.isin(lab, 1 + np.where(sizes > 2000)[0])  # keep only figure-sized shapes, drop stray specks
 cols = fg.any(0)
 runs, start = [], None
 for x, on in enumerate(list(cols) + [False]):
