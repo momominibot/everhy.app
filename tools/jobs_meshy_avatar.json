@@ -1,0 +1,44 @@
+[
+ {
+  "id": "avatar_fair",
+  "endpoint": "multi-image-to-3d",
+  "body": {
+   "image_urls": [
+    "@img:art/meshy/fair_front.png",
+    "@img:art/meshy/fair_side.png",
+    "@img:art/meshy/fair_back.png"
+   ],
+   "ai_model": "meshy-7.1",
+   "pose_mode": "a-pose",
+   "should_remesh": true,
+   "topology": "triangle",
+   "target_polycount": 30000,
+   "should_texture": true,
+   "texture_resolution": "2k",
+   "target_formats": [
+    "glb"
+   ]
+  }
+ },
+ {
+  "id": "avatar_fair_rig",
+  "endpoint": "rigging",
+  "body": {
+   "input_task_id": "@task:avatar_fair",
+   "height_meters": 1.2
+  }
+ },
+ {
+  "id": "avatar_fair_anim",
+  "endpoint": "animations",
+  "body": {
+   "rig_task_id": "@task:avatar_fair_rig",
+   "action_ids": [
+    0,
+    1,
+    32,
+    28
+   ]
+  }
+ }
+]

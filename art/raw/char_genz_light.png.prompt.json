@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Same character turnaround sheet as the reference: front view, side view and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips, same cream hoodie, light blue jeans and cream sneakers, same smooth matte clay style and proportions. Change only her skin to a few shades lighter: light warm beige skin with a golden peach undertone, the same on her face, neck and hands, still warm, not pale, not white. Stand each view straight with arms held slightly away from the body. Flat pure green #00FF00 background, even soft light, no shadow, no text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 25.7,
+ "bytes": 1788664
+}

@@ -2,3 +2,8 @@ art/RUN.lock
 art/run.log
 .DS_Store
 __pycache__/
+# Meshy outputs: keep only the models the 3D test page loads (art/meshy/avatar_*_moves, _idles); the rest re-download from task.json
+art/meshy/RUN.lock
+art/meshy/*/*.glb
+!art/meshy/avatar_light_moves/*.glb
+!art/meshy/avatar_light_idles/*.glb

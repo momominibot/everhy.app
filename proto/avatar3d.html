@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EveRhy 3D Avatar Test</title>
+<style>
+  :root { --cream: #fff8ef; --ink: #4a3a3f; --rose: #e58fae; }
+  html, body { margin: 0; height: 100%; background: #f6efe6; overflow: hidden; font: 600 15px/1.3 "Nunito", system-ui, sans-serif; color: var(--ink); }
+  #view { position: fixed; inset: 0; overflow: hidden; touch-action: none; }
+  #stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  #stage img.plate { display: block; width: 100%; height: 100%; }
+  #old { position: absolute; transform: translate(-50%, -100%); pointer-events: none; }
+  #gl { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .bar { position: fixed; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .bar button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--rose); background: var(--cream); color: var(--ink); font: inherit; }
+  .bar button[aria-pressed="true"] { background: var(--rose); color: #fff; }
+  .note { position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 12px; right: 12px; text-align: center; background: rgba(255, 248, 239, 0.92); border-radius: 14px; padding: 8px 12px; }
+  .note small { display: block; font-weight: 500; opacity: 0.8; }
+</style>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }</script>
+</head>
+<body>
+<div id="view"><div id="stage"><img class="plate" src="../art/plates/bedroom-dream-wide.webp" alt=""><img id="old" src="" alt="" hidden></div></div>
+<canvas id="gl"></canvas>
+<div class="note" id="note">Loading her in 3D<small>Tap the floor to walk</small></div>
+<div class="bar">
+  <button data-act="idle">Idle</button><button data-act="wave">Wave</button><button data-act="sit">Sit</button><button data-act="turn">Turn around</button><button data-act="old" aria-pressed="false">Old sprite</button>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/* The room is the same 100 x 100 scene units as js/ebb-world.js. The plate is a CSS-scaled image; the WebGL canvas
+ * covers the screen and its orthographic camera shows exactly the scene units the plate shows, so she stands on the
+ * painted floor. Her height and depth scale follow EbbWorld: standing height 104 x scaleAt(y). */
+const FLOOR = [[50, 42], [97, 68], [50, 93], [2, 67]], DEPTH = [44, 0.19, 93, 0.255], ZOOM = 2.2, TILT = 0.22; /* positive: the top of her tips towards you, so you look down on her like the room */
+const scaleAt = y => DEPTH[1] + (DEPTH[3] - DEPTH[1]) * Math.max(0, Math.min(1, (y - DEPTH[0]) / (DEPTH[2] - DEPTH[0])));
+const inside = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > p.y) !== (yj > p.y) && p.x < (xj - xi) * (p.y - yi) / (yj - yi) + xi) c = !c; } return c; };
+const q = new URLSearchParams(location.search), SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_light_moves') + '/animation_glb_url.glb';
+
+const view = document.getElementById('view'), stage = document.getElementById('stage'), note = document.getElementById('note');
+const me = { x: 40, y: 70, yaw: 0, target: null, act: 'idle' };
+const cam = { x: me.x, y: me.y - 8 };
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'), alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NoToneMapping;
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(0, 100, 0, -100, 0.1, 1000); camera.position.z = 500;
+/* light like the painting: a soft key from the window side (upper left) and an ambient tinted by the floor around her,
+ * sampled from the plate itself (the Pillars of Eternity trick), so she picks up the room's warm colour */
+const AMB = +(q.get('amb') || 2.1), KEY = +(q.get('key') || 1.3);
+const amb = new THREE.AmbientLight(0xffffff, AMB); scene.add(amb);
+const sun = new THREE.DirectionalLight(0xfff0e0, KEY); sun.position.set(-1.2, 1.6, 1.4); scene.add(sun);
+const sampler = document.createElement('canvas'); sampler.width = sampler.height = 50; const sctx = sampler.getContext('2d', { willReadFrequently: true });
+const plateImg = new Image(); plateImg.src = '../art/plates/bedroom-dream-wide.webp'; plateImg.decode().then(() => sctx.drawImage(plateImg, 0, 0, 50, 50));
+const floorTint = new THREE.Color(1, 1, 1), want = new THREE.Color();
+function sampleFloor(x, y) { const d = sctx.getImageData(Math.max(0, Math.round(x / 2) - 2), Math.max(0, Math.round(y / 2) - 1), 5, 3).data; let r = 0, g = 0, b = 0;
+  for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; } const n = d.length / 4, m = Math.max(r, g, b) / n || 1;
+  want.setRGB(r / n / m, g / n / m, b / n / m, THREE.SRGBColorSpace); return want; }
+
+/* a soft round shadow under her feet, like the sprite's: drawn by a tiny shader (a soft dark oval), no texture */
+function shadowMat(peak) {
+  return new THREE.ShaderMaterial({ transparent: true, depthWrite: false, /* depth-tested: they sit just behind her feet, so her shoes stay on top */ uniforms: { op: { value: 1 }, peak: { value: peak } },
+    vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: 'varying vec2 vUv; uniform float op; uniform float peak; void main() { float d = length(vUv - 0.5) * 2.0; float a = 1.0 - smoothstep(0.0, 1.0, d); gl_FragColor = vec4(0.22, 0.13, 0.11, a * peak * op); }' });
+}
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.34));
+shadow.renderOrder = -2; scene.add(shadow);
+/* a small dark contact shadow under each shoe, following the feet: this is what puts her weight on the floor */
+const soles = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.55)); m.renderOrder = -1; scene.add(m); return m; });
+
+const holder = new THREE.Group(), tilt = new THREE.Group(), turn = new THREE.Group();
+holder.add(tilt); tilt.add(turn); tilt.rotation.x = TILT; scene.add(holder);
+let mixer = null, clips = {}, current = null, unitH = 1, model = null, feet = [], footClear = 0;
+const tmp = new THREE.Vector3();
+function lowestFoot() { let lo = Infinity; for (const b of feet) { b.getWorldPosition(tmp); turn.worldToLocal(tmp); lo = Math.min(lo, tmp.y); } return lo; }
+
+function pick(names, words) { return names.find(n => words.some(w => n.toLowerCase().includes(w))); }
+new GLTFLoader().load(SRC, gltf => {
+  const m = gltf.scene;
+  /* which way does she face? headfront sits in front of Head; turn her to face +Z (towards you) whatever the model's export */
+  m.updateMatrixWorld(true);
+  const hf = m.getObjectByName('headfront'), hd = m.getObjectByName('Head');
+  if (hf && hd) { const a = hf.getWorldPosition(new THREE.Vector3()), b = hd.getWorldPosition(new THREE.Vector3()); m.rotation.y = -Math.atan2(a.x - b.x, a.z - b.z); m.updateMatrixWorld(true); }
+  const box = new THREE.Box3().setFromObject(m), size = box.getSize(new THREE.Vector3());
+  unitH = size.y; m.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
+  /* soft diffuse shading over Meshy's clay texture, lit like the room */
+  m.traverse(o => { if (o.isMesh) { o.frustumCulled = false; const map = o.material && o.material.map; o.material = new THREE.MeshLambertMaterial({ map }); }
+    if (/^(Left|Right)(ToeBase|Foot)$/.test(o.name)) feet.push(o); });
+  turn.add(m); model = m; turn.updateMatrixWorld(true); footClear = lowestFoot();
+  mixer = new THREE.AnimationMixer(m);
+  const names = gltf.animations.map(a => a.name);
+  const find = w => gltf.animations.find(a => a.name === pick(names, w));
+  clips = { idle: find(['idle']) || gltf.animations[0], walk: find(['walk']), wave: find(['wave', 'hello']), sit: find(['sit']) };
+  /* Meshy's plain Idle swings her hips 80 degrees to look around; Idle 7 (library 247) stands still and faces you */
+  if (!q.get('model')) new GLTFLoader().load(SRC.replace(/avatar_(\w+?)_moves\//, 'avatar_$1_idles/'), g2 => {
+    const calm = g2.animations.find(a => a.name === 'Idle_7'); if (!calm) return;
+    clips.idle = calm; if (me.act === 'idle') { current && current.fadeOut(0.3); current = null; play('idle'); } }, undefined, () => {});
+  note.innerHTML = 'Fairer 3D test<small>' + gltf.animations.length + ' moves: ' + names.join(', ') + '. Tap the floor to walk.</small>';
+  play('idle');
+}, undefined, e => { note.textContent = 'Could not load ' + SRC + ' (' + e.message + ')'; });
+
+function play(name, once) {
+  const clip = clips[name] || clips.idle; if (!mixer || !clip) return;
+  const a = mixer.clipAction(clip); if (a === current) return;
+  a.reset(); a.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat); a.clampWhenFinished = !!once;
+  if (current) a.crossFadeFrom(current, 0.25, false); a.play(); current = a;
+}
+
+/* tap the floor: walk there, facing the way she goes (screen-down is towards you) */
+view.addEventListener('pointerup', e => {
+  const r = view.getBoundingClientRect(), u = r.width / (100 / ZOOM);
+  const p = { x: cam.x - r.width / 2 / u + (e.clientX - r.left) / u, y: cam.y - r.height / 2 / u + (e.clientY - r.top) / u };
+  if (!inside(p, FLOOR)) return;
+  me.target = p; me.act = 'walk'; play('walk');
+});
+let spin = 0;
+document.querySelector('.bar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
+  const act = b.dataset.act;
+  if (act === 'old') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); document.getElementById('old').hidden = !on; placeOld(); return; }
+  me.target = null;
+  if (act === 'turn') { spin = Math.PI * 2; me.act = 'idle'; play('idle'); return; }
+  me.act = act; play(act, false);
+});
+document.querySelector('.bar').addEventListener('pointerup', e => e.stopPropagation());
+
+/* the old clay sprite, same height, a little to her right */
+async function placeOld() {
+  const old = document.getElementById('old'); if (old.hidden) return;
+  const meta = await (await fetch('../art/chars/genz/idle.json')).json();
+  const ox = me.x + 9, oy = me.y, h = 104 * scaleAt(oy) * 300 / 300;
+  const c = document.createElement('canvas'), im = new Image(); im.src = '../art/chars/genz/idle.webp'; await im.decode();
+  c.width = meta.w; c.height = meta.h; c.getContext('2d').drawImage(im, 0, 0, meta.w, meta.h, 0, 0, meta.w, meta.h);
+  old.src = c.toDataURL(); const unit = 104 / 300;
+  old.style.left = ox + '%'; old.style.top = oy + '%'; old.style.height = (meta.h * unit * scaleAt(oy)) + '%'; old.style.width = 'auto';
+}
+
+let last = performance.now(), tick = 0;
+function frame(t) {
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  if (me.target) {
+    const dx = me.target.x - me.x, dy = me.target.y - me.y, d = Math.hypot(dx, dy), step = 9 * dt;
+    if (d < step) { me.x = me.target.x; me.y = me.target.y; me.target = null; me.act = 'idle'; play('idle'); }
+    else { me.x += dx / d * step; me.y += dy / d * step; const want = Math.atan2(dx, dy); let dif = want - me.yaw; dif = Math.atan2(Math.sin(dif), Math.cos(dif)); me.yaw += dif * Math.min(1, dt * 10); }
+  } else if (!spin) { let dif = -me.yaw; dif = Math.atan2(Math.sin(dif), Math.cos(dif)); me.yaw += dif * Math.min(1, dt * 3); }
+  if (spin > 0) { const s = Math.min(spin, dt * 7); spin -= s; me.yaw += s; }
+  /* camera follows her gently, clamped to the plate */
+  const r = view.getBoundingClientRect(), u = r.width / (100 / ZOOM), vw = r.width / u, vh = r.height / u;
+  cam.x += (me.x - cam.x) * Math.min(1, dt * 3); cam.y += (me.y - 8 - cam.y) * Math.min(1, dt * 3);
+  cam.x = Math.max(vw / 2, Math.min(100 - vw / 2, cam.x)); cam.y = Math.max(vh / 2, Math.min(100 - vh / 2, cam.y));
+  const left = cam.x - vw / 2, top = cam.y - vh / 2;
+  stage.style.width = stage.style.height = (100 * u) + 'px';
+  stage.style.transform = `translate(${(-left * u).toFixed(2)}px, ${(-top * u).toFixed(2)}px)`;
+  camera.left = left; camera.right = left + vw; camera.top = -top; camera.bottom = -(top + vh); camera.updateProjectionMatrix();
+  renderer.setSize(r.width, r.height, false);
+  /* her feet at (x, y) in scene units; scene y runs down, so the 3D y is -y */
+  const s = scaleAt(me.y), H = 104 * s;
+  holder.position.set(me.x, -me.y, me.y); holder.scale.setScalar(H / unitH);
+  turn.rotation.y = me.yaw;
+  shadow.position.set(me.x, -me.y + 0.3 * s, me.y - 1); shadow.scale.set(46 * s, 13 * s, 1);
+  if ((tick = (tick + 1) % 10) === 0) floorTint.lerp(sampleFloor(me.x, me.y), 0.4); /* sample the floor every tenth frame, plenty for a slow blend */ amb.color.setRGB(1, 1, 1).lerp(floorTint, 0.35);
+  if (mixer) mixer.update(dt);
+  /* keep her soles on the floor whatever the clip does (not while seated) */
+  if (model && feet.length && me.act !== 'sit') { turn.updateMatrixWorld(true); model.position.y += footClear - lowestFoot(); }
+  /* contact shadows under the toes, fading as a foot lifts */
+  holder.updateMatrixWorld(true);
+  feet.filter(b => /ToeBase/.test(b.name)).forEach((b, i) => { if (!soles[i]) return; b.getWorldPosition(tmp); const lift = Math.max(0, tmp.y + me.y);
+    soles[i].position.set(tmp.x, -me.y + 0.2 * s, me.y - 0.5); soles[i].scale.set(15 * s, 5 * s, 1); soles[i].material.uniforms.op.value = Math.max(0, 1 - lift / (6 * s)); });
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__t = { shadow, holder, camera, scene, me, get model() { return model; } };
+</script>
+</body>
+</html>
