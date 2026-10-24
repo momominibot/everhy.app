@@ -97,6 +97,7 @@
         { id: 'kopi', kind: 'tea', at: { x: 18, y: 100 }, stand: { x: 8, y: 118 }, label: 'Order a kopi' },
         { id: 'chickenrice', kind: 'log', topic: 'food', at: { x: 47, y: 98 }, stand: { x: 46, y: 116 }, label: 'What did you eat or drink?' },
         { id: 'table', kind: 'cushion', at: { x: 80, y: 116 }, stand: { x: 66, y: 124 }, label: 'Sit with your kopi a moment' },
+        { id: 'provisions', kind: 'grocer', at: { x: 79, y: 99 }, stand: { x: 65, y: 115 }, label: 'Buy provisions' }, /* the fruit stall also sells eggs, rice, ginger and chilli (js/ext/grocer.js) */
         /* the stools round the other tables (read off a 5 unit grid): seats too, set up by js/seats/rules.js */
         { id: 'stool1', kind: 'seat', at: { x: 18, y: 127 }, stand: { x: 18, y: 140 }, label: 'Sit at this table' },
         { id: 'stool2', kind: 'seat', at: { x: 35, y: 127 }, stand: { x: 34, y: 141 }, label: 'Sit at this table' },
@@ -116,7 +117,7 @@
         { id: 'toJetty', rect: [48, 138, 70, 146], to: 'jetty', arrive: { x: 44, y: 165 }, label: 'Over the bridge to Bedok Jetty' }
       ],
       spots: [
-        { id: 'pond', kind: 'pond', at: { x: 52, y: 80 }, stand: { x: 54, y: 114 }, label: 'Toss a wish to the Merlion' },
+        { id: 'pond', kind: 'pond', at: { x: 52, y: 80 }, stand: { x: 54, y: 114 }, label: 'Make a quiet wish' },
         { id: 'bench', kind: 'cushion', at: { x: 41, y: 114 }, stand: { x: 41, y: 128 }, label: 'Sit on the stone bench' }
       ],
       start: { x: 40, y: 136 }
@@ -139,7 +140,7 @@
       doors: [{ id: 'toFarm', rect: [30, 170, 55, 175], to: 'farm', arrive: { x: 78, y: 162 }, label: 'Path to the garden' }], /* the world extension adds the hot spring door beside it */
       water: [[[6, 80], [96, 80], [96, 99], [58, 101], [56, 111], [22, 111], [8, 107]]], /* the lake, for tap ripples (js/ext/ripples.js) */
       spots: [
-        { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Offer to the lake' },
+        { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Make a quiet wish by the lake' },
         { id: 'bench', kind: 'cushion', at: { x: 31, y: 110 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }
       ],
       start: { x: 44, y: 165 }

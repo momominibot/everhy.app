@@ -7,7 +7,8 @@
   /* ---------- basket: the farm's basket holds crops, eggs and fish alike ---------- */
   var ITEMS = {
     egg: { name: 'Egg' }, spaEgg: { name: 'Spa-boiled egg' },
-    fishSmall: { name: 'Small fish' }, fishMedium: { name: 'Medium fish' }, fishLarge: { name: 'Large fish' }
+    fishSmall: { name: 'Small fish' }, fishMedium: { name: 'Medium fish' }, fishLarge: { name: 'Large fish' },
+    rice: { name: 'Rice' }, ginger: { name: 'Ginger' }, chilli: { name: 'Chilli' } /* the provision shop's pantry (js/ext/grocer.js) */
   };
   function addToBasket(farm, key, n) { farm.basket[key] = (farm.basket[key] || 0) + (n || 1); return farm.basket[key]; }
 

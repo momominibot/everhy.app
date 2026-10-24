@@ -19,6 +19,10 @@
     { id: 'friedEgg', station: 'cook', name: 'Fried egg', needs: { egg: 1 }, line: 'Crisp edges, a soft middle.' },
     { id: 'grilledFish', station: 'cook', name: 'Grilled fish', anyFish: true, line: 'A squeeze of lime, a little salt.' },
     { id: 'carrotCake', station: 'bake', name: 'Carrot cake', needs: { carrot: 2, egg: 1 }, line: 'The whole room smells of cinnamon.' },
+    /* with the provision shop's pantry (eggs, rice, ginger, chilli from the hawker centre) */
+    { id: 'eggFriedRice', station: 'cook', name: 'Egg fried rice', needs: { rice: 1, egg: 1 }, line: 'Rice tossed hot with egg, the wok smell filling the kitchen.' },
+    { id: 'gingerFish', station: 'cook', name: 'Steamed fish with ginger', needs: { ginger: 1 }, anyFish: true, line: 'Fish steamed soft, thin ginger on top, a little soy.' },
+    { id: 'sambalTurnip', station: 'cook', name: 'Sambal turnip', needs: { turnip: 1, chilli: 1 }, line: 'Turnip in a gentle homemade sambal. Warm, not fiery.' },
     { id: 'sunflowerBread', station: 'bake', name: 'Sunflower seed bread', needs: { sunflower: 1 }, line: 'A small loaf, seeds on the crust.' },
     { id: 'smoothie', station: 'blend', name: 'Smoothie', anyCrop: true, line: 'Cold and bright, drunk slowly.' }
   ];
@@ -45,9 +49,9 @@
   /* the sets of ingredients that would make a recipe: one exact set, or one small set per fish or crop. ids is
    * { crops: [...], fish: [...] } from the farm and world modules */
   function options(r, ids) {
-    if (r.needs) return [Object.assign({}, r.needs)];
-    var list = r.anyFish ? ids.fish : r.anyCrop ? ids.crops : [];
-    return list.map(function (k) { var o = {}; o[k] = 1; return o; });
+    var list = r.anyFish ? ids.fish : r.anyCrop ? ids.crops : null;
+    if (!list) return r.needs ? [Object.assign({}, r.needs)] : [];
+    return list.map(function (k) { var o = Object.assign({}, r.needs || {}); o[k] = (o[k] || 0) + 1; return o; }); /* any one fish (or crop), plus what else it needs */
   }
   function covers(basket, set) { return Object.keys(set).every(function (k) { return (basket[k] || 0) >= set[k]; }); }
   /* the first ingredient set the basket covers, or null when short */
@@ -60,8 +64,9 @@
   function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
   /* what a recipe wants, in words: "2 turnips", "2 carrots and 1 egg", "a fish of any size", "any one crop" */
   function needText(r, ids, nameOf) {
-    if (r.anyFish) return 'a fish of any size';
-    if (r.anyCrop) return 'any one crop';
+    var extra = r.needs ? Object.keys(r.needs).map(function (k) { return plural(r.needs[k], String(nameOf(k) || k).toLowerCase()); }).join(' and ') : '';
+    if (r.anyFish) return 'a fish of any size' + (extra ? ' and ' + extra : '');
+    if (r.anyCrop) return 'any one crop' + (extra ? ' and ' + extra : '');
     return Object.keys(r.needs).map(function (k) { return plural(r.needs[k], String(nameOf(k) || k).toLowerCase()); }).join(' and ');
   }
   /* what was used, in words: "2 turnips" */
@@ -97,6 +102,9 @@
     return meal;
   }
   function mealsOn(k, date) { return k.meals.filter(function (m) { return m.date === date; }); }
+  /* ---------- eating: a cooked dish waits, ready to eat, until she eats it slowly at the table ---------- */
+  function ready(k) { return ensure(k).meals.filter(function (m) { return !m.eaten; }); } /* oldest first */
+  function eat(k, at) { var m = ready(k)[0]; if (!m) return null; m.eaten = true; m.eatenAt = at || null; return m; }
 
   /* ---------- the timer: counts only running, visible time (same rule as the course) ---------- */
   function timer(plannedSec) { return { planned: plannedSec, activeMs: 0, paused: false, hidden: false, ended: false, last: null }; }
@@ -135,7 +143,7 @@
   root.EbbKitchenRules = {
     VERSION: VERSION, MAX_STEP_MS: MAX_STEP_MS, WASH_SECS: WASH_SECS, STATIONS: STATIONS, RECIPES: RECIPES, WASH_CUES: WASH_CUES,
     ensure: ensure, byStation: byStation, recipe: recipe, options: options, covers: covers, pick: pick, canMake: canMake, needText: needText,
-    usedText: usedText, dishName: dishName, menu: menu, makeable: makeable, consume: consume, make: make, mealsOn: mealsOn,
+    usedText: usedText, dishName: dishName, menu: menu, makeable: makeable, consume: consume, make: make, mealsOn: mealsOn, ready: ready, eat: eat,
     timer: timer, counting: counting, advance: advance, pause: pause, resume: resume, setHidden: setHidden, end: end, activeSec: activeSec,
     leftSec: leftSec, finished: finished, clockText: clockText, cueAt: cueAt, washRecord: washRecord, worthSaving: worthSaving
   };

@@ -2,7 +2,7 @@
  * device's cache when offline; art is served from the cache first. Each build has its own cache name, and an
  * upgrade deletes every older Ebb cache once the new one is complete. The cache holds app files only, never her data. */
 'use strict';
-var VERSION = 'ebb-shell-2026-10-24e';
+var VERSION = 'ebb-shell-2026-10-24f';
 var SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/ebb.css',
   'js/ebb-puppet.js', 'js/ebb-world.js', 'js/ebb-farm.js', 'js/ebb-store.js', 'js/ebb-props.js', 'js/ebb-ui.js', 'js/ebb-game.js',

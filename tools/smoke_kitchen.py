@@ -67,7 +67,7 @@ with sync_playwright() as p:
     s2 = pg.evaluate(STATE)
     check('the hob card opens and she faces the counter', s2['sheet'] and s2['title'] == 'Hob' and s2['view'] == 'back', str(s2))
     dishes = pg.evaluate("() => [...document.querySelectorAll('.kitchen-dish')].map(b => [b.dataset.recipe, !b.disabled, b.querySelector('small').textContent])")
-    check('five dishes listed, soup and egg possible, the rest short', [d[0] for d in dishes] == ['turnipSoup', 'carrotStirFry', 'sunflowerSnack', 'friedEgg', 'grilledFish'] and [d[1] for d in dishes] == [True, False, False, True, False], str(dishes))
+    check('eight dishes listed, soup and egg possible, the rest short', [d[0] for d in dishes] == ['turnipSoup', 'carrotStirFry', 'sunflowerSnack', 'friedEgg', 'grilledFish', 'eggFriedRice', 'gingerFish', 'sambalTurnip'] and [d[1] for d in dishes] == [True, False, False, True, False, False, False, False], str(dishes))
     check('a short dish says what it needs', any('Needs 2 carrots' in d[2] for d in dishes) and any('Needs a fish of any size' in d[2] for d in dishes), str(dishes))
     if shot: pg.screenshot(path=f'{shot}_sheet.png')
 

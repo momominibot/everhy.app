@@ -19,6 +19,7 @@
     boats: { id: 'boats', label: 'Watch the boats', sec: 60, prompt: 'Follow one boat across the bay until it is gone. Then another.', done: 'A minute by the bay. The boats carried on without you.' },
     soak: { id: 'soak', pose: 'soak', label: 'A warm soak', sec: 120, prompt: 'Let the warm water hold you. Notice where it touches: your back, your shoulders, your hands. Breathe in the steam, and let each breath out be a little slower.', done: 'Two warm minutes, noticed. A gentle way to end the day.' },
     warmth: { id: 'warmth', pose: 'soak', label: 'Feel the warmth', sec: 60, prompt: 'Rest your hands on the water. Feel warm, then a little warmer. With each breath out, let your shoulders drop a little more.', done: 'A minute of warmth, on purpose.' },
+    eat: { id: 'eat', label: 'Eat slowly', sec: 60, uses: 'dish', prompt: 'Look at your food first: the colours, the steam. Small bites. Put your spoon down between them and taste each one.', done: 'A meal eaten slowly, on purpose.' },
     still: { id: 'still', label: 'Just sit', sec: 0, prompt: 'Sitting. Nothing to do. Get up whenever you like.', done: '' }
   };
 
@@ -36,6 +37,7 @@
     'hawker:stool4': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -8, y: -12 } },
     'waterfall:bench': { title: 'On the lake bench', line: 'The quarry lake, the cliff in it upside down.', offset: { x: 2.5, y: 12 }, actions: ['water', 'breaths', 'listen', 'still'] },
     'bathroom:bath': { title: 'In the bath', line: 'Warm water, soft bubbles, the day nearly done.', offset: { x: 0, y: 9 }, pose: 'soak', cover: 'bubbles', actions: ['soak', 'warmth', 'breaths', 'still'] },
+    'kitchen:dining': { title: 'At the table', line: 'Your own table, at home.', offset: { x: -6, y: 8 }, actions: ['eat', 'breaths', 'still'] },
     'merlion:bench': { title: 'On the stone bench', line: 'The bay, the spout, the boats going by.', offset: { x: 5, y: 8 }, actions: ['boats', 'breaths', 'still'] }
   };
 

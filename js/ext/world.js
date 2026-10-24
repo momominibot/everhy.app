@@ -191,12 +191,22 @@
       function finish(res) {
         clear(); state = 'result';
         api.fx(res.result === 'caught' && root.EbbProps ? root.EbbProps.sparkles(fx, fy, 7) : '', 1600);
-        if (res.result === 'caught') {
-          R0.addToBasket(api.state().farm, res.size, 1);
-          var w = data(api); w.fish = (w.fish || 0) + 1; api.save(); api.refresh();
-          say('You caught a ' + itemName(res.size) + '. Into the basket.');
-        } else say(res.result === 'early' ? 'Too soon. It swam off. The water is calm again.' : 'It got away. The water is calm again.');
-        buttons([{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }]);
+        var again = [{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }];
+        if (res.result === 'caught') { /* she chooses: keep it for the kitchen, or let it go */
+          say('You caught a ' + itemName(res.size) + '. Keep it for the kitchen, or let it go?');
+          buttons([{ id: 'keepFish', label: 'Keep it', primary: true, fn: function () {
+            R0.addToBasket(api.state().farm, res.size, 1);
+            var w = data(api); w.fish = (w.fish || 0) + 1; api.save(); api.refresh();
+            say('Into the basket. Cook it at home: grilled, or steamed with ginger.'); buttons(again);
+          } }, { id: 'releaseFish', label: 'Let it go', fn: function () {
+            var w = data(api); w.released = (w.released || 0) + 1; api.save();
+            api.fx(root.EbbProps ? root.EbbProps.sparkles(fx, fy, 5) : '', 1400);
+            say('You let it slip back into the sea. It flicks its tail and is gone.'); buttons(again);
+          } }]);
+          return;
+        }
+        say(res.result === 'early' ? 'Too soon. It swam off. The water is calm again.' : 'It got away. The water is calm again.');
+        buttons(again);
       }
       castLine();
     }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, 'world-mini');

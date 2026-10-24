@@ -1,6 +1,7 @@
 /* Ebb item registry, pure. Every thing she can carry is defined once here or by the workstream that makes it:
  *   EbbItems.define({ id, name, kind, icon: { strip, frame }, stack: true, about })
- * kinds: seed (plant in a bed), crop (from the farm), find (eggs, milk, fish, dug-up things), gift (given to her),
+ * kinds: seed (plant in a bed), crop (from the garden), find (fish, finds), pantry (bought at the provision shop),
+ * dish (cooked at home, ready to eat), gift (given to her),
  * tool (kept, never used up). Icons name a sprite strip (EbbPropSprites or EbbItems.STRIPS) and a frame in it.
  * The farm's seeds and crops register here from EbbFarm.CROPS; the barn and fishing items from js/world/rules.js are
  * listed by name so the bag can show them before that file loads. Digging (phase 3) and friends (phase 4) call
@@ -9,9 +10,11 @@
   'use strict';
 
   var KINDS = [
-    { id: 'seed', label: 'Seeds', about: 'Plant one in a hoed bed on the farm.', empty: 'No seeds yet. The shed on the farm gives three a day.' },
-    { id: 'crop', label: 'From the farm', about: 'Offer at the pond, or give to a friend when you meet one.', empty: 'Nothing picked yet. Crops ripen overnight when watered.' },
-    { id: 'find', label: 'Finds', about: 'Things found along the way. The pond takes any of them.', empty: 'Nothing found yet. Try the barn, the pier, or digging.' },
+    { id: 'seed', label: 'Seeds', about: 'Plant one in a hoed bed in the garden.', empty: 'No seeds yet. Buy them with hearts at the Flower Dome.' },
+    { id: 'crop', label: 'From the garden', about: 'Cook it at home: the hob and the oven know what to do with it.', empty: 'Nothing picked yet. Water a planted bed each day and it ripens in two to four days.' },
+    { id: 'find', label: 'Caught and found', about: 'Fish from the jetty and things found along the way. Cook fish at home.', empty: 'Nothing yet. Try fishing off the end of Bedok Jetty.' },
+    { id: 'pantry', label: 'Pantry', about: 'From the provision shop. Cook with it at home.', empty: 'Nothing yet. The provision shop at the hawker centre sells eggs, rice, ginger and chilli.' },
+    { id: 'dish', label: 'Ready to eat', about: 'Cooked at home. Eat it slowly at the kitchen table.', empty: 'Nothing cooked yet. Cook at the hob or the oven at home.' },
     { id: 'gift', label: 'Gifts', about: 'Given to you. Yours to keep.', empty: 'No gifts yet.' },
     { id: 'tool', label: 'Tools', about: 'Kept in the bag and never used up.', empty: 'No tools yet.' }
   ];
@@ -60,20 +63,25 @@
       define({ id: seedId(c), name: crop.name + ' seed', kind: 'seed', icon: { strip: 'icons', frame: 0 }, source: 'farm.seeds',
         about: 'Grows into a ' + low + ' in ' + crop.days + ' watered days. Plant it in a hoed bed.' });
       define({ id: c, name: crop.name, kind: 'crop', icon: { strip: c, frame: 4 }, source: 'farm.basket',
-        about: 'Picked from the farm. The Goddess at the pond is glad of a ' + low + '.' });
+        about: 'Picked from the garden. Cook it at home.' });
     });
   }
   /* ---------- barn and fishing (names match js/world/rules.js ITEMS; frames match art/world/items.webp) ---------- */
-  [['egg', 'Egg', 0, 'From a hen you fed the day before. An egg lowered into the hot spring comes out spa-boiled.'],
-   ['milk', 'Milk', 1, 'Fresh from Mochi on a day she was cared for.'],
-   ['fishSmall', 'Small fish', 2, 'Caught off the pier. Small, quick and shiny.'],
-   ['fishMedium', 'Medium fish', 3, 'Caught off the pier with good timing.'],
-   ['fishLarge', 'Large fish', 4, 'Caught off the pier right in the middle of the dip.'],
-   ['spaEgg', 'Spa-boiled egg', 5, 'An egg warmed through in the hot spring. The small secret.']
-  ].forEach(function (r) { define({ id: r[0], name: r[1], kind: 'find', icon: { strip: 'items', frame: r[2] }, about: r[3], source: 'farm.basket' }); });
-  /* ---------- the Goddess's gift ---------- */
+  [['egg', 'Egg', 0, 'From the provision shop. Fry it, bake with it, or lower it into the hot spring.', 'pantry'],
+   ['milk', 'Milk', 1, 'Fresh milk. Blend it, or keep it.', 'find'],
+   ['fishSmall', 'Small fish', 2, 'Caught off the end of Bedok Jetty. Small, quick and shiny. Cook it at home.', 'find'],
+   ['fishMedium', 'Medium fish', 3, 'Caught off Bedok Jetty with good timing. Cook it at home.', 'find'],
+   ['fishLarge', 'Large fish', 4, 'Caught off Bedok Jetty right in the middle of the dip. Cook it at home.', 'find'],
+   ['spaEgg', 'Spa-boiled egg', 5, 'An egg warmed through in the hot spring. The small secret.', 'find']
+  ].forEach(function (r) { define({ id: r[0], name: r[1], kind: r[4], icon: { strip: 'items', frame: r[2] }, about: r[3], source: 'farm.basket' }); });
+  /* ---------- the provision shop's pantry (js/ext/grocer.js); no drawn icon yet, the bag shows a letter ---------- */
+  [['rice', 'Rice', 'A small bag of rice from the provision shop. For egg fried rice.'],
+   ['ginger', 'Ginger', 'A knob of fresh ginger. For steamed fish.'],
+   ['chilli', 'Chilli', 'Red chillies for a gentle homemade sambal.']
+  ].forEach(function (r) { define({ id: r[0], name: r[1], kind: 'pantry', icon: null, about: r[2], source: 'farm.basket' }); });
+  /* ---------- the water's gift: five days of quiet wishes ---------- */
   define({ id: 'moonPearl', name: 'Moon pearl', kind: 'gift', icon: { strip: 'icons', frame: 2 }, source: 'pond.gift',
-    about: 'The Goddess gave you this after five offerings. It glows a little at night.' });
+    about: 'The water gave you this after five quiet wishes. It glows a little at night.' });
 
   root.EbbItems = { KINDS: KINDS, STRIPS: STRIPS, define: define, get: get, all: all, byKind: byKind, kind: kind, stub: stub, seedId: seedId };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -108,12 +108,12 @@ const ids = { crops: Object.keys(F.CROPS), fish: Object.keys(WR.ITEMS).filter(k 
 const nameOf = k => (F.CROPS[k] || WR.ITEMS[k] || { name: k }).name;
 check('crop ids come from the farm, fish ids from the world', ids.crops.join() === 'turnip,carrot,sunflower' && ids.fish.join() === WR.SIZES.join());
 check('every recipe names only known ingredients', R.RECIPES.every(r => !r.needs || Object.keys(r.needs).every(k => F.CROPS[k] || WR.ITEMS[k])));
-check('eight recipes over three stations', R.RECIPES.length === 8 && R.byStation('cook').length === 5 && R.byStation('bake').length === 2 && R.byStation('blend').length === 1);
+check('eleven recipes over three stations', R.RECIPES.length === 11 && R.byStation('cook').length === 8 && R.byStation('bake').length === 2 && R.byStation('blend').length === 1);
 check('station lengths: hob 20 s, oven 30 s, Thermomix 15 s, basin 20 s', R.STATIONS.cook.secs === 20 && R.STATIONS.bake.secs === 30 && R.STATIONS.blend.secs === 15 && R.WASH_SECS === 20);
 check('the recipes asked for', ['turnipSoup', 'carrotStirFry', 'sunflowerSnack', 'friedEgg', 'grilledFish', 'carrotCake', 'sunflowerBread', 'smoothie'].every(id => !!R.recipe(id)));
 check('turnip soup wants 2 turnips, the cake 2 carrots and an egg, the bread 1 sunflower', JSON.stringify(R.recipe('turnipSoup').needs) === '{"turnip":2}' && JSON.stringify(R.recipe('carrotCake').needs) === '{"carrot":2,"egg":1}' && JSON.stringify(R.recipe('sunflowerBread').needs) === '{"sunflower":1}');
 check('an empty basket makes nothing', R.makeable({}, ids) === 0 && R.menu('cook', {}, ids, nameOf).every(m => !m.can));
-check('the menu lists every dish of the station, can or not', R.menu('cook', {}, ids, nameOf).length === 5 && R.menu('bake', {}, ids, nameOf).length === 2);
+check('the menu lists every dish of the station, can or not', R.menu('cook', {}, ids, nameOf).length === 8 && R.menu('bake', {}, ids, nameOf).length === 2);
 check('two turnips make soup and nothing else on the hob', (() => { const m = R.menu('cook', { turnip: 2 }, ids, nameOf); return m.filter(x => x.can).map(x => x.id).join() === 'turnipSoup'; })());
 check('one turnip is short for soup', !R.canMake(R.recipe('turnipSoup'), { turnip: 1 }, ids));
 check('need words', R.needText(R.recipe('turnipSoup'), ids, nameOf) === '2 turnips' && R.needText(R.recipe('carrotCake'), ids, nameOf) === '2 carrots and 1 egg' && R.needText(R.recipe('grilledFish'), ids, nameOf) === 'a fish of any size' && R.needText(R.recipe('smoothie'), ids, nameOf) === 'any one crop');
@@ -191,5 +191,18 @@ check('no em dash in the kitchen copy', !/—/.test(read('js/ext/kitchen.js') + 
 check('no calorie or medical claim in what she reads', (() => { const strs = (read('js/ext/kitchen.js') + read('js/kitchen/rules.js')).match(/'(?:[^'\\\n]|\\.)*'/g) || []; return strs.length > 40 && strs.every(q => !/calorie|kcal|healthy|weight|diet|cure|nutrient|burn/i.test(q)); })());
 check('the page part only touches its own kinds', (() => { const s = read('js/ext/kitchen.js'); return ['cook', 'bake', 'blend', 'wash'].every(k => s.includes("'" + k + "'")) && !s.includes("registerKind('log'") && !s.includes("registerKind('tea'"); })());
 
+/* ---------- the pantry recipes and eating (24 Oct: grow, catch, buy, cook, eat) ---------- */
+{
+  const ids2 = { crops: ['turnip', 'carrot', 'sunflower'], fish: ['fishSmall', 'fishMedium', 'fishLarge'] };
+  const gf = R.recipe('gingerFish');
+  check('steamed fish needs a fish and ginger', !R.canMake(gf, { fishMedium: 1 }, ids2) && !R.canMake(gf, { ginger: 1 }, ids2) && R.canMake(gf, { fishMedium: 1, ginger: 1 }, ids2));
+  check('it says so in words', R.needText(gf, ids2, nameOf) === 'a fish of any size and 1 ginger');
+  const k = R.ensure({}), b = { rice: 1, egg: 1 };
+  const m = R.make(k, b, R.recipe('eggFriedRice'), '2026-10-24', ids2, nameOf, '2026-10-24T12:00:00');
+  check('egg fried rice uses the rice and the egg', m && !b.rice && !b.egg);
+  check('a cooked dish waits, ready to eat', R.ready(k).length === 1 && !k.meals[0].eaten);
+  const e = R.eat(k, '2026-10-24T12:30:00');
+  check('eating takes the oldest ready dish, once', e && e.dish === 'eggFriedRice' && R.ready(k).length === 0 && R.eat(k) === null);
+}
 console.log(`test-kitchen: ${pass} passed, ${fail} failed`);
 process.exitCode = fail ? 1 : 0;

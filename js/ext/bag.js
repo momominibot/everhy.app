@@ -1,7 +1,7 @@
 /* Ebb bag extension (phase 2): one place that shows everything she carries. A round Bag button sits bottom-left above
  * the sound toggle, and More > Bag opens the same sheet: a grid of items with icon, name and count, grouped by kind,
- * each with a line on what it is for and, where it makes sense here, one action (plant a seed on the farm, take the
- * basket to the pond at the waterfall). Rules live in js/bag/core.js and the item registry in js/bag/items.js; both load
+ * each with a line on what it is for and, where it makes sense here, one action (plant a seed in the garden, eat a
+ * cooked dish at the kitchen table). Rules live in js/bag/core.js and the item registry in js/bag/items.js; both load
  * from here so index.html needs no change beyond the one script line. Nothing in the bag is ever taken away as a
  * punishment, and nothing here asks about health. */
 (function (root) {
@@ -132,19 +132,12 @@
         if (!best) { c.api.toast('Hoe a bed first, then plant.'); return; }
         G.walkTo(W.bedStand(best.bd), { bed: best.i });
       } });
-    b.registerAction({ id: 'offer', label: 'Take the basket to the pond', kinds: ['crop', 'find'],
-      when: function (c) {
-        if (c.api.scene() !== 'waterfall' || c.entry.source !== 'farm.basket') return false;
-        /* the farm decides which item leaves the basket (the most plentiful), so say so when it is not this one */
-        var bk = c.state.farm.basket, first = Object.keys(bk).filter(function (k) { return bk[k] > 0; }).sort(function (x, y) { return bk[y] - bk[x]; })[0];
-        if (first && first !== c.entry.id && c.notes) { var it = root.EbbItems.get(first); c.notes.push('The Goddess takes from the top of the basket, so the ' + (it ? it.name.toLowerCase() : first) + ' goes first.'); }
-        return true;
-      },
+    /* a dish she cooked: eat it slowly at the kitchen table (walks her there when she is in the kitchen) */
+    b.registerAction({ id: 'eat', label: 'Eat it at the table', kinds: ['dish'],
+      when: function (c) { return c.api.scene() === 'kitchen'; },
       run: function (c) {
-        var s = W.SCENES.waterfall, pond = s.spots.filter(function (sp) { return sp.kind === 'pond'; })[0];
-        c.close();
-        if (!pond) { c.api.toast('The pond is quiet today.'); return; }
-        G.walkTo(pond.stand, { spot: pond });
+        var spot = (W.SCENES.kitchen.spots || []).filter(function (sp) { return sp.id === 'dining'; })[0];
+        c.close(); if (spot) G.walkTo(spot.stand, { spot: spot });
       } });
   }
 

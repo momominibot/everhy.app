@@ -15,13 +15,16 @@ function fresh() { return { farm: F.fresh(6), pond: { offerings: 0, gift: false 
 const snap = o => JSON.stringify(o);
 
 /* ---------- registry ---------- */
-check('kinds in order', I.KINDS.map(k => k.id).join() === 'seed,crop,find,gift,tool');
+check('kinds in order', I.KINDS.map(k => k.id).join() === 'seed,crop,find,pantry,dish,gift,tool');
 Object.keys(F.CROPS).forEach(c => {
   check(`${c} crop registered`, I.get(c) && I.get(c).kind === 'crop' && I.get(c).name === F.CROPS[c].name);
   check(`${c} seed registered`, I.get(I.seedId(c)) && I.get(I.seedId(c)).kind === 'seed' && I.get(I.seedId(c)).icon.strip === 'icons');
 });
 check('crop icon is the ripe frame of its own strip', I.get('turnip').icon.strip === 'turnip' && I.get('turnip').icon.frame === 4);
-['egg', 'milk', 'spaEgg', 'fishSmall', 'fishMedium', 'fishLarge'].forEach(id => check(`${id} is a find`, I.get(id) && I.get(id).kind === 'find' && I.get(id).icon.strip === 'items'));
+['milk', 'spaEgg', 'fishSmall', 'fishMedium', 'fishLarge'].forEach(id => check(`${id} is a find`, I.get(id) && I.get(id).kind === 'find' && I.get(id).icon.strip === 'items'));
+check('the egg is pantry, from the provision shop', I.get('egg').kind === 'pantry' && /provision shop/.test(I.get('egg').about));
+['rice', 'ginger', 'chilli'].forEach(id => check(`${id} is pantry`, I.get(id) && I.get(id).kind === 'pantry' && I.get(id).source === 'farm.basket'));
+check('no item talks about a goddess, hens or a shed any more', I.all().every(it => !/goddess|\bhens?\b|\bshed\b/i.test(it.about)) && I.KINDS.every(k => !/goddess|\bhens?\b|\bshed\b|\bbarn\b/i.test(k.about + k.empty)));
 check('moon pearl is a gift', I.get('moonPearl') && I.get('moonPearl').kind === 'gift');
 check('unknown id is null', I.get('nothing') === null);
 check('define refuses a taken id', I.define({ id: 'turnip', name: 'Again', kind: 'crop' }) === null);
@@ -62,7 +65,7 @@ check('EbbItems does not touch strips of the engine', I.STRIPS.items.src === 'ar
   const st = fresh(), day = '2026-10-22';
   check('fresh farm: bag lists nothing', B.list(st).length === 0 && B.total(st) === 0);
   const g0 = B.grouped(st);
-  check('grouped shows every kind with its empty line', g0.length === 5 && g0.every(g => g.items.length === 0 && g.kind.empty));
+  check('grouped shows every kind with its empty line', g0.length === 7 && g0.every(g => g.items.length === 0 && g.kind.empty));
   F.takeSeeds(st.farm, day); F.takeSeeds(st.farm, day); /* turnip, carrot */
   check('seeds from the shed show as seed items', B.count(st, 'seed-turnip') === 1 && B.count(st, 'seed-carrot') === 1 && B.count(st, 'seed-sunflower') === 0);
   const before = snap(st.farm);
@@ -75,18 +78,18 @@ check('EbbItems does not touch strips of the engine', I.STRIPS.items.src === 'ar
   st.farm.basket.turnip = 2; st.farm.basket.egg = 1; st.farm.basket.fishLarge = 1; st.farm.basket.mystery = 1;
   const l2 = B.list(st);
   const ids = l2.map(e => e.id);
-  check('basket crops and finds show, kinds in order', ids.join() === 'seed-turnip,seed-carrot,turnip,egg,fishLarge,mystery');
+  check('basket crops and finds show, kinds in order', ids.join() === 'seed-turnip,seed-carrot,turnip,fishLarge,mystery,egg');
   check('an unknown basket key is shown as a find, not dropped', l2.find(e => e.id === 'mystery')?.item.stub === true && l2.find(e => e.id === 'mystery')?.item.name === 'Mystery');
   check('total adds every count', B.total(st) === 3 + 1 + 2 + 1 + 1 + 1);
   st.pond.gift = true;
-  check('the moon pearl appears once the Goddess gave it', B.count(st, 'moonPearl') === 1 && B.list(st).some(e => e.id === 'moonPearl' && e.source === 'pond.gift'));
+  check('the moon pearl appears once the water gave it', B.count(st, 'moonPearl') === 1 && B.list(st).some(e => e.id === 'moonPearl' && e.source === 'pond.gift'));
   st.farm.basket.egg = 0; st.farm.seeds.carrot = 0;
   check('zero counts are not listed', !B.list(st).some(e => e.id === 'egg' || e.id === 'seed-carrot'));
   B.add(st, 'egg', 2); st.farm.basket.egg = 1;
   check('own and basket counts of the same id add up', B.count(st, 'egg') === 3 && B.list(st).find(e => e.id === 'egg')?.count === 3);
   check('take only takes the owned part', B.take(st, 'egg', 3) === false && B.take(st, 'egg', 2) === true && B.count(st, 'egg') === 1 && st.farm.basket.egg === 1);
   const g = B.grouped(st);
-  check('grouped keeps kind order and puts each item under its kind', g.map(x => x.kind.id).join() === 'seed,crop,find,gift,tool' && g[1].items.every(e => e.item.kind === 'crop') && g[3].items[0]?.id === 'moonPearl');
+  check('grouped keeps kind order and puts each item under its kind', g.map(x => x.kind.id).join() === 'seed,crop,find,pantry,dish,gift,tool' && g[1].items.every(e => e.item.kind === 'crop') && g[3].items[0]?.id === 'egg' && g[5].items[0]?.id === 'moonPearl');
   check('a farm without a seeds map is harmless', B.count({ farm: { basket: null } }, 'seed-turnip') === 0 && B.list({}).length === 0);
   const strange = fresh(); strange.farm.seeds.turnip = -2; strange.farm.basket.egg = 'two';
   check('bad farm numbers never show as negative or NaN', B.count(strange, 'seed-turnip') === 0 && B.count(strange, 'egg') === 0 && B.list(strange).length === 0);

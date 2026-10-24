@@ -198,17 +198,16 @@
   }
   function stand() { sitting = false; me.action = 'idle'; me.pose = null; if (standBack) { me.x = standBack.x; me.y = standBack.y; } }
 
+  /* the water (Merlion Park, Little Guilin): a quiet wish, no offering needed. One wish a day counts; the fifth day of
+   * wishing, the water gives her a moon pearl */
   function offer() {
-    var item = F.takeFromBasket(st.farm);
-    if (!item) { toast('The pond is quiet. Bring something from the farm.'); return; }
-    st.pond.offerings += 1; S.save(); updateHud();
     me.view = 'back'; work('none', 900, 'back');
     var pond = scene().spots.filter(function (sp) { return sp.kind === 'pond'; })[0], px = pond ? pond.at.x : 60, py = pond ? pond.at.y : 60;
-    fxHtml = PR.sparkles(px, py + 3, 12) + PR.goddess(px, py - 4); fxUntil = Date.now() + 4200;
-    var n = st.pond.offerings, line = 'Thank you for the ' + F.CROPS[item].name.toLowerCase() + '.';
-    if (n >= 5 && !st.pond.gift) { st.pond.gift = true; S.save(); line += ' Please keep this moon pearl.'; }
-    else if (n < 5) line += ' ' + (5 - n) + ' more and I will have something for you.';
-    setTimeout(function () { toast('The Goddess: ' + line, 4200); }, 600);
+    fxHtml = PR.sparkles(px, py + 3, 12); fxUntil = Date.now() + 3200;
+    var day = today(), line = 'A quiet wish, made. Breathe it out over the water.';
+    if (st.pond.lastWish !== day) { st.pond.lastWish = day; st.pond.offerings += 1; S.save(); }
+    if (st.pond.offerings >= 5 && !st.pond.gift) { st.pond.gift = true; S.save(); line = 'The water sparkles back at you. A moon pearl is in your bag.'; }
+    setTimeout(function () { toast(line, 4200); }, 600);
   }
 
   /* ---------- loop ---------- */

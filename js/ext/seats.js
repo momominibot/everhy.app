@@ -79,6 +79,13 @@
     if (!action.sec) { /* Just sit: no clock, no record, only a way up */
       close(); showUp(); api.toast(action.prompt, 3200); return;
     }
+    var dish = null;
+    if (action.uses === 'dish') { /* eating needs something she cooked */
+      var ready = root.EbbKitchen ? root.EbbKitchen.ready(api) : [];
+      if (!ready.length) { menu('Nothing cooked yet. Cook something at the hob or the oven first, then come and eat it here.'); return; }
+      dish = ready[0];
+      action = Object.assign({}, action, { prompt: 'Your ' + String(dish.name || 'meal').toLowerCase() + '. ' + action.prompt });
+    }
     var E = R(), t = E.timer(action.sec), startIso = new Date().toISOString();
     if (api.pose) api.pose(action.pose || null); /* a seated action strip when the set has one (sip), else the plain seat */
     var prompt = el('p', 'seat-prompt', action.prompt), clock = el('p', 'seat-clock'), count = el('p', 'seat-count');
@@ -107,6 +114,7 @@
       if (run) { run.stop(); run = null; }
       if (api.pose) api.pose(cur && cur.spot.seat && cur.spot.seat.pose || null); /* back to the seat's resting pose (in the bath, still soaking) */
       var rec = E.record(action, t, cur.scene, cur.spot.id, startIso, new Date().toISOString()), line;
+      if (dish && E.activeSec(t) >= 20 && root.EbbKitchen) root.EbbKitchen.eat(api, new Date().toISOString()); /* the dish is eaten once she has sat with it a while */
       if (rec) {
         rec.id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         var st = api.state(); if (!Array.isArray(st.observations)) st.observations = [];

@@ -25,7 +25,8 @@
       { id: 'oven', kind: 'bake', at: { x: 39, y: 55 }, stand: { x: 41, y: 63 }, label: 'Bake something', steam: { x: 40, y: 50 } },
       { id: 'thermomix', kind: 'blend', at: { x: 24, y: 50 }, stand: { x: 26, y: 69 }, label: 'Blend a smoothie', steam: { x: 24, y: 45 } },
       { id: 'basin', kind: 'wash', at: { x: 46, y: 41 }, stand: { x: 49, y: 58 }, label: 'Wash your hands, slowly', steam: { x: 44, y: 37 } },
-      { id: 'kettle', kind: 'tea', at: { x: 56, y: 32 }, stand: { x: 56, y: 60 }, label: 'Make a warm cup' } /* the pink teapot on the shelf */
+      { id: 'kettle', kind: 'tea', at: { x: 56, y: 32 }, stand: { x: 56, y: 60 }, label: 'Make a warm cup' }, /* the pink teapot on the shelf */
+      { id: 'dining', kind: 'seat', at: { x: 66, y: 72 }, stand: { x: 56, y: 88.5 }, label: 'Sit at the table' } /* the front chair: eat what she cooked, slowly (js/seats/rules.js) */
     ],
     start: { x: 28, y: 76 }
   });
@@ -195,7 +196,7 @@
       api.fx(root.EbbProps ? root.EbbProps.sparkles(spot.steam.x, spot.steam.y - 2, 8) : '', 1800);
       try { if (root.EbbLife) root.EbbLife.react('heart', 1600); } catch (e) { }
       ui.body.appendChild(p(S.done + ': ' + meal.name.toLowerCase() + '. ' + m.recipe.line, 'kitchen-cue'));
-      ui.body.appendChild(p('Used ' + r.usedText(meal.used, nameOf) + '. Log it as food if you like, or just enjoy it.', 'muted small'));
+      ui.body.appendChild(p('Used ' + r.usedText(meal.used, nameOf) + '. It waits in your bag, ready to eat slowly at the kitchen table. You can log it as food too.', 'muted small'));
       ui.buttons([{ id: 'kitchenLog', label: 'Log it as food', fn: function () { logFood(api, spot, meal); } }, { id: 'kitchenDone', label: 'Done', primary: true, fn: ui.close }]);
       api.toast(S.done + ' ' + meal.name.toLowerCase() + '.', 2600);
     }
@@ -246,5 +247,18 @@
 
   ['cook', 'bake', 'blend'].forEach(function (kind) { root.EbbGame.registerKind(kind, function (spot, api) { station(spot, api, kind); }); });
   root.EbbGame.registerKind('wash', wash);
-  root.EbbKitchen = { cooking: function () { return cooking; }, open: function () { return !!current; }, close: function () { if (current) current.close(); }, rules: R, steamFx: steamFx };
+  /* what she cooked waits in the bag as Ready to eat until she eats it slowly at the table */
+  function bagUp() {
+    var B = root.EbbBag, I = root.EbbItems; if (!B || !I || !R()) return;
+    R().RECIPES.forEach(function (r) { I.define({ id: 'dish-' + r.id, name: r.name, kind: 'dish', icon: null, source: 'kitchen.ready', about: r.line + ' Eat it slowly at the kitchen table.' }); });
+    B.registerBridge('kitchen.ready', function (st) {
+      var out = {}; if (!st || !st.kitchen || !Array.isArray(st.kitchen.meals)) return out;
+      st.kitchen.meals.forEach(function (m) { if (m && !m.eaten && m.dish) out['dish-' + m.dish] = (out['dish-' + m.dish] || 0) + 1; });
+      return out;
+    });
+  }
+  if (root.EbbGame._ready) bagUp(); else doc.addEventListener('ebb:ready', bagUp);
+  root.EbbKitchen = { cooking: function () { return cooking; }, open: function () { return !!current; }, close: function () { if (current) current.close(); }, rules: R, steamFx: steamFx,
+    /* what she cooked and has not eaten yet, oldest first; eat() marks the oldest eaten (js/ext/seats.js, the table) */
+    ready: function (api) { return R().ready(data(api)); }, eat: function (api, at) { var m = R().eat(data(api), at); if (m) api.save(); return m; } };
 })(typeof window !== 'undefined' ? window : globalThis);
