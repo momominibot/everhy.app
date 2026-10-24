@@ -180,3 +180,14 @@ asked for). Art waits on the image key: run `python3 tools/run_batch.py tools/jo
 OK), slice with `tools/slice_sheet.py <sheet> art/chars/genz/soak_tube --count 2 --ref art/chars/genz/soak.webp --match height`,
 add soak_tube to js/ebb-clay-sets.js. Tudung outfits keep their own clothes (no tube). A local pixel repaint was tried and
 dropped: it looked unclothed, not a towel.
+
+## 24 Oct, morning (main, check_all ALL GREEN incl. the new smoothness gate)
+- Spin: api.spin(onHalf) in js/ebb-game.js (wardrobe, hot spring, bath). Towel tube art waits on the image key
+  (tools/jobs_soak_tube.json); key file unchanged since 23 Oct 15:17 and still 401 (one guarded run tried on Jamie's word).
+- Smoothness: tools/perf.py (Chromium/WebKit, --warm, --gate); plates warmed during fades; tiny pre-blurred backdrops
+  (tools/backdrops.py; rerun after any new plate). Test browsers live in ~/Library/Application Support/ms-playwright
+  (Library/Caches is wiped nightly).
+- Food loop: docs/FOOD-LOOP.md. Provision stall = hawker spot 'provisions' (js/ext/grocer.js); kitchen 'dining' seat eats
+  dishes (seats action 'eat'); pond = quiet wish.
+NEXT: parallax/shader water (offered), Erin voice for bath and eating (one TTS run on OK), standing fishing pose art and
+night plates via renders once the key is fixed, a rules page from the playbook (palette, easing).
