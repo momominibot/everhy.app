@@ -25,6 +25,7 @@ def seg_dist(P, a, b):
     ab = b - a; t = np.clip(((P - a) @ ab) / max(ab @ ab, 1e-12), 0, 1); return np.linalg.norm(P - (a + t[:, None] * ab), axis=1)
 B = {b.name: (np.array(aw @ b.head_local), np.array(aw @ b.tail_local)) for b in arm.data.bones}
 unknown = np.zeros(len(V), bool)
+torso_cut = {}
 for side in ('Left', 'Right'):
     chain = [side + 'Arm', side + 'ForeArm']
     arm_w = sum(W[:, idx[n]] for n in chain + [side + 'Hand'] if n in idx)
@@ -32,6 +33,15 @@ for side in ('Left', 'Right'):
     d = np.minimum.reduce([seg_dist(V, *B[n]) for n in chain + [side + 'Hand'] if n in B])
     # the loose sleeve: arm-weighted vertices standing well off the bones
     unknown |= (arm_w > 0.05) & (d > GAP)
+    # EveRhy (chibi, bind pose with arms out to the sides): cut at the armpit seam. Anything nearer her middle than the
+    # shoulder joint is torso and must not follow the arm, however close it sits to the arm bone. TORSO_CUT_M sets how far
+    # inside the joint the cut sits (0 = at the joint).
+    if os.environ.get('TORSO_CUT') == '1' and 'Hips' in B and side + 'Arm' in B:
+        mid = B['Hips'][0][0]; root = abs(B[side + 'Arm'][0][0] - mid); lat = np.abs(V[:, 0] - mid)
+        on_side = np.sign(V[:, 0] - mid) == np.sign(B[side + 'Arm'][0][0] - mid)
+        torso = on_side & (lat < root - float(os.environ.get('TORSO_CUT_M', '0.0'))) & (V[:, 2] < B[side + 'Arm'][0][2] + 0.02)
+        print(side, 'torso cut vertices', int((torso & (arm_w > 0.02)).sum()))
+        unknown |= torso & (arm_w > 0.02); torso_cut[side] = torso
     # the cuff ring around the wrist, but not the hand itself
     wrist = B[side + 'Hand'][0]; hand_dir = B[side + 'Hand'][1] - wrist; hand_dir /= max(np.linalg.norm(hand_dir), 1e-9)
     along = (V - wrist) @ hand_dir
@@ -72,6 +82,15 @@ if os.environ.get('SKIRT') == '1' and 'Hips' in idx:
     sk = (V[:, 2] < hz + 0.01) & (V[:, 2] > kz - 0.02) & (leg_w > 0.3) & (dleg > float(os.environ.get('SKIRT_GAP', '0.035')))
     keep = Wn[sk] * 0.25; keep[:, idx['Hips']] += 0.75 * 1.0
     Wn[sk] = keep; print('skirt vertices', int(sk.sum()))
+# EveRhy: on the torso side of the seam the smooth fill still blends in some arm weight from the arm root, and that
+# gradient is what stretches her top. There, drop the arm bones outright; chest and shoulder carry the vertex.
+for side, torso in torso_cut.items():
+    for n in (side + 'Arm', side + 'ForeArm', side + 'Hand'):
+        if n in idx: Wn[torso, idx[n]] = 0
+    tot = Wn[torso].sum(1); empty = tot < 1e-6
+    rows = np.nonzero(torso)[0]
+    if 'Spine02' in idx: Wn[rows[empty], idx['Spine02']] = 1.0
+    print(side, 'arm weight removed on', len(rows), 'torso vertices')
 # at most four bones per vertex, renormalised
 order = np.argsort(-Wn, axis=1); keep = np.zeros_like(Wn, bool); np.put_along_axis(keep, order[:, :4], True, axis=1)
 Wn = np.where(keep, Wn, 0); Wn /= np.maximum(Wn.sum(1, keepdims=True), 1e-9)
