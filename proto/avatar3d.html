@@ -37,7 +37,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const FLOOR = [[50, 42], [97, 68], [50, 93], [2, 67]], DEPTH = [44, 0.19, 93, 0.255], ZOOM = 2.2, TILT = 0.22; /* positive: the top of her tips towards you, so you look down on her like the room */
 const scaleAt = y => DEPTH[1] + (DEPTH[3] - DEPTH[1]) * Math.max(0, Math.min(1, (y - DEPTH[0]) / (DEPTH[2] - DEPTH[0])));
 const inside = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if ((yi > p.y) !== (yj > p.y) && p.x < (xj - xi) * (p.y - yi) / (yj - yi) + xi) c = !c; } return c; };
-const q = new URLSearchParams(location.search), SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_tee_moves') + '/animation_glb_url.glb';
+const q = new URLSearchParams(location.search), SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_white_moves') + '/animation_glb_url.glb';
 
 const view = document.getElementById('view'), stage = document.getElementById('stage'), note = document.getElementById('note');
 const me = { x: 40, y: 70, yaw: 0, target: null, act: 'idle' };
@@ -51,7 +51,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(0, 100, 0, -100, 0.1, 1000); camera.position.z = 500;
 /* light like the painting: a soft key from the window side (upper left) and an ambient tinted by the floor around her,
  * sampled from the plate itself (the Pillars of Eternity trick), so she picks up the room's warm colour */
-const AMB = +(q.get('amb') || 2.1), KEY = +(q.get('key') || 1.3);
+const AMB = +(q.get('amb') || 2.45), KEY = +(q.get('key') || 1.45);
 const amb = new THREE.AmbientLight(0xffffff, AMB); scene.add(amb);
 const sun = new THREE.DirectionalLight(0xfff0e0, KEY); sun.position.set(-1.2, 1.6, 1.4); scene.add(sun);
 const sampler = document.createElement('canvas'); sampler.width = sampler.height = 50; const sctx = sampler.getContext('2d', { willReadFrequently: true });
@@ -94,6 +94,26 @@ const soles = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.PlaneGeometr
 const holder = new THREE.Group(), tilt = new THREE.Group(), turn = new THREE.Group();
 holder.add(tilt); tilt.add(turn); tilt.rotation.x = TILT; scene.add(holder);
 let mixer = null, clips = {}, current = null, unitH = 1, model = null, feet = [], footClear = 0;
+/* Relax her pose on top of any clip: the stock moves are made for adult proportions, so on her chibi frame the shoulders
+ * ride up and the arms hover out (it reads as stiff and breathless). Each frame, after the clip, drop the shoulders and
+ * bring the upper arms in towards her body, mirrored left and right. Full on while she stands or walks, eased off for
+ * the wave and the sit, whose arms are part of the move. */
+const RELAX = { shoulder: +(q.get('sh') ?? 20) * Math.PI / 180, arm: +(q.get('arm') ?? -14) * Math.PI / 180, fore: +(q.get('fore') ?? 4) * Math.PI / 180, swing: +(q.get('swing') ?? -14) * Math.PI / 180 };
+let relaxW = 1, bones = {};
+const q1 = new THREE.Quaternion(), q2 = new THREE.Quaternion(), qw = new THREE.Quaternion(), fwd = new THREE.Vector3(), side = new THREE.Vector3();
+function bendWorld(bone, axis, angle) { if (!bone || !angle) return; bone.parent.updateWorldMatrix(true, false); bone.parent.getWorldQuaternion(q1);
+  qw.setFromAxisAngle(axis, angle); q2.copy(q1).invert().multiply(qw).multiply(q1); bone.quaternion.premultiply(q2); bone.updateMatrixWorld(true); }
+function relax(dt) {
+  const goal = me.act === 'idle' || me.act === 'walk' ? 1 : 0; relaxW += (goal - relaxW) * Math.min(1, dt * 6);
+  if (relaxW < 0.01) return;
+  turn.getWorldQuaternion(q1); fwd.set(0, 0, 1).applyQuaternion(q1).normalize(); /* her forward axis: rotating about it swings arms in and out */
+  side.set(1, 0, 0).applyQuaternion(q1).normalize(); /* her side axis: rotating about it swings arms forward */
+  const w = relaxW;
+  bendWorld(bones.LeftShoulder, fwd, -RELAX.shoulder * w); bendWorld(bones.RightShoulder, fwd, RELAX.shoulder * w);
+  bendWorld(bones.LeftArm, fwd, -RELAX.arm * w); bendWorld(bones.RightArm, fwd, RELAX.arm * w);
+  bendWorld(bones.LeftArm, side, RELAX.swing * w); bendWorld(bones.RightArm, side, RELAX.swing * w);
+  bendWorld(bones.LeftForeArm, fwd, -RELAX.fore * w); bendWorld(bones.RightForeArm, fwd, RELAX.fore * w);
+}
 const tmp = new THREE.Vector3();
 function lowestFoot() { let lo = Infinity; for (const b of feet) { b.getWorldPosition(tmp); turn.worldToLocal(tmp); lo = Math.min(lo, tmp.y); } return lo; }
 
@@ -108,7 +128,8 @@ new GLTFLoader().load(SRC, gltf => {
   unitH = size.y; m.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
   /* soft diffuse shading over Meshy's clay texture, lit like the room */
   m.traverse(o => { if (o.isMesh) { o.frustumCulled = false; const map = o.material && o.material.map; o.material = graded(new THREE.MeshLambertMaterial({ map })); }
-    if (/^(Left|Right)(ToeBase|Foot)$/.test(o.name)) feet.push(o); });
+    if (/^(Left|Right)(ToeBase|Foot)$/.test(o.name)) feet.push(o);
+    if (/^(Left|Right)(Shoulder|Arm|ForeArm|Hand)$/.test(o.name)) bones[o.name] = o; });
   turn.add(m); model = m; turn.updateMatrixWorld(true); footClear = lowestFoot();
   mixer = new THREE.AnimationMixer(m);
   const names = gltf.animations.map(a => a.name);
@@ -182,7 +203,7 @@ function frame(t) {
   turn.rotation.y = me.yaw;
   shadow.position.set(me.x, -me.y + 0.3 * s, me.y - 1); shadow.scale.set(46 * s, 13 * s, 1);
   if ((tick = (tick + 1) % 10) === 0) floorTint.lerp(sampleFloor(me.x, me.y), 0.4); /* sample the floor every tenth frame, plenty for a slow blend */ amb.color.setRGB(1, 1, 1).lerp(floorTint, 0.35);
-  if (mixer) mixer.update(dt);
+  if (mixer) { mixer.update(dt); if (model) relax(dt); }
   /* keep her soles on the floor whatever the clip does (not while seated) */
   if (model && feet.length && me.act !== 'sit') { turn.updateMatrixWorld(true); model.position.y += footClear - lowestFoot(); }
   /* contact shadows under the toes, fading as a foot lifts */
@@ -193,7 +214,7 @@ function frame(t) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__t = { shadow, holder, camera, scene, me, get model() { return model; } };
+window.__t = { shadow, holder, camera, scene, me, turn, bones, get model() { return model; } };
 </script>
 </body>
 </html>

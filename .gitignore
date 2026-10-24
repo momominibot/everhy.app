@@ -8,3 +8,4 @@ art/meshy/*/*.glb
 !art/meshy/avatar_light_moves/*.glb
 !art/meshy/avatar_light_idles/*.glb
 !art/meshy/avatar_tee_moves/*.glb
+!art/meshy/avatar_white_moves/*.glb

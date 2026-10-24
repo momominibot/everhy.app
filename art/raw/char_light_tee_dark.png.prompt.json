@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Same character turnaround sheet as the reference: front view, side view and back view of the same cute girl, same face, same light warm beige skin, same long wavy dark brown hair with small pink clips, same smooth matte clay style and proportions. Change only her clothes to a cool outfit for hot weather: a soft pastel pink short-sleeved cotton T-shirt with a tiny white flower on the chest, light blue denim shorts ending just above the knee, white ankle socks and the same cream sneakers. Bare arms and lower legs. Stand each view straight with arms held slightly away from the body. Flat pure green #00FF00 background, even soft light, no shadow, no text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz_light.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 26.9,
+ "bytes": 1974298
+}

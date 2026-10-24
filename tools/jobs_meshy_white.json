@@ -1,0 +1,8 @@
+[
+ {"id": "avatar_white", "endpoint": "multi-image-to-3d", "body": {
+   "image_urls": ["@img:art/meshy/white_front.png", "@img:art/meshy/white_side.png", "@img:art/meshy/white_back.png"],
+   "ai_model": "meshy-7.1", "pose_mode": "a-pose", "should_remesh": true, "topology": "triangle",
+   "target_polycount": 30000, "should_texture": true, "texture_resolution": "2k", "target_formats": ["glb"]}},
+ {"id": "avatar_white_rig", "endpoint": "rigging", "body": {"input_task_id": "@task:avatar_white", "height_meters": 1.2}},
+ {"id": "avatar_white_moves", "endpoint": "animations", "body": {"rig_task_id": "@task:avatar_white_rig", "action_ids": [247, 1, 290, 363]}}
+]
