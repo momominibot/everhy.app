@@ -1,0 +1,18 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Same character turnaround sheet as the reference: front, side and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips falling behind her shoulders, same smooth matte clay style and proportions. Keep her skin exactly as light as in the reference: light warm beige, not tan. Relaxed posture, shoulders down, arms loose at her sides with a small gap. Change her clothes: a fitted sage green ribbed sleeveless top, high-waisted cream linen wide-leg trousers to the ankle, white sneakers. Flat pure green #00FF00 background, soft even light, no shadow, no text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz_light.png"
+ ],
+ "usage": {
+  "input_images": 1,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 36.5,
+ "bytes": 1964785
+}

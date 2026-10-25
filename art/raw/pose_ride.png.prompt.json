@@ -1,0 +1,19 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props. She sits upright on an invisible bench facing front, knees together, feet flat on the floor, both hands resting loosely in her lap. Frame 1: eyes open, a soft smile. Frame 2: eyes gently closed, calm, shoulders relaxed.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/char_genz.png",
+  "/Users/michiyomimi/Doubao/chats/2026-10-16/new-chat-12/ebb/art/raw/genz_sit_ref.png"
+ ],
+ "usage": {
+  "input_images": 2,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 51.0,
+ "bytes": 1993761
+}

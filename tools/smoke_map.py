@@ -27,9 +27,9 @@ with sync_playwright() as p:
     errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' and '404' not in m.text else None)
-    def just_arrive():  # transit asks how she gets to an away place; Just arrive is the plain map travel this smoke tests
+    def just_arrive():  # transit asks how she gets to an away place; Teleport is the plain map travel this smoke tests
         if pg.locator('.transit-wrap').count():
-            pg.eval_on_selector('.transit-card[data-choice="walk"]', 'e => e.click()')
+            pg.eval_on_selector('.transit-card[data-choice="teleport"]', 'e => e.click()')
     pg.goto(base)
     pg.evaluate('localStorage.clear()')
     pg.reload()

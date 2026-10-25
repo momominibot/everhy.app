@@ -10,7 +10,7 @@
   if (!W) return;
 
   /* ---------- the two carriages (Seedream renders, 768x1344: x 0..100 across, y 0..175 down, read on a 5% grid) ---------- */
-  var SEAT = 'Take a seat';
+  var SEAT = 'Take a seat'; /* one sparkle per carriage (the middle seat): every seat still works, but a row of diamonds read as clutter (Jamie, 25 Oct); the rest are quiet */
   W.register('train', { /* an MRT carriage: bench seats along the back under the windows, three poles, open floor, the doors at the bottom */
     name: 'MRT train', plate: 'art/plates/train.webp', aspect: [4, 7], indoor: true, sound: 'room', surface: 'tile', depth: [86, 0.22, 131, 0.32],
     lamps: [{ x: 50, y: 14, r: 60 }], windows: [{ x: 13, y: 58, rx: 11, ry: 12 }, { x: 44, y: 58, rx: 11, ry: 12 }, { x: 72, y: 58, rx: 9, ry: 12 }, { x: 93, y: 58, rx: 6, ry: 12 }],
@@ -18,12 +18,12 @@
     solids: [[16, 84, 22, 93], [62, 86, 68, 96], [91, 90, 98, 100]], /* the three pole feet */
     doors: [{ id: 'exit', rect: [20, 126, 80, 140], to: 'merlion', label: 'Step off at your stop' }],
     spots: [
-      { id: 'seat1', kind: 'ride', at: { x: 9, y: 82 }, stand: { x: 9, y: 94 }, label: SEAT },
-      { id: 'seat2', kind: 'ride', at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
-      { id: 'seat3', kind: 'ride', at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
-      { id: 'seat4', kind: 'ride', at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
-      { id: 'seat5', kind: 'ride', at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
-      { id: 'seat6', kind: 'ride', at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
+      { id: 'seat1', kind: 'ride', sit: { x: 8, y: 90.3 }, quiet: true, at: { x: 9, y: 82 }, stand: { x: 9, y: 94 }, label: SEAT },
+      { id: 'seat2', kind: 'ride', sit: { x: 27.5, y: 91.8 }, quiet: true, at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
+      { id: 'seat3', kind: 'ride', sit: { x: 46, y: 92.6 }, at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
+      { id: 'seat4', kind: 'ride', sit: { x: 56.5, y: 93.4 }, quiet: true, at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
+      { id: 'seat5', kind: 'ride', sit: { x: 76.5, y: 94.2 }, quiet: true, at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
+      { id: 'seat6', kind: 'ride', sit: { x: 89, y: 95.4 }, quiet: true, at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
     ],
     start: { x: 50, y: 112 }
   });
@@ -37,13 +37,7 @@
       { id: 'stairsRight', rect: [54, 150, 72, 163], to: 'hawker', label: 'Down the stairs to get off' }
     ],
     spots: [
-      { id: 'bench', kind: 'ride', at: { x: 50, y: 87 }, stand: { x: 50, y: 96 }, label: SEAT },
-      { id: 'leftFar', kind: 'ride', at: { x: 24, y: 93 }, stand: { x: 36, y: 97 }, label: SEAT },
-      { id: 'leftMid', kind: 'ride', at: { x: 19, y: 106 }, stand: { x: 35, y: 108 }, label: SEAT },
-      { id: 'leftNear', kind: 'ride', at: { x: 14, y: 121 }, stand: { x: 34, y: 122 }, label: SEAT },
-      { id: 'rightFar', kind: 'ride', at: { x: 77, y: 93 }, stand: { x: 64, y: 97 }, label: SEAT },
-      { id: 'rightMid', kind: 'ride', at: { x: 82, y: 106 }, stand: { x: 65, y: 108 }, label: SEAT },
-      { id: 'rightNear', kind: 'ride', at: { x: 86, y: 121 }, stand: { x: 66, y: 122 }, label: SEAT }
+      { id: 'bench', kind: 'ride', sit: { x: 50, y: 97 }, at: { x: 50, y: 87 }, stand: { x: 50, y: 99 }, label: SEAT } /* the back bench, the one seat in clear view: each side seat is half hidden behind the next one and the handrails, so she could only float over them (Jamie, 25 Oct) */
     ],
     start: { x: 40, y: 145 }
   });
@@ -89,8 +83,11 @@
     var first = sh.querySelector('button:not([disabled])'); if (first) first.focus();
     return close;
   }
-  function card(label, note, fn, id) {
-    var b = el('button', 'transit-card'); b.type = 'button'; b.dataset.choice = id;
+  /* the two ways to ride as pictures (Seedream renders, art/ui/ride-*.webp), Teleport as a plain row under them */
+  var PICS = { train: 'art/ui/ride-mrt.webp', bus: 'art/ui/ride-bus.webp' };
+  function card(label, note, fn, id, pic) {
+    var b = el('button', 'transit-card' + (pic ? ' pic' : '')); b.type = 'button'; b.dataset.choice = id;
+    if (pic) { var im = el('img', 'transit-pic'); im.src = pic; im.alt = ''; im.decoding = 'async'; b.appendChild(im); }
     var t = el('span', 'cw-text'); t.appendChild(el('b', '', label)); if (note) t.appendChild(el('small', '', note)); b.appendChild(t);
     b.addEventListener('click', fn); return b;
   }
@@ -116,13 +113,14 @@
     if (close) close();
     sheet('How will you get there?', function (body, done) {
       body.appendChild(el('p', 'muted', 'To ' + dest.label + '. The ride is a quiet moment of its own, if you want one.'));
-      var cards = el('div', 'transit-cards');
-      Object.keys(r.MODES).forEach(function (m) { cards.appendChild(card(r.MODES[m].label, r.MODES[m].note, function () { done(); board(m, dest); }, m)); });
-      cards.appendChild(card('Just arrive', 'Straight there, as before', function () {
+      var cards = el('div', 'transit-cards'), rides = el('div', 'transit-rides');
+      Object.keys(r.MODES).forEach(function (m) { rides.appendChild(card(r.MODES[m].label, r.MODES[m].note, function () { done(); board(m, dest); }, m, PICS[m])); });
+      cards.appendChild(rides);
+      cards.appendChild(card('Teleport', 'Straight there, in a blink', function () {
         done(); bypass = true;
         try { if (root.EbbMap && root.EbbMap.go) root.EbbMap.go(pin); else fade(function () { gameApi.enter(pin.scene, dest.arrive || undefined); gameApi.toast(sceneName(pin.scene), 1400); }); }
         finally { bypass = false; }
-      }, 'walk'));
+      }, 'teleport'));
       body.appendChild(cards);
     }, [{ label: 'Not now', id: 'notnow', fn: function (b, done) { done(); } }]);
     return true;
@@ -192,7 +190,7 @@
     var r = R(); if (!r) return;
     api = api || a;
     if (openSheet) openSheet();
-    a.sit({ x: spot.at.x, y: spot.at.y + 0.2 });
+    a.sit(spot.sit || { x: spot.at.x, y: spot.at.y + 0.2 }, 'ride'); /* legs down, hands in her lap (art/chars/genz/ride.webp), sat on the cushion; not the cross-legged plain seat, which floated over the bench (Jamie, 25 Oct) */
     seated = { spot: spot, scene: a.scene() };
     paintBar();
     var mode = a.scene() === 'bus' ? 'bus' : 'train';

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Headless phone smoke (390x844) for transit. Serves the repo on a spare port. Drives the map to Merlion Park by MRT,
 sits and breathes for a few seconds, reloads mid-ride (still on board, Arrive still works), arrives, takes the bus
-to the hawker centre and gets off down the stairs, checks "Just arrive" and that leaving by another route forgets the
+to the hawker centre and gets off down the stairs, checks Teleport and that leaving by another route forgets the
 trip, and walks every seat and exit of both carriages. Zero console errors. Nothing leaves the machine.
 Run: python3 tools/smoke_transit.py [--shots DIR]"""
 import functools, http.server, socket, sys, threading
@@ -89,6 +89,10 @@ with sync_playwright() as p:
         print('DEBUG', pg.evaluate("() => ({ scene: EbbGame.api.scene(), transit: !!window.EbbTransit, rules: !!window.EbbTransitRules, map: !!document.querySelector('.map-wrap'), sheets: [...document.querySelectorAll('.sheet-wrap')].map(e => e.className), trip: (EbbGame.state().transit || {}).trip || null, offer: window.EbbTransitRules && EbbTransitRules.offerFor(EbbMap.pin('merlion'), EbbWorld.SCENES, EbbGame.api.scene()) })"), 'errors', errs); raise
     check('the choice sheet asks the question', pg.evaluate("document.querySelector('.transit-sheet h2').textContent") == 'How will you get there?')
     check('three ways to go', pg.evaluate("document.querySelectorAll('.transit-card').length") == 3)
+    pg.wait_for_function("[...document.querySelectorAll('.transit-pic')].every(i => i.complete)", timeout=5000)
+    check('the MRT and the bus are picture tiles side by side', pg.evaluate("[...document.querySelectorAll('.transit-rides .transit-card.pic')].map(b => b.dataset.choice + ':' + (b.querySelector('img').naturalWidth > 0)).join()") == 'train:true,bus:true'
+          and pg.evaluate("(() => { const [a, b] = [...document.querySelectorAll('.transit-rides .transit-card')].map(e => e.getBoundingClientRect()); return Math.abs(a.top - b.top) < 1 && a.right <= b.left; })()"))
+    check('the last way is Teleport', pg.evaluate("document.querySelector('.transit-card[data-choice=\"teleport\"] b').textContent") == 'Teleport')
     check('the map closed first', pg.evaluate("!document.querySelector('.map-wrap')"))
     check('still on the farm until she chooses', scene(pg) == 'farm' and trip(pg) is None)
     shot(pg, 'transit_choice')
@@ -105,6 +109,7 @@ with sync_playwright() as p:
     t = trip(pg)
     check('on the train with the trip remembered', scene(pg) == 'train' and t and t['to'] == 'merlion' and t['mode'] == 'train' and t['arrive'] is None and t['startedAt'] > 0)
     check('the place reads MRT train', pg.evaluate("document.getElementById('place').textContent") == 'MRT train')
+    check('one sparkle in the carriage, not one per seat', pg.evaluate("document.querySelectorAll('.sparkle').length") == 1)
     pg.wait_for_selector('#transitArrive', state='visible', timeout=3000)
     check('Arrive names her stop', pg.evaluate("document.getElementById('transitArrive').textContent") == 'Arrive at Merlion Park')
     check('Get up waits until she sits', pg.evaluate("document.getElementById('transitUp').hidden"))
@@ -182,14 +187,15 @@ with sync_playwright() as p:
     t = trip(pg)
     check('on the bus, trip to the hawker centre', scene(pg) == 'bus' and t and t['mode'] == 'bus' and t['to'] == 'hawker')
     check('the place reads Bus', pg.evaluate("document.getElementById('place').textContent") == 'Bus')
+    check('one sparkle on the upper deck too', pg.evaluate("document.querySelectorAll('.sparkle').length") == 1)
     pg.wait_for_timeout(700); shot(pg, 'transit_bus')
     stairs = pg.evaluate("() => { const d = EbbWorld.SCENES.bus.doors[1]; return { x: (d.rect[0] + d.rect[2]) / 2, y: (d.rect[1] + d.rect[3]) / 2 }; }")
     pg.evaluate("q => EbbGame.walkTo(q)", stairs); wait_scene(pg, 'hawker'); pg.wait_for_function("() => !(EbbGame.state().transit || {}).trip", timeout=3000)
     check('down the stairs she arrives at the hawker centre', scene(pg) == 'hawker' and trip(pg) is None and pg.evaluate("EbbWorld.walkable('hawker', EbbGame.me())"))
 
-    # Just arrive is the old path; leaving by another route forgets the trip
-    go_map(pg, 'waterfall'); click(pg, '.transit-card[data-choice="walk"]'); wait_scene(pg, 'waterfall')
-    check('Just arrive goes straight there', scene(pg) == 'waterfall' and trip(pg) is None)
+    # Teleport is the old straight-there path; leaving by another route forgets the trip
+    go_map(pg, 'waterfall'); click(pg, '.transit-card[data-choice="teleport"]'); wait_scene(pg, 'waterfall')
+    check('Teleport goes straight there', scene(pg) == 'waterfall' and trip(pg) is None)
     go_map(pg, 'pier'); click(pg, '.transit-card[data-choice="train"]'); wait_scene(pg, 'train')
     t = trip(pg); fishing = pg.evaluate("() => EbbWorld.SCENES.jetty.spots.find(s => s.id === 'fishing').stand")
     check('a spot pin remembers its stand point', t and t['to'] == 'jetty' and t['arrive'] == fishing)

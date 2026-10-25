@@ -41,7 +41,7 @@
       var sc = W.SCENES[id]; if (!sc || !sc.spots) return '';
       var tall = W.units(sc) > 110, s = tall ? 1 : 0.8, lift = tall ? 4.5 : 3.5, out = '';
       sc.spots.forEach(function (sp, i) {
-        if (sp.hidden || (near && near.spot === sp)) return;
+        if (sp.hidden || sp.quiet || (near && near.spot === sp)) return; /* quiet: a spot that works but shows no diamond (the carriages keep one per row of seats) */
         if (sp.topic && restsToday(api.state(), sp.topic, api.today())) return; /* today's entry from here is in and paid */
         out += star(sp.at.x, sp.at.y - lift, s, i);
       });
