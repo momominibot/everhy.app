@@ -29,10 +29,18 @@
   }
   var STAGE_FRAME = { 0: 0, 1: 1, 2: 2, 3: 3, ripe: 4 };
 
-  /* a bed painted into the farm plate: only what changes is drawn over it (grass tufts, wet soil, the crops) */
+  /* a garden bed's weeds before it is hoed: one rendered patch per bed (art/props/weeds.webp, tools/weeds.py) covering its whole soil,
+     drawn in a cell w*1.15 wide with its bottom at y + w*0.17; frames follow the garden's beds, a bed elsewhere borrows the nearest size */
+  var WEED_FRAME = { '35,125': 0, '65,125': 1, '31,139': 2, '67,139': 3 };
+  function weeds(x, y, w) {
+    if (!SP.weeds) return '';
+    var f = WEED_FRAME[x + ',' + y]; if (f === undefined) f = w < 28 ? 0 : 2;
+    return sprite('weeds', f, x, y + w * 0.17, w * 1.15, 'weeds');
+  }
+  /* a bed painted into the farm plate: only what changes is drawn over it (the weeds, wet soil, the crops) */
   function paintedBed(b, x, y, w, today, near) {
     var out = '', wet = b.state === 'planted' && F.wateredToday(b, today), h = w * 0.42;
-    if (b.state === 'grass') for (var i = 0; i < 6; i++) out += '<path d="M' + (x - w * 0.36 + i * w * 0.145) + ' ' + (y + 1.5) + ' l0.9 -3.2 l0.9 3.2 M' + (x - w * 0.33 + i * w * 0.145) + ' ' + (y + 2) + ' l0.7 -2.4 l0.7 2.4" fill="#8fb46f"/>';
+    if (b.state === 'grass') out += weeds(x, y, w);
     if (wet) out += '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (w * 0.4) + '" ry="' + (h * 0.38) + '" fill="rgba(70,40,25,0.42)"/>';
     if (b.state === 'planted' && SP[b.crop]) {
       var m = SP[b.crop], ch = w * 0.34;

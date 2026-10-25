@@ -119,4 +119,22 @@ check('plan avoids leaving the floor', (() => { const s = W.SCENES.waterfall, p 
   check('corrupt save falls back to a fresh game', S.load().scene === 'bedroom');
 })();
 
+/* garden weeds: a grass bed draws its own rendered patch over the whole soil (art/props/weeds.webp from tools/weeds.py), never SVG strokes */
+(function () {
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', 'ebb-props.js'), 'utf8'), ctx, { filename: 'ebb-props.js' });
+  const PR = ctx.EbbProps, SPW = ctx.EbbPropSprites.weeds, beds = W.SCENES.farm.beds.filter(b => b.w);
+  const meta = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'art/props/weeds.json'), 'utf8'));
+  check('the weeds strip ships with one frame per painted garden bed', fs.existsSync(path.join(__dirname, '..', 'art/props/weeds.webp')) && SPW && meta.frames === beds.length && SPW.frames === beds.length);
+  const src = fs.readFileSync(path.join(__dirname, 'weeds.py'), 'utf8');
+  check('tools/weeds.py composes patches for exactly the garden beds, in world order', JSON.stringify([...src.matchAll(/\(\((\d+), (\d+), (\d+)\), \[/g)].map(m => m.slice(1).map(Number))) === JSON.stringify(beds.map(b => [b.x, b.y, b.w])));
+  beds.forEach((b, i) => {
+    const out = PR.paintedBed({ state: 'grass', crop: null, watered: [] }, b.x, b.y, b.w, '2026-10-25', false);
+    const cw = b.w * 1.15, ch = cw * SPW.h / SPW.w, num = re => Number((out.match(re) || [])[1]);
+    check(`bed ${i} weeds: its own frame, in the cell the composer used, no SVG strokes`, /weeds\.webp/.test(out) && !/<path/.test(out) &&
+      new RegExp('viewBox="' + i * SPW.w + ' 0 ').test(out) && Math.abs(num(/ x="([\d.]+)"/) - (b.x - cw / 2)) < 0.02 &&
+      Math.abs(num(/ width="([\d.]+)"/) - cw) < 0.02 && Math.abs(num(/ y="([\d.]+)"/) + ch - (b.y + b.w * 0.17)) < 0.03);
+    check(`bed ${i}: hoed or planted, the weeds are gone`, ['tilled', 'planted'].every(state => !/weeds\.webp/.test(PR.paintedBed({ state, crop: 'carrot', watered: [] }, b.x, b.y, b.w, '2026-10-25', false))));
+  });
+})();
+
 process.on('beforeExit', () => { console.log(`${pass} passed, ${fail} failed`); process.exitCode = fail ? 1 : 0; });

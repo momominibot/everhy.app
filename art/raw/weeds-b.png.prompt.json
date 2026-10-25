@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A 3 by 3 grid of nine separate small weed tufts, evenly spaced, none touching, each whole in its cell: leafy chickweed sprigs, broad plantain leaf rosettes, thin wild grass clumps, small creeping vine sprigs. Seen from a slightly raised three-quarter angle, each tuft rooted at its base. 3D chibi clay-toy art style, soft matte clay texture, rounded leaves, fresh soft greens, cosy farm game prop. Solid flat pure magenta background #FF00FF, no soil, no pots, no shadows, no text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 5102,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 66.1,
+ "bytes": 2038266
+}
