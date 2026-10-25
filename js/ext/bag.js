@@ -62,13 +62,15 @@
     function grid() {
       view = { kind: 'grid', id: null };
       var st = a.state(), groups = B().grouped(st), n = B().total(st);
-      totalEl.textContent = n ? n + (n === 1 ? ' thing' : ' things') : 'Nothing yet';
+      totalEl.textContent = n ? n + (n === 1 ? ' thing' : ' things') : '';
       body.innerHTML = '';
+      /* short on purpose (Jamie, 25 Oct: too wordy): only the kinds that hold something, no explainer under each heading;
+       * an item's own line shows when it is tapped. An empty bag is one line. */
+      if (!n) body.appendChild(el('p', 'muted bag-empty', 'Your bag is empty.'));
       groups.forEach(function (g) {
+        if (!g.items.length) return;
         var sec = el('section', 'bag-kind'); sec.dataset.kind = g.kind.id;
         var h = el('h3', null, g.kind.label); sec.appendChild(h);
-        if (!g.items.length) { sec.appendChild(el('p', 'muted bag-empty', g.kind.empty)); body.appendChild(sec); return; }
-        sec.appendChild(el('p', 'muted bag-about', g.kind.about));
         var list = el('div', 'bag-grid'); list.setAttribute('role', 'list');
         g.items.forEach(function (e) {
           var b = el('button', 'bag-item'); b.type = 'button'; b.setAttribute('role', 'listitem'); b.dataset.id = e.id;

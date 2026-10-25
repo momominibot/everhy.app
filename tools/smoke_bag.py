@@ -103,12 +103,14 @@ def main():
         check('button says it is expanded', btn.get_attribute('aria-expanded') == 'true')
         check('sheet fits the width', js("() => document.querySelector('.bag-sheet .sheet').getBoundingClientRect().width") <= W and js('() => document.scrollingElement.scrollWidth') <= W)
         heads = js("() => [...document.querySelectorAll('.bag-kind h3')].map(h => h.textContent)")
-        check('every kind has a heading, in order', heads == ['Seeds', 'From the garden', 'Caught and found', 'Pantry', 'Ready to eat', 'Gifts', 'Tools'], str(heads))
+        ORDER = ['Seeds', 'From the garden', 'Caught and found', 'Pantry', 'Ready to eat', 'Gifts', 'Tools']
+        check('only kinds that hold something get a heading, in order', heads == [h for h in ORDER if h in heads] and 'Tools' not in heads and len(heads) >= 3, str(heads))
+        check('no explainer line under the headings', page.locator('.bag-sheet .bag-about').count() == 0)
         cells = js("() => [...document.querySelectorAll('.bag-item')].map(b => [b.dataset.id, b.querySelector('.bag-name').textContent, b.querySelector('.bag-count').textContent])")
         check('seeded items listed with counts', cells == [['seed-turnip', 'Turnip seed', '2'], ['seed-carrot', 'Carrot seed', '1'], ['turnip', 'Turnip', '1'], ['egg', 'Egg', '1'], ['moonPearl', 'Moon pearl', '1']], str(cells))
         check('total in the heading', page.locator('.bag-total').inner_text() == '6 things')
         check('a long bag opens at its title, not scrolled to the end', js("() => document.querySelector('.bag-sheet .sheet').scrollTop") == 0 and js("() => document.getElementById('bagTitle').getBoundingClientRect().top") >= 0)
-        check('an empty kind shows its line, not a blank', page.locator('.bag-kind[data-kind=tool] .bag-empty').inner_text().startswith('No tools yet'))
+        check('an empty kind is left out, not a line of its own', page.locator('.bag-kind[data-kind=tool]').count() == 0 and page.locator('.bag-empty').count() == 0)
         check('crop and find icons are clay pictures', js("() => ['turnip', 'egg'].every(id => !!document.querySelector('.bag-item[data-id=' + id + '] .bag-ico image'))"))
         imgs = js("""async () => { const out = {}; for (const im of document.querySelectorAll('.bag-sheet .bag-ico image')) {
             const href = im.getAttribute('href'); if (href in out) continue; out[href] = (await fetch(href)).ok; } return out; }""")
@@ -155,8 +157,7 @@ def main():
         # ---------- empty bag ----------
         js("() => { const s = EbbGame.state(); s.farm.seeds = {}; s.farm.basket = {}; s.pond.gift = false; s.bag = {}; EbbGame.api.save(); EbbGame.api.refresh(); }")
         btn.click(); page.wait_for_selector('.bag-sheet')
-        empties = js("() => [...document.querySelectorAll('.bag-kind')].map(k => !!k.querySelector('.bag-empty'))")
-        check('an empty bag shows a line for every kind', empties == [True] * 7 and page.locator('.bag-item').count() == 0 and page.locator('.bag-total').inner_text() == 'Nothing yet', str(empties))
+        check('an empty bag is one short line', page.locator('.bag-kind').count() == 0 and page.locator('.bag-item').count() == 0 and page.locator('.bag-empty').inner_text() == 'Your bag is empty.' and page.locator('.bag-total').inner_text() == '')
         if shots:
             page.screenshot(path=str(shots / 'bag-empty-390.png'))
         page.click('#bagDone')
