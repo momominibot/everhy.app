@@ -12,6 +12,8 @@
   #stage img.plate { display: block; width: 100%; height: 100%; }
   #old { position: absolute; transform: translate(-50%, -100%); pointer-events: none; }
   #gl { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #front { position: fixed; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; }
+  #front img { position: absolute; }
   .bar { position: fixed; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .bar button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--rose); background: var(--cream); color: var(--ink); font: inherit; }
   .bar button[aria-pressed="true"] { background: var(--rose); color: #fff; }
@@ -23,10 +25,12 @@
 <body>
 <div id="view"><div id="stage"><img class="plate" src="../art/plates/bedroom-dream-wide.webp" alt=""><img id="old" src="" alt="" hidden></div></div>
 <canvas id="gl"></canvas>
+<div id="front"></div>
 <div class="note" id="note">Loading her in 3D<small>Tap the floor to walk</small></div>
 <div class="bar">
   <button data-act="idle">Idle</button><button data-act="wave">Wave</button><button data-act="sit">Sit</button><button data-act="turn">Turn around</button><button data-act="old" aria-pressed="false">Old sprite</button>
 </div>
+<script src="../js/ebb-world.js"></script>
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -40,7 +44,7 @@ const inside = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1
 const q = new URLSearchParams(location.search), SRC = q.get('model') || '../art/meshy/' + (q.get('skin') || 'avatar_white_fixed') + '/animation_glb_url.glb';
 
 const view = document.getElementById('view'), stage = document.getElementById('stage'), note = document.getElementById('note');
-const me = { x: 40, y: 70, yaw: 0, target: null, act: 'idle' };
+const me = { x: 50, y: 80, yaw: 0, target: null, path: [], act: 'idle' };
 const cam = { x: me.x, y: me.y - 8 };
 
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gl'), alpha: true, antialias: true });
@@ -104,7 +108,7 @@ const q1 = new THREE.Quaternion(), q2 = new THREE.Quaternion(), qw = new THREE.Q
 function bendWorld(bone, axis, angle) { if (!bone || !angle) return; bone.parent.updateWorldMatrix(true, false); bone.parent.getWorldQuaternion(q1);
   qw.setFromAxisAngle(axis, angle); q2.copy(q1).invert().multiply(qw).multiply(q1); bone.quaternion.premultiply(q2); bone.updateMatrixWorld(true); }
 function relax(dt) {
-  const goal = me.act === 'idle' || me.act === 'walk' ? 1 : 0; relaxW += (goal - relaxW) * Math.min(1, dt * 6);
+  const goal = me.act === 'idle' || me.act === 'walk' || me.act === 'wave' ? 1 : 0; relaxW += (goal - relaxW) * Math.min(1, dt * 6);
   if (relaxW < 0.01) return;
   turn.getWorldQuaternion(q1); fwd.set(0, 0, 1).applyQuaternion(q1).normalize(); /* her forward axis: rotating about it swings arms in and out */
   side.set(1, 0, 0).applyQuaternion(q1).normalize(); /* her side axis: rotating about it swings arms forward */
@@ -113,6 +117,44 @@ function relax(dt) {
   bendWorld(bones.LeftArm, fwd, -RELAX.arm * w); bendWorld(bones.RightArm, fwd, RELAX.arm * w);
   bendWorld(bones.LeftArm, side, RELAX.swing * w); bendWorld(bones.RightArm, side, RELAX.swing * w);
   bendWorld(bones.LeftForeArm, fwd, -RELAX.fore * w); bendWorld(bones.RightForeArm, fwd, RELAX.fore * w);
+}
+/* Cap the elbow. Her chibi forearm is short and thick, and plain skinning cannot hold its shape past a right angle: the
+ * stock wave bends it to 123 degrees and the sleeve and forearm cave in. Unbend any elbow past CAP about its own hinge,
+ * which also keeps the waving hand out beside her head instead of in front of her face. */
+const CAP = +(q.get('cap') ?? 80) * Math.PI / 180, va = new THREE.Vector3(), vf = new THREE.Vector3(), vh = new THREE.Vector3(), hinge = new THREE.Vector3();
+function capElbows() {
+  for (const s of ['Left', 'Right']) {
+    const A = bones[s + 'Arm'], F = bones[s + 'ForeArm'], Hd = bones[s + 'Hand']; if (!A || !F || !Hd) continue;
+    A.getWorldPosition(va); F.getWorldPosition(vf); Hd.getWorldPosition(vh);
+    va.subVectors(vf, va).normalize(); vh.sub(vf).normalize();
+    const ang = Math.acos(Math.max(-1, Math.min(1, va.dot(vh)))); if (ang <= CAP) continue;
+    hinge.crossVectors(va, vh); if (hinge.lengthSq() < 1e-8) continue;
+    bendWorld(F, hinge.normalize(), -(ang - CAP));
+  }
+}
+/* Her own wave. Meshy's library wave is drawn for adult arms: on her short chibi arms it lands the hand on top of her
+ * head (a salute) and bends the elbow past what the skin can hold. So the wave keeps the calm idle underneath and
+ * aims her right arm itself: upper arm out to the side and a little up, forearm up beside her head, swaying. */
+const WAVE = { lift: +(q.get('lift') ?? 28) * Math.PI / 180, lean: +(q.get('lean') ?? 22) * Math.PI / 180, sway: +(q.get('sway') ?? 16) * Math.PI / 180, hz: 1.4 };
+let waveW = 0, waveT = 0;
+const qI = new THREE.Quaternion(), up = new THREE.Vector3(), out = new THREE.Vector3(), dir = new THREE.Vector3();
+function aim(bone, child, want, w) {
+  bone.getWorldPosition(va); child.getWorldPosition(vf); vf.sub(va).normalize();
+  qw.setFromUnitVectors(vf, want); if (w < 1) qw.slerp(qI, 1 - w);
+  bone.parent.updateWorldMatrix(true, false); bone.parent.getWorldQuaternion(q1);
+  q2.copy(q1).invert().multiply(qw).multiply(q1); bone.quaternion.premultiply(q2); bone.updateMatrixWorld(true);
+}
+function waveArm(dt) {
+  waveW += ((me.act === 'wave' ? 1 : 0) - waveW) * Math.min(1, dt * 5); if (waveW < 0.01) { waveT = 0; return; }
+  waveT += dt;
+  const A = bones.RightArm, F = bones.RightForeArm, Hd = bones.RightHand, L = bones.LeftArm; if (!A || !F || !Hd || !L) return;
+  turn.getWorldQuaternion(q1); up.set(0, 1, 0).applyQuaternion(q1).normalize(); fwd.set(0, 0, 1).applyQuaternion(q1).normalize();
+  A.getWorldPosition(va); L.getWorldPosition(vf); out.subVectors(va, vf); out.addScaledVector(up, -out.dot(up)).normalize(); /* towards her right hand */
+  dir.copy(out).multiplyScalar(Math.cos(WAVE.lift)).addScaledVector(up, Math.sin(WAVE.lift)).addScaledVector(fwd, 0.25).normalize();
+  aim(A, F, dir, waveW);
+  const t = WAVE.lean + WAVE.sway * Math.sin(waveT * Math.PI * 2 * WAVE.hz) * Math.min(1, waveT * 2);
+  dir.copy(up).multiplyScalar(Math.cos(t)).addScaledVector(out, Math.sin(t)).addScaledVector(fwd, 0.2).normalize();
+  aim(F, Hd, dir, waveW);
 }
 const tmp = new THREE.Vector3();
 function lowestFoot() { let lo = Infinity; for (const b of feet) { b.getWorldPosition(tmp); turn.worldToLocal(tmp); lo = Math.min(lo, tmp.y); } return lo; }
@@ -154,17 +196,23 @@ function play(name, once) {
 view.addEventListener('pointerup', e => {
   const r = view.getBoundingClientRect(), u = r.width / (100 / ZOOM);
   const p = { x: cam.x - r.width / 2 / u + (e.clientX - r.left) / u, y: cam.y - r.height / 2 / u + (e.clientY - r.top) / u };
-  if (!inside(p, FLOOR)) return;
-  me.target = p; me.act = 'walk'; play('walk');
+  /* the game's own planner and furniture blocks (js/ebb-world.js): a tap on the bed walks her to the floor beside it, round the furniture */
+  if (!window.EbbWorld) return;
+  const spot = EbbWorld.SCENES.bedroom.spots.find(sp => Math.hypot(sp.at.x - p.x, sp.at.y - p.y) < 8); /* like the game: near a spot, go to where she stands to use it */
+  const from = { x: me.x, y: me.y }; let path = EbbWorld.plan('bedroom', from, spot ? spot.stand : p);
+  for (let r = 2; !path && r <= 12; r += 2) for (let k = 0; !path && k < 12; k++) /* the nearest floor can be a pocket she can't reach: try further out */
+    path = EbbWorld.plan('bedroom', from, { x: p.x + Math.cos(k * Math.PI / 6) * r, y: p.y + Math.sin(k * Math.PI / 6) * r });
+  if (!path || !path.length) return;
+  me.path = path.slice(1); me.target = path[0]; me.act = 'walk'; play('walk');
 });
 let spin = 0;
 document.querySelector('.bar').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
   const act = b.dataset.act;
   if (act === 'old') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); document.getElementById('old').hidden = !on; placeOld(); return; }
-  me.target = null;
+  me.target = null; me.path = [];
   if (act === 'turn') { spin = Math.PI * 2; me.act = 'idle'; play('idle'); return; }
-  me.act = act; play(act, false);
+  me.act = act; play(act === 'wave' ? 'idle' : act, false); /* her wave is the calm idle plus waveArm() */
 });
 document.querySelector('.bar').addEventListener('pointerup', e => e.stopPropagation());
 
@@ -179,12 +227,17 @@ async function placeOld() {
   old.style.left = ox + '%'; old.style.top = oy + '%'; old.style.height = (meta.h * unit * scaleAt(oy)) + '%'; old.style.width = 'auto';
 }
 
+/* the arch door cut-out from the game's scene, laid over her while she is behind it (above its base), as the game does */
+const front = document.getElementById('front'), fronts = (window.EbbWorld ? EbbWorld.SCENES.bedroom.fronts || [] : []).map(f => {
+  const im = new Image(); im.src = '../' + f.src; const [x0, y0, x1, y1] = f.rect;
+  Object.assign(im.style, { left: x0 + '%', top: y0 + '%', width: (x1 - x0) + '%', height: (y1 - y0) + '%' }); front.appendChild(im);
+  return { im, base: f.base ?? y1 }; });
 let last = performance.now(), tick = 0;
 function frame(t) {
   const dt = Math.min(0.05, (t - last) / 1000); last = t;
   if (me.target) {
     const dx = me.target.x - me.x, dy = me.target.y - me.y, d = Math.hypot(dx, dy), step = 9 * dt;
-    if (d < step) { me.x = me.target.x; me.y = me.target.y; me.target = null; me.act = 'idle'; play('idle'); }
+    if (d < step) { me.x = me.target.x; me.y = me.target.y; me.target = me.path.shift() || null; if (!me.target) { me.act = 'idle'; play('idle'); } }
     else { me.x += dx / d * step; me.y += dy / d * step; const want = Math.atan2(dx, dy); let dif = want - me.yaw; dif = Math.atan2(Math.sin(dif), Math.cos(dif)); me.yaw += dif * Math.min(1, dt * 10); }
   } else if (!spin) { let dif = -me.yaw; dif = Math.atan2(Math.sin(dif), Math.cos(dif)); me.yaw += dif * Math.min(1, dt * (me.act === 'idle' ? 4 : 9)); } /* back to facing you; quickly when she waves or sits */
   if (spin > 0) { const s = Math.min(spin, dt * 7); spin -= s; me.yaw += s; }
@@ -194,7 +247,8 @@ function frame(t) {
   cam.x = Math.max(vw / 2, Math.min(100 - vw / 2, cam.x)); cam.y = Math.max(vh / 2, Math.min(100 - vh / 2, cam.y));
   const left = cam.x - vw / 2, top = cam.y - vh / 2;
   stage.style.width = stage.style.height = (100 * u) + 'px';
-  stage.style.transform = `translate(${(-left * u).toFixed(2)}px, ${(-top * u).toFixed(2)}px)`;
+  stage.style.transform = front.style.transform = `translate(${(-left * u).toFixed(2)}px, ${(-top * u).toFixed(2)}px)`;
+  front.style.width = front.style.height = (100 * u) + 'px'; fronts.forEach(f => { f.im.hidden = me.y >= f.base; });
   camera.left = left; camera.right = left + vw; camera.top = -top; camera.bottom = -(top + vh); camera.updateProjectionMatrix();
   renderer.setSize(r.width, r.height, false);
   /* her feet at (x, y) in scene units; scene y runs down, so the 3D y is -y */
@@ -203,7 +257,7 @@ function frame(t) {
   turn.rotation.y = me.yaw;
   shadow.position.set(me.x, -me.y + 0.3 * s, me.y - 1); shadow.scale.set(46 * s, 13 * s, 1);
   if ((tick = (tick + 1) % 10) === 0) floorTint.lerp(sampleFloor(me.x, me.y), 0.4); /* sample the floor every tenth frame, plenty for a slow blend */ amb.color.setRGB(1, 1, 1).lerp(floorTint, 0.35);
-  if (mixer) { mixer.update(dt); if (model) relax(dt); }
+  if (mixer) { mixer.update(dt); if (model) { relax(dt); waveArm(dt); capElbows(); } }
   /* keep her soles on the floor whatever the clip does (not while seated) */
   if (model && feet.length && me.act !== 'sit') { turn.updateMatrixWorld(true); model.position.y += footClear - lowestFoot(); }
   /* contact shadows under the toes, fading as a foot lifts */
@@ -214,7 +268,7 @@ function frame(t) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__t = { shadow, holder, camera, scene, me, turn, bones, get model() { return model; } };
+window.__t = { shadow, holder, camera, scene, me, cam, turn, bones, get model() { return model; } };
 </script>
 </body>
 </html>

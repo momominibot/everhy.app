@@ -205,7 +205,9 @@
       open.sort(function (p, q) { return p.f - q.f; });
       var cur = open.shift(), ck = key(cur.x, cur.y);
       if (seen[ck]) continue; seen[ck] = true;
-      if (cur.x === gx && cur.y === gy) {
+      /* the goal's own grid cell can lie inside a solid when the goal sits on its edge (a tap on furniture lands on the
+       * nearest walkable point, right at the edge), so a cell beside the goal with a clear line to it also finishes */
+      if ((cur.x === gx && cur.y === gy) || (Math.hypot(cur.x - goal.x, cur.y - goal.y) < 1.5 && segClear(scene, cur, goal, avoid))) {
         var cells = [], k = ck;
         while (k) { var parts = k.split(','); cells.unshift({ x: +parts[0], y: +parts[1] }); k = came[k]; }
         cells.push(goal);

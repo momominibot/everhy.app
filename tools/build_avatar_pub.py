@@ -13,6 +13,8 @@ IDLES = (ROOT / 'art/meshy' / (AV + '_idles') / 'animation_glb_url.glb').exists(
 shutil.copy(ROOT / 'art/plates/bedroom-dream-wide.webp', D / 'bedroom.webp')
 shutil.copy(ROOT / 'art/chars/genz/idle.webp', D / 'sprite.webp')
 shutil.copy(ROOT / 'art/chars/genz/idle.json', D / 'sprite.json')
+shutil.copy(ROOT / 'js/ebb-world.js', D / 'ebb-world.js')  # the game's floor, furniture blocks and path planner
+(D / 'art/occluders').mkdir(parents=True, exist_ok=True); shutil.copy(ROOT / 'art/occluders/bedroom-arch-door.webp', D / 'art/occluders/bedroom-arch-door.webp')
 for f in D.glob('*.glb.txt'): f.unlink()
 for src, name in [((AV + '_fixed') if (ROOT / 'art/meshy' / (AV + '_fixed')).exists() else (AV + '_moves'), 'moves.glb')] + ([(AV + '_idles', 'idles.glb')] if IDLES else []):
     (D / (name + '.txt')).write_bytes(base64.encodebytes((ROOT / 'art/meshy' / src / 'animation_glb_url.glb').read_bytes()))
@@ -35,7 +37,9 @@ REP = [
     ('.bar button {', '.bar button:focus-visible { outline: 3px solid #7a3550; outline-offset: 2px; }\n  .bar button {'),
     ("note.innerHTML = 'Fairer 3D test<small>' + gltf.animations.length + ' moves: ' + names.join(', ') + '. Tap the floor to walk.</small>';",
      "note.innerHTML = 'Her in 3D<small>Tap the floor to walk. Old sprite shows her as she is now.</small>';"),
-    ('window.__t = { shadow, holder, camera, scene, me, turn, bones, get model() { return model; } };\n', ''),
+    ('window.__t = { shadow, holder, camera, scene, me, cam, turn, bones, get model() { return model; } };\n', ''),
+    ('<script src="../js/ebb-world.js"></script>', '<script src="ebb-world.js"></script>'),
+    ("im.src = '../' + f.src;", 'im.src = f.src;'),
     ('new GLTFLoader().load(SRC, gltf => {',
      "/* the models ship as base64 text (the host serves no .glb), decoded here and handed to the loader */\n"
      "async function glb(name) { const t = await (await fetch(name + '.txt')).text(); const bin = atob(t.replace(/\\s+/g, '')); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }\n"
