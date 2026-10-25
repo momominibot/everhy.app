@@ -198,3 +198,14 @@ night plates via renders once the key is fixed, a rules page from the playbook (
 - Image renders: the key in `~/.config/volcengine/api_key` returns 401. Run with the working Ark key from `~/.hermes/.env` as env, never printed:
   `ARK_API_KEY="$(grep '^VOLCENGINE_ARK_API_KEY=' ~/.hermes/.env | sed 's/^[^=]*=//' | tr -d '"\n')" python3 tools/run_batch.py <jobs.json>`
 - smoke_doors pins `&weather=clear`: on rain days the tint rightly keeps the waterfall video off.
+
+## 25 Oct, admin study dashboard (Doubao continuation)
+The admin/agents dashboard now renders end to end from demo data: admin.js draws Ovia + the four agents (Bloom/Snooze/
+Breezy/Sprout), cohort tiles (total, consented, active last 7 days, flagged), coverage bars per domain, the people table
+(Person, last active, active days 28, warning signs, agent dots) and, on tapping a person, their detail cards with 28-day
+bar charts (validated blue, rounded tops, hover tooltip), warning signs from the app's own safety table, and Today +
+Four-weeks summaries. Dropped exports load in the tab; nothing is uploaded. tools/test-agents.js (18 checks) verifies the
+data path headless: P05 (no research consent) is counted never opened, P03's 9-day period raises the long-period flag,
+body stays "not collected". A real Playwright smoke of admin/ still needs writing + running on a machine whose Playwright
+driver works (browsers install fine here but the driver fails to start in this sandbox); node suites + a headless DOM
+render check cover the logic meanwhile. check_all auto-picks up tools/test-*.js so test-agents is already in the gate.
