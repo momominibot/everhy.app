@@ -88,11 +88,17 @@
       '<text x="' + x + '" y="' + (y - 1.15) + '" font-size="2.2" font-weight="700" text-anchor="middle" fill="#5a3f2a">' + (flip ? '‹ ' + text : text + ' ›') + '</text></g>';
   }
 
-  /* ---------- a small sheet (same look as the engine's) ---------- */
+  /* ---------- a small sheet (same look as the engine's) ----------
+   * opts: { cls: extra wrap class, dismissOnBackdrop: false } -> a tap on the transparent wrap is absorbed but does
+   * not close the sheet (so a stray tap while she soaks or fishes never pops her out). Only the card button or
+   * Escape closes it. A plain string is still accepted as the extra class (older call sites). */
   var openSheet = null;
-  function sheet(title, build, onClose, extra) {
+  function sheet(title, build, onClose, opts) {
     if (openSheet) openSheet();
-    var wrap = doc.createElement('div'); wrap.className = 'sheet-wrap world-sheet' + (extra ? ' ' + extra : '');
+    if (typeof opts === 'string') opts = { cls: opts };
+    opts = opts || {};
+    var dismissOnBackdrop = opts.dismissOnBackdrop === true;
+    var wrap = doc.createElement('div'); wrap.className = 'sheet-wrap world-sheet' + (opts.cls ? ' ' + opts.cls : '');
     wrap.innerHTML = '<section class="sheet" role="dialog" aria-modal="true" aria-label="' + title + '"><h2>' + title + '</h2><div class="sheet-body"></div><div class="sheet-actions"></div></section>';
     var body = wrap.querySelector('.sheet-body'), acts = wrap.querySelector('.sheet-actions');
     function close() { if (!wrap.parentNode) return; wrap.remove(); openSheet = null; if (onClose) onClose(); }
@@ -107,7 +113,8 @@
     }
     /* keys stay inside the sheet so Enter on a button never reaches the game's own key handler */
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
-    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    /* the wrap covers the whole screen to absorb taps (so she can't walk while resting); it only closes when asked */
+    wrap.addEventListener('click', function (e) { if (dismissOnBackdrop && e.target === wrap) close(); });
     doc.body.appendChild(wrap); openSheet = close;
     build(body, buttons, close);
     return close;
@@ -178,7 +185,7 @@
         buttons(list);
       }
       draw();
-    }, out);
+    }, out, { dismissOnBackdrop: false });
   });
   /* Little Guilin: only the signpost. No fishing there: NParks lists Bukit Batok Town Park as "Do not fish" */
   root.EbbGame.registerProps('waterfall', function () { return sign(80, 162, 'Hot spring'); });
@@ -238,7 +245,7 @@
         buttons(again);
       }
       castLine();
-    }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, 'world-mini');
+    }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, { cls: 'world-mini', dismissOnBackdrop: false });
   });
 
 })(typeof window !== 'undefined' ? window : globalThis);
