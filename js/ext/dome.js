@@ -268,7 +268,21 @@
   }
   root.EbbGame.registerKind('seedshop', function (spot, a) { api = api || a; openStall(); });
 
-  /* ---------- wiring ---------- */
+  /* ---------- wiring ----------
+   * dev/test only: ?hearts=N grants N hearts once (idempotent) so the seed and plant stalls can be tried without
+   * earning them. It only does anything when the query param is present, never in the normal game. */
+  function grantDevHearts(a) {
+    try {
+      var m = root.location && root.location.search ? /[?&]hearts=(\d+)/.exec(root.location.search) : null;
+      if (!m) return;
+      var n = parseInt(m[1], 10); if (!(n > 0)) return;
+      var st = a.state(), p = R().ensure(st.points);
+      st.points = p; /* attach the ledger: ensure makes a new object when the state has none */
+      var id = 'dev:hearts:' + n;
+      if (p.entries.some(function (e) { return e.id === id; })) return;
+      p.entries.push({ id: id, date: a.today(), source: 'dev', n: n });
+    } catch (e) { console.error(e); }
+  }
   function start(a) {
     api = a;
     /* its own little icon: a five-petal flower, so the Points chip never borrows the Hearts chip's heart */
@@ -276,6 +290,7 @@
       [0, 72, 144, 216, 288].map(function (d) { return '<ellipse cx="12" cy="6.6" rx="3.6" ry="4.6" transform="rotate(' + d + ' 12 12)"/>'; }).join('') +
       '</g><circle cx="12" cy="12" r="3" fill="#fff4d6" stroke="#d99a2b" stroke-width="1.1"/></svg>';
     root.EbbGame.registerHud('Hearts', function () { return R() ? R().balance(a.state().points) : 0; }); /* the one currency: logging, practices and Today's invitations earn hearts, the Flower Dome spends them */
+    grantDevHearts(a);
     sync(true); /* what she already saved counts from the first open, with no fanfare */
     pollTimer = setInterval(function () { if (!doc.hidden) sync(); }, 3000);
     doc.addEventListener('visibilitychange', function () { if (!doc.hidden) sync(); });

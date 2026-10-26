@@ -163,7 +163,7 @@
   }
   mount();
   root.addEventListener('load', paintButton);
-  root.EbbGame.registerPanel({ id: 'bag', label: 'Bag', open: function () { open(); } });
+  /* Bag stays on its always-visible round button; it is not duplicated in the More menu */
   function ready() { wireActions(); }
   if (root.EbbGame._ready) ready(); else doc.addEventListener('ebb:ready', ready, { once: true });
 

@@ -28,7 +28,7 @@
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   /* ---------- places: which ambience and which floor ---------- */
-  var PLACES = { bedroom: 'room', bathroom: 'bath', living: 'room', farm: 'meadow', waterfall: 'meadow', spring: 'spring', hawker: 'room', merlion: 'meadow', jetty: 'meadow' }; /* parks are breeze and birds */
+  var PLACES = { bedroom: 'room', bathroom: 'bath', living: 'room', farm: 'meadow', waterfall: 'meadow', spring: 'spring', hawker: 'hawker', merlion: 'harbour', jetty: 'sea' }; /* each named place has its own ambience */
   var FLOORS = { room: 'wood', bath: 'tile', meadow: 'soil', falls: 'grass', spring: 'grass' };
   var INDOOR = { room: true, bath: true };
   function placeSound(id, scene) {
@@ -414,6 +414,55 @@
           tone(ctx, out, when, { f: between(r, 280, 650), to: between(r, 700, 1200), a: 0.004, d: 0.05, gain: between(r, 0.04, 0.07), pan: between(r, -0.5, 0.5) });
           self.events += 1;
           return between(r, 0.35, 1.5);
+        }
+      });
+    } },
+    sea: { make: function (ctx, out, r, t) { /* slow sea swells, a little foam, and gulls now and then */
+      var srcs = bed(ctx, out, [
+        ['brown', [['lowpass', 480, 0.7]], 0.55, [0.1, 0.32]], /* the swell */
+        ['pink', [['bandpass', 720, 0.6]], 0.16, [0.09, 0.1]] /* soft foam */
+      ], t);
+      return ambience(srcs, {
+        first: function () { return between(r, 1, 3); },
+        at: function (when, m, self) {
+          var f = between(r, 900, 1500), n = 2 + Math.floor(r() * 2), p = between(r, -0.6, 0.6);
+          for (var i = 0; i < n; i++) tone(ctx, out, when + i * 0.12, { f: f, to: f * 0.6, glide: 0.1, a: 0.01, d: 0.1, gain: 0.08, pan: p });
+          self.events += 1;
+          return between(r, 4, 9);
+        }
+      });
+    } },
+    hawker: { make: function (ctx, out, r, t) { /* the food centre's low chatter, with clatter and a short sizzle */
+      var srcs = bed(ctx, out, [
+        ['pink', [['bandpass', 600, 0.8]], 0.5, [0.09, 0.15]], /* the murmur */
+        ['brown', [['lowpass', 240, 0.7]], 0.22]
+      ], t);
+      return ambience(srcs, {
+        first: function () { return between(r, 0.4, 1.5); },
+        at: function (when, m, self) {
+          var p = between(r, -0.7, 0.7), i;
+          if (r() < 0.5) { /* a few quick clatters */
+            for (i = 0; i < 2 + Math.floor(r() * 3); i++) burst(ctx, out, when + i * 0.05, { f: between(r, 1800, 3000), q: 2, a: 0.002, d: 0.03, gain: 0.12, pan: p }, r);
+          } else { /* a short sizzle */
+            burst(ctx, out, when, { kind: 'white', type: 'highpass', f: 3500, a: 0.05, d: 0.5, gain: 0.1, pan: p }, r);
+          }
+          self.events += 1;
+          return between(r, 0.8, 2.5);
+        }
+      });
+    } },
+    harbour: { make: function (ctx, out, r, t) { /* gentle harbour water, a distant city hum, and a gull now and then */
+      var srcs = bed(ctx, out, [
+        ['pink', [['bandpass', 800, 0.9]], 0.32, [0.1, 0.14], [0.08, 200]],
+        ['brown', [['lowpass', 220, 0.7]], 0.3, [0.06, 0.08]]
+      ], t);
+      return ambience(srcs, {
+        first: function () { return between(r, 1, 3); },
+        at: function (when, m, self) {
+          tone(ctx, out, when, { f: between(r, 200, 500), to: between(r, 500, 900), a: 0.004, d: 0.05, gain: 0.05, pan: between(r, -0.5, 0.5) });
+          if (r() < 0.4) { var f = between(r, 900, 1400), p = between(r, -0.6, 0.6); tone(ctx, out, when + 0.2, { f: f, to: f * 0.65, glide: 0.1, a: 0.01, d: 0.1, gain: 0.06, pan: p }); }
+          self.events += 1;
+          return between(r, 1.5, 4);
         }
       });
     } }

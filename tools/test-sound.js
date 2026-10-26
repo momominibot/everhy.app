@@ -30,6 +30,9 @@ check('Little Guilin is a lakeside park', S.placeSound('waterfall', W.SCENES.wat
 check('bathroom is room tone with drips', S.placeSound('bathroom', W.SCENES.bathroom) === 'bath');
 check('an indoor scene reads as a room', S.placeSound('library', { name: 'Library', indoor: true }) === 'room');
 check('hot spring is lapping water', S.placeSound('spring', { name: 'Hot spring' }) === 'spring');
+check('jetty is the sea', S.placeSound('jetty', W.SCENES.jetty) === 'sea');
+check('hawker is the food centre', S.placeSound('hawker', W.SCENES.hawker) === 'hawker');
+check('merlion is the harbour', S.placeSound('merlion', W.SCENES.merlion) === 'harbour');
 check('a scene can name its sound', S.placeSound('cave', { name: 'Cave', sound: 'falls' }) === 'falls');
 check('an unknown sound name is ignored', S.placeSound('kitchen', { name: 'Kitchen', sound: 'disco' }) === 'room');
 check('unknown indoor names read as a room', S.placeSound('teaShop', { name: 'Tea shop' }) === 'room');
@@ -235,7 +238,7 @@ Object.keys(S.AMBIENCES).forEach(name => {
   check(`ambience ${name}: a long gap does not flood`, g.sources.length - n2 <= 12);
 });
 ['step:wood', 'step:tile', 'step:soil', 'step:grass', 'can', 'hoe', 'seed', 'pick', 'door', 'swoosh', 'tick', 'pop', 'sparkle', 'tada', 'chime', 'gift'].forEach(n => check(`has sound ${n}`, !!S.VOICES[n]));
-['room', 'bath', 'meadow', 'falls', 'spring'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
+['room', 'bath', 'meadow', 'falls', 'spring', 'sea', 'hawker', 'harbour'].forEach(n => check(`has ambience ${n}`, !!S.AMBIENCES[n]));
 ['tick', 'pop', 'sparkle', 'swoosh', 'door', 'tada'].forEach(n => check(`${n} is short`, S.VOICES[n].dur <= 1.3));
 let unknownThrows = false; try { S.render(fakeContext().c, 'trumpet'); } catch (e) { unknownThrows = true; }
 check('an unknown sound name is refused', unknownThrows);

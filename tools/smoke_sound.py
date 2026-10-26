@@ -363,6 +363,26 @@ def main():
         check('ducking the ambience under a voice runs', status(page)['ctx'] == 'running')
         check('every sound was made in this one context', page.evaluate('window.__acMade') == 1)
 
+        # each named place now has its own ambience: the jetty sea, the hawker centre, the merlion harbour
+        page.evaluate("EbbGame.api.enter('jetty')")
+        page.wait_for_function("EbbSound.status().ambience === 'sea'", timeout=3000)
+        check('jetty plays the sea', status(page)['ambience'] == 'sea')
+        page.wait_for_timeout(2200)
+        check('the old park layer is gone', status(page)['layers'] == 1)
+        page.evaluate("EbbGame.api.enter('hawker')")
+        page.wait_for_function("EbbSound.status().ambience === 'hawker'", timeout=3000)
+        check('hawker plays the food centre', status(page)['ambience'] == 'hawker')
+        page.wait_for_timeout(2200)
+        page.evaluate("EbbGame.api.enter('merlion')")
+        page.wait_for_function("EbbSound.status().ambience === 'harbour'", timeout=3000)
+        check('merlion plays the harbour', status(page)['ambience'] == 'harbour')
+        page.wait_for_timeout(2200)
+        check('one ambience layer after the crossfades', status(page)['layers'] == 1)
+        # back to Little Guilin so the later toggle checks (which assume a meadow) hold
+        page.evaluate("EbbGame.api.enter('waterfall')")
+        page.wait_for_function("EbbSound.status().ambience === 'meadow'", timeout=3000)
+        page.wait_for_timeout(2000)
+
         # off again from the toggle, then on from the More menu
         page.wait_for_timeout(500)
         btn.click()

@@ -211,6 +211,6 @@
     app.appendChild(btn);
   }
   mount();
-  root.EbbGame.registerPanel({ id: 'map', label: 'Map', open: function () { open(); } });
+  /* Map stays on its always-visible round button; it is not duplicated in the More menu */
   EbbMap.open = open; EbbMap.close = close; EbbMap.isOpen = function () { return !!wrap; }; EbbMap.go = go;
 })(typeof window !== 'undefined' ? window : globalThis);
