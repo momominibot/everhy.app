@@ -1,0 +1,53 @@
+[
+ {
+  "id": "pose_ride",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz.png",
+   "art/raw/genz_sit_ref.png"
+  ],
+  "prompt": "Same girl as reference 1 (same face, long wavy dark brown hair, warm light-brown skin, oversized cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), in exactly the same smooth matte clay style, proportions and size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props. She sits upright on an invisible bench facing front, knees together, feet flat on the floor, both hands resting loosely in her lap. Frame 1: eyes open, a soft smile. Frame 2: eyes gently closed, calm, shoulders relaxed."
+ },
+ {
+  "id": "card_mrt",
+  "size": "1024x1024",
+  "prompt": "A cute Singapore MRT train gliding along an elevated track: a sleek white and silver metro train with a red stripe, three carriages, past rain trees and pastel HDB blocks under a soft blue sky, seen from the side and a little above, the train filling the middle of the frame. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm light, pastel colours. No people, no logos, no text."
+ },
+ {
+  "id": "card_bus",
+  "size": "1024x1024",
+  "prompt": "A cute Singapore double-decker public bus in lush green and white livery, big rounded windows on both decks, pulling up at a sheltered bus stop under rain trees with pastel HDB blocks behind, seen from the front three-quarter view and a little above, the bus filling the middle of the frame. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm light, pastel colours. No people, no logos, no readable text."
+ },
+ {
+  "id": "outfit_sage",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz_light.png"
+  ],
+  "prompt": "Same character turnaround sheet as the reference: front, side and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips falling behind her shoulders, same smooth matte clay style and proportions. Keep her skin exactly as light as in the reference: light warm beige, not tan. Relaxed posture, shoulders down, arms loose at her sides with a small gap. Change her clothes: a fitted sage green ribbed sleeveless top, high-waisted cream linen wide-leg trousers to the ankle, white sneakers. Flat pure green #00FF00 background, soft even light, no shadow, no text."
+ },
+ {
+  "id": "outfit_sundress",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz_light.png"
+  ],
+  "prompt": "Same character turnaround sheet as the reference: front, side and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips falling behind her shoulders, same smooth matte clay style and proportions. Keep her skin exactly as light as in the reference: light warm beige, not tan. Relaxed posture, shoulders down, arms loose at her sides with a small gap. Change her clothes: a soft lilac sleeveless cotton sundress with a fitted bodice and a gently flared skirt to the knee, white ankle socks and white sneakers. Flat pure green #00FF00 background, soft even light, no shadow, no text."
+ },
+ {
+  "id": "outfit_yoga",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz_light.png"
+  ],
+  "prompt": "Same character turnaround sheet as the reference: front, side and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips falling behind her shoulders, same smooth matte clay style and proportions. Keep her skin exactly as light as in the reference: light warm beige, not tan. Relaxed posture, shoulders down, arms loose at her sides with a small gap. Change her clothes: a matching dusty rose yoga set: a fitted sleeveless sports top and high-waisted ankle leggings, white sneakers. Flat pure green #00FF00 background, soft even light, no shadow, no text."
+ },
+ {
+  "id": "outfit_tee_skirt",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz_light.png"
+  ],
+  "prompt": "Same character turnaround sheet as the reference: front, side and back view of the same cute girl, same face, same long wavy dark brown hair with small pink clips falling behind her shoulders, same smooth matte clay style and proportions. Keep her skin exactly as light as in the reference: light warm beige, not tan. Relaxed posture, shoulders down, arms loose at her sides with a small gap. Change her clothes: a fitted cream short-sleeve baby tee with a tiny pink heart, a light denim A-line skirt to the knee, pink ankle socks and cream sneakers. Flat pure green #00FF00 background, soft even light, no shadow, no text."
+ }
+]

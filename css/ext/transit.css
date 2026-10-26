@@ -5,6 +5,11 @@
 .transit-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .transit-card b { font-size: 15px; }
 .transit-card small { color: var(--soft); font-size: 13px; }
+/* MRT and bus as two picture tiles side by side; Teleport is the plain row below them */
+.transit-rides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.transit-card.pic { flex-direction: column; align-items: stretch; gap: 0; padding: 0; overflow: hidden; min-width: 0; }
+.transit-pic { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--line); }
+.transit-card.pic .cw-text { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px 12px; }
 .transit-cue { font-size: 22px; font-weight: 600; line-height: 1.4; min-height: 3.2em; margin: 0; }
 .transit-dots { display: flex; gap: 8px; margin: 0; min-height: 14px; }
 .transit-dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--line); transition: background 0.25s ease, transform 0.25s ease; }

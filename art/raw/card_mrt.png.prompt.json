@@ -1,0 +1,16 @@
+{
+ "model": "doubao-seedream-5-0-pro-260628",
+ "prompt": "A cute Singapore MRT train gliding along an elevated track: a sleek white and silver metro train with a red stripe, three carriages, past rain trees and pastel HDB blocks under a soft blue sky, seen from the side and a little above, the train filling the middle of the frame. Dreamy cosy Animal Crossing style soft 3D clay, rounded chunky shapes, matte clay, warm light, pastel colours. No people, no logos, no text.",
+ "size_req": "1024x1024",
+ "size": "1024x1024",
+ "seed": 77,
+ "refs": [],
+ "usage": {
+  "input_images": 0,
+  "generated_images": 1,
+  "output_tokens": 4096,
+  "total_tokens": 4096
+ },
+ "seconds": 54.7,
+ "bytes": 1865909
+}
