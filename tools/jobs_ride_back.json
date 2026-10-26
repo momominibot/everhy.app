@@ -1,0 +1,11 @@
+[
+ {
+  "id": "pose_ride_back",
+  "size": "1024x1024",
+  "ref": [
+   "art/raw/char_genz_fair.png",
+   "art/raw/pose_ride.png"
+  ],
+  "prompt": "Same girl as reference 1 (fair skin, long wavy dark brown hair with small pink clips, cream cropped hoodie with a tiny sun, light wide-leg jeans with a cuff, chunky white sneakers), in exactly the same smooth matte clay style, proportions and seated size as the seated girl in reference 2. Two frames side by side, evenly spaced, same size, not touching, on a flat pure green #00FF00 background, no shadow, no text, no props. She sits upright on an invisible bench viewed from the BACK, facing away from the viewer, knees together, feet flat on the floor, her long hair falling down her back, both hands resting loosely in her lap. Frame 1: relaxed, breathing out. Frame 2: shoulders gently lifted as she breathes in."
+ }
+]

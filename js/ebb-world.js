@@ -141,7 +141,7 @@
       water: [[[6, 80], [96, 80], [96, 99], [58, 101], [56, 111], [22, 111], [8, 107]]], /* the lake, for tap ripples (js/ext/ripples.js) */
       spots: [
         { id: 'pond', kind: 'pond', at: { x: 46, y: 100 }, stand: { x: 47, y: 113 }, label: 'Make a quiet wish by the lake' },
-        { id: 'bench', kind: 'cushion', at: { x: 31, y: 110 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }
+        { id: 'bench', kind: 'cushion', at: { x: 31, y: 114 }, stand: { x: 31, y: 127 }, label: 'Sit on the bench' }
       ],
       start: { x: 44, y: 165 }
     }

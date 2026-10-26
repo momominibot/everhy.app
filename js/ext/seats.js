@@ -87,7 +87,7 @@
       action = Object.assign({}, action, { prompt: 'Your ' + String(dish.name || 'meal').toLowerCase() + '. ' + action.prompt });
     }
     var E = R(), t = E.timer(action.sec), startIso = new Date().toISOString();
-    if (api.pose) api.pose(action.pose || null); /* a seated action strip when the set has one (sip), else the plain seat */
+    if (api.pose) api.pose(action.pose || (cur && cur.spot.seat && cur.spot.seat.pose) || null); /* a seated action strip when it names one; otherwise keep the seat's resting pose (the lake bench faces the water) */
     var prompt = el('p', 'seat-prompt', action.prompt), clock = el('p', 'seat-clock'), count = el('p', 'seat-count');
     clock.setAttribute('aria-live', 'off'); count.setAttribute('aria-live', 'polite');
     var row = el('div', 'seat-row'); row.appendChild(clock); row.appendChild(count);

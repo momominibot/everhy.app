@@ -35,7 +35,7 @@
     'hawker:stool2': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -6, y: -9 } },
     'hawker:stool3': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: 4, y: -10 } },
     'hawker:stool4': { title: 'At a hawker table', line: 'A stool, a marble table, the hum of the centre around you.', offset: { x: 0, y: 1.5 }, pose: 'sip', actions: ['sip', 'breaths', 'watch', 'still'], steam: { x: -8, y: -12 } },
-    'waterfall:bench': { title: 'On the lake bench', line: 'The quarry lake, the cliff in it upside down.', offset: { x: 2.5, y: 12 }, actions: ['water', 'breaths', 'listen', 'still'] },
+    'waterfall:bench': { title: 'On the lake bench', line: 'The quarry lake, the cliff in it upside down.', offset: { x: -2, y: 11 }, pose: 'ride_back', actions: ['water', 'breaths', 'listen', 'still'] },
     'bathroom:bath': { title: 'In the bath', line: 'Warm water, soft bubbles, the day nearly done.', offset: { x: 0, y: 9 }, pose: 'soak', cover: 'bubbles', actions: ['soak', 'warmth', 'breaths', 'still'] },
     'kitchen:dining': { title: 'At the table', line: 'Your own table, at home.', offset: { x: -6, y: 8 }, actions: ['eat', 'breaths', 'still'] },
     'merlion:bench': { title: 'On the stone bench', line: 'The bay, the spout, the boats going by.', offset: { x: 5, y: 8 }, actions: ['boats', 'breaths', 'still'] }
