@@ -37,7 +37,7 @@
       { id: 'stairsRight', rect: [54, 150, 72, 163], to: 'hawker', label: 'Down the stairs to get off' }
     ],
     spots: [
-      { id: 'bench', kind: 'ride', sit: { x: 50, y: 97 }, at: { x: 50, y: 87 }, stand: { x: 50, y: 99 }, label: SEAT } /* the back bench, the one seat in clear view: each side seat is half hidden behind the next one and the handrails, so she could only float over them (Jamie, 25 Oct) */
+      { id: 'bench', kind: 'ride', sit: { x: 50, y: 95.5 }, at: { x: 50, y: 87 }, stand: { x: 50, y: 99 }, label: SEAT } /* the back bench, the one seat in clear view: each side seat is half hidden behind the next one and the handrails, so she could only float over them (Jamie, 25 Oct) */
     ],
     start: { x: 40, y: 145 }
   });
@@ -47,12 +47,42 @@
 
   /* rules load as their own file; the load event waits for them, and nothing below needs them until a tap */
   if (!root.EbbTransitRules) { var sc0 = doc.createElement('script'); sc0.src = 'js/transit/rules.js'; sc0.async = false; doc.head.appendChild(sc0); }
+  if (!root.EbbTransitVoice) { var sv0 = doc.createElement('script'); sv0.src = 'js/transit/voice.js'; sv0.async = false; doc.head.appendChild(sv0); }
   function R() { return root.EbbTransitRules; }
 
   var api = null, bypass = false, seated = null, lastScene = null, bar = null, arriveBtn = null, upBtn = null, openSheet = null;
   function el(tag, cls, text) { var n = doc.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
   function reduced() { return doc.documentElement.getAttribute('data-motion') === 'reduce' || (root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches); }
   function chime() { try { if (root.EbbSound && typeof root.EbbSound.play === 'function') root.EbbSound.play('chime'); } catch (e) { } }
+  /* ---------- Erin's voice for the seat practices (js/transit/voice.js, made by tools/voice_transit.py): on unless she mutes it (kept in the save) ---------- */
+  function voiceOn() { return !!api && api.state().transitVoice !== false; }
+  function voiceClip(text) { var V = root.EbbTransitVoice; return V && V.clips && V.clips[text] || null; }
+  function voiceReady() { var r = R(); return !!(r && (voiceClip(r.NOTICE[0]) || voiceClip(r.BREATH[0][0]))); }
+  /* point the sheet's one audio element at the cue's clip and play it while the timer counts */
+  function say(audio, text) {
+    try { audio.pause(); } catch (e) { }
+    var c = voiceOn() ? voiceClip(text) : null;
+    if (!c) { audio.removeAttribute('src'); return; }
+    audio.src = c.src;
+  }
+  function listen(audio, t) { /* the voice follows the timer: silent while muted, paused, hidden or ended */
+    var r = R();
+    if (!r || !voiceOn() || !audio.getAttribute('src') || audio.ended || !r.counting(t)) { try { audio.pause(); } catch (e) { } return; }
+    var pr = audio.play(); if (pr && pr.catch) pr.catch(function () { });
+  }
+  /* the mute toggle shown in the running practice; the choice is saved so it stays off next ride */
+  function voiceBtn(audio, t) {
+    var b = el('button', 'btn small transit-voice'); b.type = 'button'; b.dataset.act = 'voice';
+    function paint() { b.textContent = voiceOn() ? 'Mute Erin' : 'Erin\u2019s voice'; b.setAttribute('aria-pressed', voiceOn() ? 'false' : 'true'); }
+    b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      api.state().transitVoice = !voiceOn(); api.save();
+      var cue = document.getElementById('transitCue');
+      if (voiceOn()) { if (cue) say(audio, cue.textContent); listen(audio, t); } else try { audio.pause(); } catch (x) { }
+      paint();
+    });
+    paint(); return b;
+  }
   function sceneName(id) { var s = W.SCENES[id]; return s ? s.name : id; }
   /* the same fade the doors and the map use; reduced motion moves at once */
   function fade(move) {
@@ -225,30 +255,36 @@
       var t = r.timer(secs), startIso = new Date().toISOString(), over = false;
       sheet(o.label, function (body, done, wrap) {
         wrap._stay = true;
-        var cue = el('p', 'transit-cue'); cue.setAttribute('aria-live', 'polite');
+        var cue = el('p', 'transit-cue'); cue.id = 'transitCue'; cue.setAttribute('aria-live', 'polite');
         var dots = el('p', 'transit-dots'); dots.setAttribute('aria-hidden', 'true');
         var clock = el('p', 'transit-clock'); clock.id = 'transitClock';
         var back = el('p', 'muted small transit-back');
-        body.appendChild(cue); body.appendChild(dots); body.appendChild(clock); body.appendChild(back);
-        var backTimer = 0;
+        var audio = el('audio', 'transit-voice-audio'); audio.preload = 'auto'; audio.hidden = true; /* one element for every cue, first played inside the Begin tap */
+        body.appendChild(cue); body.appendChild(dots); body.appendChild(clock); body.appendChild(back); body.appendChild(audio);
+        if (voiceReady()) body.appendChild(voiceBtn(audio, t)); /* only once the clips are on disk */
+        var spoken = '', backTimer = 0;
         function paint() {
+          var text;
           if (o.id === 'breathe') {
-            var b = r.breathAt(t); cue.textContent = b.text;
+            var b = r.breathAt(t); text = b.text; cue.textContent = text;
             var d = ''; for (var i = 1; i <= b.of; i++) d += '<i' + (i <= b.count ? ' class="on"' : '') + '></i>'; dots.innerHTML = d;
-          } else { cue.textContent = r.noticeAt(t).text; dots.innerHTML = ''; }
+          } else { text = r.noticeAt(t).text; cue.textContent = text; dots.innerHTML = ''; }
+          if (text !== spoken) { spoken = text; say(audio, text); } /* Erin reads each cue as it appears */
           clock.textContent = r.clock(t) + ' left' + (t.paused ? ', paused' : '');
+          listen(audio, t);
         }
         function onVis() {
           r.setHidden(t, doc.hidden, Date.now());
+          listen(audio, t);
           if (!doc.hidden) { back.textContent = 'Welcome back. The count waited while you were away.'; clearTimeout(backTimer); backTimer = setTimeout(function () { back.textContent = ''; }, 5000); }
         }
         doc.addEventListener('visibilitychange', onVis);
         r.setHidden(t, doc.hidden, Date.now());
         var iv = setInterval(function () { r.advance(t, Date.now()); paint(); if (t.ended) finish(done); }, 250);
-        wrap._cleanup = function () { clearInterval(iv); clearTimeout(backTimer); doc.removeEventListener('visibilitychange', onVis); };
+        wrap._cleanup = function () { clearInterval(iv); clearTimeout(backTimer); doc.removeEventListener('visibilitychange', onVis); try { audio.pause(); } catch (e) { } audio.removeAttribute('src'); };
         paint();
       }, [
-        { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) r.resume(t, Date.now()); else r.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; } },
+        { label: 'Pause', id: 'pause', fn: function (b) { if (t.paused) r.resume(t, Date.now()); else r.pause(t, Date.now()); b.textContent = t.paused ? 'Resume' : 'Pause'; var au = document.querySelector('.transit-voice-audio'); if (au) listen(au, t); } },
         { label: 'Skip', id: 'skip', fn: function (b, done) { r.end(t, Date.now()); finish(done); } }]);
       function finish(done) {
         if (over) return; over = true;

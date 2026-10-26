@@ -59,7 +59,7 @@ def main():
         page = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2).new_page()
         page.on('console', lambda m: m.type == 'error' and 'Failed to load resource' not in m.text and errors.append(m.text))
         page.on('pageerror', lambda e: errors.append(str(e)))
-        page.goto(f'http://127.0.0.1:{port}/index.html')
+        page.goto(f'http://127.0.0.1:{port}/index.html?time=14:00&weather=clear')
         page.wait_for_function('window.EbbGame && EbbGame._ready && window.EbbCourse')
         cushion = "EbbWorld.SCENES.bedroom.spots.find(s => s.kind === 'cushion')"
         page.wait_for_timeout(300)
