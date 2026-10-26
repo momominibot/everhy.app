@@ -209,3 +209,22 @@ data path headless: P05 (no research consent) is counted never opened, P03's 9-d
 body stays "not collected". A real Playwright smoke of admin/ still needs writing + running on a machine whose Playwright
 driver works (browsers install fine here but the driver fails to start in this sandbox); node suites + a headless DOM
 render check cover the logic meanwhile. check_all auto-picks up tools/test-*.js so test-agents is already in the gate.
+
+## 26 Oct, mrt-skin merged + Playwright driver fixed (Doubao continuation)
+- Merged `claude/mrt-skin` (--no-ff, merge commit 3162b9f) after Jamie said "mrt-skin only". The game now has the MRT
+  and bus as two picture tiles ("How will you get there?"), "Teleport" instead of "Just arrive", one sparkle per
+  carriage (not per seat), and the new legs-down `ride` pose with per-seat sit points (bottom on the cushion, feet on
+  the floor). The bus keeps only its back bench. Every outfit is tone B (fairer) via tools/fairer.py.
+- Conflicts resolved as the handover said: sw.js got a new VERSION (ebb-shell-2026-10-26m; the settings test only
+  allows one trailing letter, so not "mrt"), and js/ebb-clay-sets.js was regenerated with tools/build_clay_sets.py so
+  it lists both `ride` and `weeds`.
+- test-transit count moved 228 -> 160 purely because the bus dropped from 6 seats to 1; the train keeps 6, every seat
+  has a sit point, and there is one sparkle each. Structure checked directly, not just the count.
+- **Playwright driver fixed**: the sandbox aliases site-packages to an ephemeral `/private/tmp/.sboxcache_*/.sandbox_exec/`
+  overlay that does not exist for the spawned node driver, so Playwright died with "Connection closed while reading from
+  the driver". A `sitecustomize.py` in the sandbox site-packages strips that overlay prefix and points
+  `_transport.compute_driver_executable` at the stable real path. After that Chromium (v153) starts and `check_all`
+  runs ALL GREEN end to end: 21 node suites + 16 browser smokes + smoothness. Note this file is outside the repo and not
+  in git; redo it if the sandbox base is rebuilt.
+- Still waiting for Jamie's word: `claude/standalone-tools` and `claude/avatar-3d-sage`. Not merged.
+
