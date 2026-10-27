@@ -19,11 +19,11 @@
     doors: [{ id: 'exit', rect: [20, 126, 80, 140], to: 'merlion', label: 'Step off at your stop' }],
     spots: [
       { id: 'seat1', kind: 'ride', sit: { x: 8, y: 90.3 }, quiet: true, at: { x: 9, y: 82 }, stand: { x: 9, y: 94 }, label: SEAT },
-      { id: 'seat2', kind: 'ride', sit: { x: 27.5, y: 91.8 }, quiet: true, at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
-      { id: 'seat3', kind: 'ride', sit: { x: 46, y: 92.6 }, at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
-      { id: 'seat4', kind: 'ride', sit: { x: 56.5, y: 93.4 }, quiet: true, at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
-      { id: 'seat5', kind: 'ride', sit: { x: 76.5, y: 94.2 }, quiet: true, at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
-      { id: 'seat6', kind: 'ride', sit: { x: 89, y: 95.4 }, quiet: true, at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
+      { id: 'seat2', kind: 'ride', sit: { x: 27.5, y: 90.5 }, quiet: true, at: { x: 28, y: 82 }, stand: { x: 28, y: 94 }, label: SEAT },
+      { id: 'seat3', kind: 'ride', sit: { x: 46, y: 90.6 }, at: { x: 45, y: 82 }, stand: { x: 45, y: 94 }, label: SEAT },
+      { id: 'seat4', kind: 'ride', sit: { x: 56.5, y: 90.6 }, quiet: true, at: { x: 56, y: 82 }, stand: { x: 56, y: 94 }, label: SEAT },
+      { id: 'seat5', kind: 'ride', sit: { x: 76.5, y: 90.7 }, quiet: true, at: { x: 75, y: 82 }, stand: { x: 75, y: 94 }, label: SEAT },
+      { id: 'seat6', kind: 'ride', sit: { x: 89, y: 90.8 }, quiet: true, at: { x: 88, y: 82 }, stand: { x: 88, y: 94 }, label: SEAT }
     ],
     start: { x: 50, y: 112 }
   });
