@@ -199,6 +199,73 @@
   }
   function close() { if (wrap) { wrap.remove(); wrap = null; } reset(); }
 
+  /* ---------- the topic picker: Ovia is always on the app, and logging is reached by these icons ---------- */
+  var ICONS = {
+    moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+    cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+    temp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>'
+  };
+  function homeIcon(name) {
+    if (name === 'drop') return '<img src="' + base + 'art/log/drop.webp" alt="" width="26" height="26">';
+    if (name === 'sun') return '<img src="' + base + 'art/log/sun.webp" alt="" width="26" height="26">';
+    if (name === 'swirl') return '<img src="' + base + 'art/log/swirl.webp" alt="" width="26" height="26">';
+    return ICONS[name] || '';
+  }
+  var HOME_TOPICS = [
+    { t: 'cycle', name: 'Flow and cycle', icon: 'drop' },
+    { t: 'body', name: 'Body', icon: 'swirl' },
+    { t: 'sleep', name: 'Sleep', icon: 'moon' },
+    { t: 'mood', name: 'Mood', icon: 'sun' },
+    { t: 'food', name: 'Food and drink', icon: 'cup' },
+    { t: 'temperature', name: 'Waking temperature', icon: 'temp' },
+    { t: 'general', name: 'Just chat', icon: 'chat' }
+  ];
+  function home(a) {
+    api = a || api || (root.EbbGame && root.EbbGame.api);
+    return load().then(function () {
+      M.ensure(st());
+      if (wrap) wrap.remove();
+      reset();
+      wrap = doc.createElement('div'); wrap.className = 'ebb-log lg-home';
+      wrap.innerHTML = '<div class="lg-sheet" role="dialog" aria-modal="true" aria-labelledby="lgHomeTitle"><div class="lg-grab" aria-hidden="true"></div><header class="lg-top"><h2 id="lgHomeTitle">Check in with Ovia</h2>' +
+        '<button type="button" class="btn small lg-close" aria-label="Close">Close</button></header>' +
+        '<section class="lg-body"><p class="lg-hint">What would you like to note? Pick a topic, or just chat. Nothing here is required.</p><div class="lg-topics"></div></section></div>';
+      doc.body.appendChild(wrap);
+      wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
+      wrap.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === wrap) close(); });
+      wrap.querySelector('.lg-close').addEventListener('click', close);
+      var grid = wrap.querySelector('.lg-topics');
+      HOME_TOPICS.forEach(function (h) {
+        var b = doc.createElement('button'); b.type = 'button'; b.className = 'lg-topic';
+        b.innerHTML = '<span class="lg-topic-ico">' + homeIcon(h.icon) + '</span><span>' + esc(h.name) + '</span>';
+        b.addEventListener('click', function () { open(api, h.t); });
+        grid.appendChild(b);
+      });
+      wrap.querySelector('.lg-topic').focus({ preventScroll: true });
+    }).catch(function (e) { console.error(e); if (api) api.toast('Ovia could not load'); });
+  }
+
+  /* ---------- the always-present Ovia button ---------- */
+  function oviaFace() {
+    return '<svg viewBox="0 0 120 120" width="30" height="30" aria-hidden="true"><defs><radialGradient id="ovBtnBody" cx="42%" cy="34%" r="72%"><stop offset="0" stop-color="#fff1f2"/><stop offset="0.38" stop-color="#ffcfdc"/><stop offset="0.8" stop-color="#f5a3bd"/><stop offset="1" stop-color="#e3869f"/></radialGradient></defs>' +
+      '<circle cx="60" cy="62" r="46" fill="url(#ovBtnBody)"/><circle cx="45" cy="58" r="6" fill="#7a3b52"/><circle cx="75" cy="58" r="6" fill="#7a3b52"/><circle cx="43" cy="55" r="2" fill="#fff"/><circle cx="73" cy="55" r="2" fill="#fff"/>' +
+      '<path d="M50 74q10 8 20 0" fill="none" stroke="#7a3b52" stroke-width="3.5" stroke-linecap="round"/><circle cx="38" cy="70" r="6" fill="#ff7fa3" opacity="0.7"/><circle cx="82" cy="70" r="6" fill="#ff7fa3" opacity="0.7"/>' +
+      '<path d="M60 22c-6 2-8 8-5 13 3-2 6-3 9-1 1-5-1-10-4-12z" fill="#d98fb0"/><path d="M60 22c6 2 8 8 5 13-3-2-6-3-9-1-1-5 1-10 4-12z" fill="#c77a9c"/></svg>';
+  }
+  function mountButton() {
+    var app = doc.querySelector('.app');
+    if (!app || doc.getElementById('oviaBtn')) return;
+    var b = doc.createElement('button');
+    b.type = 'button'; b.id = 'oviaBtn'; b.className = 'ovia-btn';
+    b.setAttribute('aria-haspopup', 'dialog'); b.setAttribute('aria-label', 'Check in with Ovia');
+    b.innerHTML = '<span class="ovia-pic">' + oviaFace() + '</span><span>Ovia</span>';
+    b.addEventListener('click', function (e) { e.stopPropagation(); home(); });
+    b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); });
+    app.appendChild(b);
+  }
+  mountButton();
+
   function chips(T) {
     var box = wrap.querySelector('.lg-chips');
     T.chips.forEach(function (c) {
@@ -443,5 +510,5 @@
     return true;
   }
   if (!register()) doc.addEventListener('DOMContentLoaded', register);
-  root.EbbLog = { weekOf: weekOf, open: function (t) { return open(root.EbbGame && root.EbbGame.api, t); }, close: close, topics: Object.keys(TOPICS), handle: function (t) { handle(t, 'chat'); }, ready: load };
+  root.EbbLog = { weekOf: weekOf, open: function (t) { return open(root.EbbGame && root.EbbGame.api, t); }, home: function () { return home(root.EbbGame && root.EbbGame.api); }, close: close, topics: Object.keys(TOPICS), handle: function (t) { handle(t, 'chat'); }, ready: load };
 })(window);

@@ -81,3 +81,26 @@
 .lg-days ul li { margin: 2px 0; overflow-wrap: anywhere; }
 .lg-private { margin: 0; }
 .ebb-log[data-view="past"] .lg-foot { display: none; }
+
+/* the always-present Ovia button: bottom-left base, with the Bag stacked above it */
+.ovia-btn { position: absolute; z-index: 5; left: max(14px, env(safe-area-inset-left)); bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px));
+  width: 54px; height: 54px; border: 0; border-radius: 50%; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: var(--card); color: var(--ink); box-shadow: 0 4px 14px rgba(40, 30, 30, 0.18); font: 800 11px var(--font); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ovia-btn .ovia-pic { width: 30px; height: 30px; display: grid; place-items: center; }
+.ovia-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+html[data-text="large"] .ovia-btn { font-size: 12px; }
+html[data-text="larger"] .ovia-btn { font-size: 13px; }
+
+/* the topic picker sheet: a shorter sheet with a grid of topic icons */
+.lg-home .lg-sheet { height: auto; max-height: 80vh; }
+.lg-home .lg-body { gap: 12px; }
+.lg-hint { margin: 0; color: var(--soft); font-size: 14px; line-height: 1.4; }
+.lg-topics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.lg-topic { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--bg);
+  color: var(--ink); font: 700 14px var(--font); text-align: left; cursor: pointer; min-height: 56px; -webkit-tap-highlight-color: transparent; }
+.lg-topic:active { transform: scale(0.98); }
+.lg-topic:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.lg-topic-ico { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
+.lg-topic-ico svg { width: 22px; height: 22px; }
+.lg-topic:last-child { grid-column: 1 / -1; justify-content: center; }
