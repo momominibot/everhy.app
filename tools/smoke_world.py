@@ -117,6 +117,13 @@ def main():
         page.click('#leaveSpring'); page.wait_for_selector('.world-sheet', state='detached')
         page.wait_for_function('() => !EbbGame.api.spinning() && EbbGame.me().action !== "sit"', timeout=5000)  # and spins out again
         check('climbs out standing on the floor', page.evaluate('() => EbbGame.me().action') != 'sit' and page.evaluate('() => EbbWorld.walkable("spring", EbbGame.me())'))
+        # cook an egg from the edge, without soaking
+        page.evaluate('() => { const f = EbbGame.state().farm; f.basket.egg = 1; EbbGame.api.save(); }')
+        use('spring', 'egg')
+        page.click('#throwEgg'); page.wait_for_timeout(2000)
+        b3 = basket()
+        check('an egg thrown from the edge comes out spa-boiled', b3.get('spaEgg') == 2 and b3.get('egg') == 0)
+        page.click('.world-sheet .btn:has-text("Done")'); page.wait_for_selector('.world-sheet', state='detached')
         through('waterfall'); check('hot spring -> Little Guilin', True)
 
         use('waterfall', 'pond')
@@ -127,7 +134,7 @@ def main():
         check('no sideways scroll at 390 px', page.evaluate('() => document.documentElement.scrollWidth') <= 390)
         check('the scene fills the phone screen', page.evaluate('() => { const r = document.getElementById("scene").getBoundingClientRect(); return r.width >= 390 && r.height >= 844; }'))
         page.reload(); page.wait_for_function('window.EbbGame && window.EbbGame._ready')
-        check('the basket survives a reload', page.evaluate('() => EbbGame.state().farm.basket.spaEgg') == 1)
+        check('the basket survives a reload', page.evaluate('() => EbbGame.state().farm.basket.spaEgg') == 2)
         b.close()
     srv.shutdown()
     check('no console errors ' + json.dumps(errors[:3]), not errors)

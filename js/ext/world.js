@@ -13,7 +13,10 @@
     floor: [[4, 100], [20, 100], [20, 106], [84, 106], [84, 100], [96, 100], [96, 175], [4, 175]],
     solids: [[20, 66, 84, 106], [4, 80, 33, 118], [84, 86, 100, 110], [78, 106, 92, 126], [10, 120, 28, 136], [84, 122, 92, 136]], /* pool and rim, egg station, pinwheel, notice board, bench, stone */
     doors: [{ id: 'toFalls', rect: [34, 170, 64, 175], to: 'waterfall', arrive: { x: 66, y: 166 }, label: 'Back to Little Guilin' }],
-    spots: [{ id: 'soak', kind: 'soak', at: { x: 70, y: 96 }, stand: { x: 70, y: 110 }, label: 'Slip into the warm water' }],
+    spots: [
+      { id: 'soak', kind: 'soak', at: { x: 70, y: 96 }, stand: { x: 70, y: 110 }, label: 'Slip into the warm water' },
+      { id: 'egg', kind: 'egg', at: { x: 38, y: 106 }, stand: { x: 38, y: 107 }, target: { x: 48, y: 96 }, label: 'Cook an egg in the spring' }
+    ],
     start: { x: 50, y: 160 }
   });
   W.addDoor('waterfall', { id: 'toSpring', rect: [57, 170, 78, 175], to: 'spring', arrive: { x: 48, y: 160 }, label: 'Path to the hot spring' }); /* the right half of the stone path */
@@ -187,6 +190,48 @@
       draw();
     }, out, { dismissOnBackdrop: false });
   });
+
+  /* cook an egg from the pool edge, without soaking: she throws it in and the warm water does the rest */
+  function splashFx(x, y) {
+    var r = function (v) { return v.toFixed(2); };
+    return '<g class="world-splash">' +
+      '<ellipse cx="' + r(x) + '" cy="' + r(y + 0.5) + '" rx="2.4" ry="0.8" fill="none" stroke="#effcf8" stroke-width="0.25" opacity="0.9"/>' +
+      '<path d="M' + r(x - 1) + ' ' + r(y) + ' l-0.6 -2 M' + r(x) + ' ' + r(y - 0.5) + ' l0 -2.6 M' + r(x + 1) + ' ' + r(y) + ' l0.6 -2" stroke="#eafaf6" stroke-width="0.3" stroke-linecap="round"/>' +
+      '</g>';
+  }
+  root.EbbGame.registerKind('egg', function (spot, api) {
+    var t = spot.target, timers = [];
+    function clear() { timers.forEach(clearTimeout); timers = []; }
+    var me = api.me(); me.view = 'side'; me.flip = false; /* she faces the pool, to her right */
+    sheet('Hot spring egg', function (body, buttons) {
+      function draw(line) {
+        body.innerHTML = '';
+        body.appendChild(p(line));
+        var list = [];
+        if ((api.state().farm.basket.egg || 0) > 0) list.push({ id: 'throwEgg', label: 'Throw an egg in', primary: true, fn: throwEgg });
+        list.push({ label: 'Done', fn: function () { if (openSheet) openSheet(); } });
+        buttons(list);
+      }
+      function throwEgg() {
+        if (!R().boilEgg(api.state().farm)) { draw('No egg to cook. Bring one from the farm.'); return; }
+        api.save();
+        var arc = [[37, 100], [41, 94], [44, 90], [47, 93]]; /* the egg arcs from her hand into the pool */
+        arc.forEach(function (q, i) {
+          timers.push(setTimeout(function () { api.fx(sprite('items', 0, q[0], q[1], 2.6), 320); }, i * 230));
+        });
+        timers.push(setTimeout(function () {
+          api.fx(splashFx(t.x, t.y) + (root.EbbProps ? root.EbbProps.sparkles(t.x, t.y, 6) : ''), 1800);
+        }, 4 * 230));
+        var w = data(api); w.spaEggFound = true;
+        timers.push(setTimeout(function () {
+          api.save(); api.refresh();
+          draw('A little while later: a spa-boiled egg, soft and golden. It is in your basket.');
+        }, 1900));
+      }
+      draw();
+    }, function () { clear(); api.fx('', 1); }, { dismissOnBackdrop: false });
+  });
+
   /* Little Guilin: only the signpost. No fishing there: NParks lists Bukit Batok Town Park as "Do not fish" */
   root.EbbGame.registerProps('waterfall', function () { return sign(80, 162, 'Hot spring'); });
   root.EbbGame.registerProps(FISH_SCENE, function (api, near) {
