@@ -149,7 +149,7 @@
       else if (x === 'close') close();
     });
 
-    doc.body.appendChild(wrap);
+    root.EbbMount(wrap);
     sheet.querySelector('button').focus();
   }
 

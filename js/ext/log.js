@@ -185,7 +185,7 @@
         '<button type="button" class="btn small lg-close" aria-label="Close">Close</button></header>' +
         (T.ring ? '<section class="lg-ring" aria-live="polite"></section>' : '') + '<section class="lg-body"></section>' +
         '<footer class="lg-foot"><div class="lg-chips"></div><form class="lg-form"><label class="lg-sr" for="lgInput">Tell Ovia in your own words</label><input id="lgInput" autocomplete="off" maxlength="' + (T.journal ? 2000 : 400) + '" placeholder="' + (T.journal ? 'Write anything…' : 'Or type it your way…') + '"><button type="submit" class="btn primary">Send</button></form></footer></div>';
-      doc.body.appendChild(wrap);
+      root.EbbMount(wrap);
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === wrap) close(); });
       wrap.querySelector('.lg-close').addEventListener('click', close);
@@ -231,7 +231,7 @@
       wrap.innerHTML = '<div class="lg-sheet" role="dialog" aria-modal="true" aria-labelledby="lgHomeTitle"><div class="lg-grab" aria-hidden="true"></div><header class="lg-top"><h2 id="lgHomeTitle">Check in with Ovia</h2>' +
         '<button type="button" class="btn small lg-close" aria-label="Close">Close</button></header>' +
         '<section class="lg-body"><p class="lg-hint">What would you like to note? Pick a topic, or just chat. Nothing here is required.</p><div class="lg-topics"></div></section></div>';
-      doc.body.appendChild(wrap);
+      root.EbbMount(wrap);
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === wrap) close(); });
       wrap.querySelector('.lg-close').addEventListener('click', close);

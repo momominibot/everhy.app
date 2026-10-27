@@ -106,7 +106,7 @@
     }
     wrap.addEventListener('keydown', function (ev) { ev.stopPropagation(); if (ev.key === 'Escape') close(); }); /* Enter on a button never reaches the game's key handler */
     wrap.addEventListener('click', function (ev) { if (ev.target === wrap) close(); });
-    doc.body.appendChild(wrap);
+    root.EbbMount(wrap);
     grid();
     if (btn) btn.setAttribute('aria-expanded', 'true');
     openSheet = { close: close, repaint: function () { if (view.kind === 'detail') detail(view.id); else grid(); }, view: function () { return view; } };

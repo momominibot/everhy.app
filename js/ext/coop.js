@@ -60,7 +60,7 @@
     }
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-    doc.body.appendChild(wrap); openWrap = wrap;
+    root.EbbMount(wrap); openWrap = wrap;
     build(body, buttons, close);
   }
   function rolls() { return [Math.random(), Math.random(), Math.random()]; }

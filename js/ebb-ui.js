@@ -5,6 +5,9 @@
   'use strict';
   var doc = root.document, P = root.EbbPuppet, S = root.EbbStore;
   var open = false;
+  /* mount a full-screen overlay inside the phone frame so it is clipped to the 390x844 app on a desktop; falls back
+   * to the body before the app exists */
+  root.EbbMount = function (el) { var app = doc.querySelector('.app'); (app || doc.body).appendChild(el); return el; };
 
   var SWATCH = {
     top: ['#f2a39b', '#f4d6a0', '#9cc7c0', '#c9b6e6', '#fbf7ef', '#e8836f'],
@@ -21,7 +24,7 @@
       var b = doc.createElement('button'); b.type = 'button'; b.textContent = a.label; b.className = a.primary ? 'btn primary' : 'btn';
       b.addEventListener('click', a.fn); wrap.querySelector('.sheet-actions').appendChild(b);
     });
-    doc.body.appendChild(wrap); open = true;
+    root.EbbMount(wrap); open = true;
     var first = wrap.querySelector('button'); if (first) first.focus();
     return function close() { wrap.remove(); open = false; };
   }

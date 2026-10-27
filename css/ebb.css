@@ -9,9 +9,14 @@
 @media (prefers-color-scheme: dark) { :root { --bg: #1f1b1d; --card: #2a2427; --ink: #f4ece6; --soft: #b8aaa6; --line: #3c3336; --scrim: rgba(0, 0, 0, 0.55); color-scheme: dark; } }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font); }
-/* full screen: the scene fills the phone, the top bar and the action button float over it */
-.app { position: fixed; inset: 0; overflow: hidden; }
+html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: #e9ded1; color: var(--ink); font: 15px/1.45 var(--font); }
+/* the app is a 390x844 phone, centered on a desktop and filling the screen on a phone. On a desktop it sits in a soft
+ * bezel so localhost always looks like the mobile app; every overlay is inside this frame. */
+.app { position: fixed; inset: 0; margin: auto; width: 390px; height: 844px; max-width: 100vw; max-height: 100vh; overflow: hidden; background: var(--bg); }
+@media (min-width: 430px) and (min-height: 880px) {
+  body { background: radial-gradient(120% 120% at 50% 0%, #efe6da 0%, #ddcfbd 100%); }
+  .app { border-radius: 44px; border: 12px solid #2c2729; box-shadow: 0 30px 80px rgba(50, 38, 30, 0.4), 0 6px 24px rgba(50, 38, 30, 0.3); }
+}
 /* the top bar: a soft cream pill with a pink edge; the place as a pink badge, the counts as icon chips, all on one row at 390px */
 .top { position: absolute; z-index: 6; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); right: max(10px, env(safe-area-inset-right));
   display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; padding: 5px 5px 5px 5px; border-radius: 999px; font-family: var(--round); color: var(--bar-ink);
@@ -46,7 +51,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: non
 .menu-item:hover, .menu-item:focus-visible { background: var(--bg); }
 .btn.small { min-height: 36px; padding: 6px 14px; }
 .top .btn.small { min-height: 32px; padding: 5px 10px; flex: none; font-family: var(--round); font-weight: 800; border-color: var(--pink); background: #fff; color: var(--pink-ink); }
-.sheet-wrap { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+.sheet-wrap { position: absolute; inset: 0; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
 .sheet { width: min(560px, 100%); max-height: 88vh; overflow: auto; background: var(--card); border-radius: 22px 22px 0 0; padding: 18px max(16px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 12px; }
 .sheet h2 { margin: 0; font-size: 19px; }
 .sheet-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }

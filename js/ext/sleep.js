@@ -48,7 +48,7 @@
     var log = el('button', 'btn primary', 'Log last night’s sleep'); log.type = 'button'; log.dataset.act = 'log';
     log.addEventListener('click', openLog);
     bar.appendChild(up); bar.appendChild(log); sh.appendChild(bar);
-    wrap.appendChild(sh); doc.body.appendChild(wrap);
+    wrap.appendChild(sh); root.EbbMount(wrap);
     log.focus();
   }
   function close() { if (wrap) { wrap.remove(); wrap = null; } }

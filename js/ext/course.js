@@ -47,7 +47,7 @@
       wrap = el('div', 'sheet-wrap course-wrap');
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); });
-      doc.body.appendChild(wrap);
+      root.EbbMount(wrap);
     }
     wrap.innerHTML = '';
     var sh = el('section', 'sheet course-sheet'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', title);

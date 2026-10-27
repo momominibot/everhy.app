@@ -45,7 +45,7 @@
     wrap.appendChild(sheetEl);
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); }); /* the game must not walk behind a sheet */
     wrap.addEventListener('click', function (e) { e.stopPropagation(); });
-    doc.body.appendChild(wrap);
+    root.EbbMount ? root.EbbMount(wrap) : doc.body.appendChild(wrap);
     current = { wrap: wrap };
     var close = function () { if (!wrap.parentNode) return; wrap.remove(); current = null; setTimeout(next, 0); };
     build(sheetEl, close, wrap);

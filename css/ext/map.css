@@ -5,7 +5,7 @@
 .map-btn svg { width: 22px; height: 22px; color: var(--teal); }
 .map-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 
-.map-wrap { position: fixed; inset: 0; z-index: 20; overflow: auto; overscroll-behavior: contain; background: var(--bg); }
+.map-wrap { position: absolute; inset: 0; z-index: 20; overflow: auto; overscroll-behavior: contain; background: var(--bg); }
 .map-sheet { min-height: 100%; width: min(640px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
   padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
 .map-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

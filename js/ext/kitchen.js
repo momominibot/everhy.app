@@ -87,7 +87,7 @@
     /* keys stay inside the card so Enter on a button never reaches the game's own key handler */
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-    doc.body.appendChild(wrap);
+    root.EbbMount(wrap);
     ui = { body: body, buttons: buttons, close: close, wrap: wrap }; current = ui;
     return ui;
   }

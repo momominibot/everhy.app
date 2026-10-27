@@ -46,7 +46,7 @@
       wrap = el('div', 'sheet-wrap routine-wrap');
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); });
-      doc.body.appendChild(wrap);
+      root.EbbMount(wrap);
     }
     wrap.className = 'sheet-wrap routine-wrap' + (cls ? ' ' + cls : '');
     wrap.innerHTML = '';

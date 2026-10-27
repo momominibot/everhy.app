@@ -43,7 +43,7 @@
     });
     head.appendChild(bar); sh.appendChild(head);
     var body = el('div', 'sheet-body seat-body'); nodes.forEach(function (n) { if (n) body.appendChild(n); }); sh.appendChild(body);
-    wrap.appendChild(sh); doc.body.appendChild(wrap);
+    wrap.appendChild(sh); root.EbbMount(wrap);
     sh.focus();
     return sh;
   }

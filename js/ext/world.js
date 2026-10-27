@@ -120,7 +120,7 @@
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
     /* the wrap covers the whole screen to absorb taps (so she can't walk while resting); it only closes when asked */
     wrap.addEventListener('click', function (e) { if (dismissOnBackdrop && e.target === wrap) close(); });
-    doc.body.appendChild(wrap); openSheet = close;
+    root.EbbMount(wrap); openSheet = close;
     build(body, buttons, close);
     return close;
   }

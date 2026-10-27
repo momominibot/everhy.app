@@ -143,7 +143,7 @@
     b.addEventListener('click', close); acts.appendChild(b);
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-    doc.body.appendChild(wrap); openSheet = close;
+    root.EbbMount(wrap); openSheet = close;
     build(body);
     b.focus();
     return close;
@@ -226,7 +226,7 @@
         v.querySelector('.dome-viewer-x').addEventListener('click', shut);
         v.addEventListener('click', function (e) { if (e.target === v) shut(); });
         doc.addEventListener('keydown', onKey);
-        doc.body.appendChild(v);
+        root.EbbMount(v);
         card.querySelector('.dome-viewer-x').focus();
       }
       function drawPlants(line) {

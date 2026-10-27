@@ -45,7 +45,7 @@
       sh.appendChild(list);
       if (!have) sh.appendChild(el('p', 'muted small', 'Hearts come from logging how you are, finishing a practice, and Today’s invitations.'));
     }
-    draw(); doc.body.appendChild(wrap); sh.focus();
+    draw(); root.EbbMount(wrap); sh.focus();
   }
   root.EbbGame.registerKind('grocer', function (spot, api) { open(api); });
   root.EbbGrocer = { open: function () { open(root.EbbGame.api); }, close: close };

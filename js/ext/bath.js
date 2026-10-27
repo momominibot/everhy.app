@@ -45,7 +45,7 @@
       wrap = el('div', 'sheet-wrap bath-wrap');
       wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
       wrap.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === wrap) close(); });
-      doc.body.appendChild(wrap);
+      root.EbbMount(wrap);
     }
     wrap.innerHTML = '';
     var sh = el('section', 'sheet bath-sheet'); sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', title);

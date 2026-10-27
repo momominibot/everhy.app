@@ -108,7 +108,7 @@
     });
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape' && !wrap._stay) close(); });
     wrap.addEventListener('click', function (e) { e.stopPropagation(); });
-    doc.body.appendChild(wrap); openSheet = close;
+    root.EbbMount(wrap); openSheet = close;
     build(body, close, wrap);
     var first = sh.querySelector('button:not([disabled])'); if (first) first.focus();
     return close;

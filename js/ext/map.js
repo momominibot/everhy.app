@@ -165,7 +165,7 @@
       }
     });
     draw();
-    doc.body.appendChild(wrap);
+    root.EbbMount(wrap);
     /* tags are measured once the sheet is on screen, and again when the fonts or the screen size change */
     var pinsBox = wrap.querySelector('.map-pins'), relabel = function () { if (wrap && wrap.contains(pinsBox)) placeLabels(pinsBox); };
     relabel();

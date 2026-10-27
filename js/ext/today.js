@@ -83,7 +83,7 @@
     b.addEventListener('click', close); acts.appendChild(b);
     wrap.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Escape') close(); });
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-    doc.body.appendChild(wrap); openSheet = close;
+    root.EbbMount(wrap); openSheet = close;
     build(body);
     b.focus();
     return close;
