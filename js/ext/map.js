@@ -84,7 +84,7 @@
     '</svg>';
 
   /* ---------- the sheet ---------- */
-  var wrap = null, opener = null, appInert = false, btn = null;
+  var wrap = null, opener = null, appInert = false, inertKids = null, btn = null;
   function api() { return root.EbbGame.api; }
   function reduced() {
     if (doc.documentElement.getAttribute('data-motion') === 'reduce') return true;
@@ -173,7 +173,16 @@
     var im = wrap.querySelector('.map-img'); if (im && !im.complete) im.addEventListener('load', relabel);
     root.addEventListener('resize', relabel); wrap._relabel = relabel;
     var app = doc.querySelector('.app');
-    if (app) { appInert = app.inert; app.inert = true; }
+    if (app) {
+      appInert = app.inert;
+      /* the map now lives inside .app, so make the background children inert instead of the frame, or the map itself goes inert */
+      inertKids = [];
+      [].forEach.call(app.children, function (kid) {
+        if (kid === wrap) return;
+        inertKids.push({ el: kid, inert: kid.inert });
+        kid.inert = true;
+      });
+    }
     if (btn) btn.setAttribute('aria-expanded', 'true');
     wrap.querySelector('.map-close').focus();
   }
@@ -181,6 +190,10 @@
     if (!wrap) return;
     if (wrap._relabel) root.removeEventListener('resize', wrap._relabel);
     wrap.remove(); wrap = null;
+    if (inertKids) {
+      inertKids.forEach(function (k) { k.el.inert = k.inert; });
+      inertKids = null;
+    }
     var app = doc.querySelector('.app');
     if (app) app.inert = appInert;
     if (btn) btn.setAttribute('aria-expanded', 'false');

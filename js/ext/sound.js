@@ -638,10 +638,15 @@
       var b = e.target && e.target.closest && e.target.closest('button');
       if (b && !b.disabled && b.id !== 'prompt' && b.id !== 'soundBtn') play('tick');
     }, true);
-    /* a pop when a sheet opens: every sheet in Ebb is a dialog added to the body */
-    if (root.MutationObserver) new root.MutationObserver(function (list) {
-      for (var i = 0; i < list.length; i++) for (var j = 0; j < list[i].addedNodes.length; j++) if (hasDialog(list[i].addedNodes[j])) { play('pop'); return; }
-    }).observe(doc.body, { childList: true });
+    /* a pop when a sheet opens: sheets mount inside the phone frame now, so watch both the body and .app */
+    if (root.MutationObserver) {
+      var popObs = new root.MutationObserver(function (list) {
+        for (var i = 0; i < list.length; i++) for (var j = 0; j < list[i].addedNodes.length; j++) if (hasDialog(list[i].addedNodes[j])) { play('pop'); return; }
+      });
+      popObs.observe(doc.body, { childList: true });
+      var frameEl = doc.querySelector('.app');
+      if (frameEl) popObs.observe(frameEl, { childList: true });
+    }
     doc.addEventListener('visibilitychange', function () {
       if (!ctx || !on) return;
       if (doc.hidden) { try { var p = ctx.suspend(); if (p && p.catch) p.catch(function () { }); } catch (e) { } }
