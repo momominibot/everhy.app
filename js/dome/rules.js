@@ -118,6 +118,7 @@
     'bedroom.window': { scene: 'bedroom', x: 61, y: 43, label: 'Bedroom, window seat corner' },
     'living.cabinet': { scene: 'living', x: 66, y: 46, label: 'Kitchen, record cabinet by the sofa' },
     'living.sill': { scene: 'living', x: 86, y: 61, label: 'Kitchen, window sill' },
+    'living.rug': { scene: 'living', x: 22, y: 60, floor: true, label: 'Kitchen, on the floor by the arch door' },
     'bathroom.shelf': { scene: 'bathroom', x: 21, y: 56, label: 'Bathroom, shelf by the basket' }
   };
   function ensureHome(h) {

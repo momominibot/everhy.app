@@ -94,7 +94,7 @@ def main():
         page.click('#buy-orchid')
         page.wait_for_selector('.dome-pick')
         pick = page.evaluate("() => [...document.querySelectorAll('.dome-spot')].map(b => [b.id, b.querySelector('small').textContent])")
-        check('the picker lists the four places, all free, and keep for later', pick == [['spot-bedroom-window', 'Free'], ['spot-living-cabinet', 'Free'], ['spot-living-sill', 'Free'], ['spot-bathroom-shelf', 'Free'], ['spot-away', 'It waits in the Plants shelf under Your plants']], str(pick))
+        check('the picker lists the five places, all free, and keep for later', pick == [['spot-bedroom-window', 'Free'], ['spot-living-cabinet', 'Free'], ['spot-living-sill', 'Free'], ['spot-living-rug', 'Free'], ['spot-bathroom-shelf', 'Free'], ['spot-away', 'It waits in the Plants shelf under Your plants']], str(pick))
         page.click('#spot-bedroom-window')
         page.wait_for_function("() => (EbbGame.state().homePlants || { plants: [] }).plants.length === 1")
         check('the orchid stands at the bedroom window seat and 60 points are spent', page.evaluate("() => { const h = EbbGame.state().homePlants; return h.plants[0].plant === 'orchid' && h.plants[0].spot === 'bedroom.window'; }") and page.locator('#domePoints').inner_text() == '45' and hud('Hearts') == '45')

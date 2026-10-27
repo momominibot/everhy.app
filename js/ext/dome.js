@@ -45,6 +45,7 @@
     var r = null;
     try {
       r = R().recompute(api.state(), api.today());
+      syncFloorSolids();
       if (r.added.length) { S.save(); api.refresh(); }
       if (r.gained > 0 && !quiet) note(r.gained);
     } catch (e) { console.error(e); }
@@ -108,6 +109,27 @@
     return out;
   }
   ['bedroom', 'living', 'bathroom'].forEach(function (id) { root.EbbGame.registerProps(id, roomPlants); });
+
+  /* A floor-standing plant occupies a patch of the floor, so she walks round it. Each floor place carries one small
+   * solid rect, present only while a plant stands there; surface places need none. Tagged with a marker so they are
+   * easy to remove and never touch the scene's own furniture solids. */
+  var FLOOR_TAG = 'domeFloorPlant';
+  function floorSolidRect(sp) { return [sp.x - 2, sp.y - 1, sp.x + 2, sp.y + 1]; }
+  function syncFloorSolids() {
+    if (!R()) return;
+    var st = root.EbbGame.state ? root.EbbGame.state() : null;
+    if (!st) return;
+    ['bedroom', 'living', 'bathroom'].forEach(function (sceneId) {
+      var scene = W.SCENES[sceneId];
+      if (!scene) return;
+      scene.solids = scene.solids.filter(function (r) { return !r[FLOOR_TAG]; });
+      Object.keys(R().HOME_SPOTS).forEach(function (key) {
+        var sp = R().HOME_SPOTS[key];
+        if (sp.scene !== sceneId || !sp.floor || !R().occupant(st.homePlants, key)) return;
+        var rect = floorSolidRect(sp); rect[FLOOR_TAG] = true; scene.solids.push(rect);
+      });
+    });
+  }
 
   /* ---------- a small sheet (same look as the engine's) ---------- */
   var openSheet = null;
@@ -283,11 +305,11 @@
           var res = R().buyPlant(st, opt.buy, api.today(), spot);
           if (!res.ok) { draw(res.reason === 'short' ? R().shortLine(res.need) : 'That one is not on the shelf.'); return; }
           name = R().PLANTS[opt.buy].name;
-          S.save(); api.refresh(); chime();
+          S.save(); syncFloorSolids(); api.refresh(); chime();
           draw(spot ? 'The ' + name.toLowerCase() + ' is yours. It stands at the ' + R().HOME_SPOTS[spot].label.toLowerCase() + '.' : 'The ' + name.toLowerCase() + ' is yours, kept for later.');
         } else {
           R().ensureHome(st.homePlants); R().place(st.homePlants, opt.move, spot);
-          S.save(); api.refresh();
+          S.save(); syncFloorSolids(); api.refresh();
           draw(spot ? 'Moved to the ' + R().HOME_SPOTS[spot].label.toLowerCase() + '.' : 'Put away for now.');
         }
         var fallback = doc.getElementById('domeClose'); if (fallback) fallback.focus();
@@ -321,6 +343,7 @@
     root.EbbGame.registerHud('Hearts', function () { return R() ? R().balance(a.state().points) : 0; }); /* the one currency: logging, practices and Today's invitations earn hearts, the Flower Dome spends them */
     grantDevHearts(a);
     sync(true); /* what she already saved counts from the first open, with no fanfare */
+    syncFloorSolids(); /* floor-standing plants keep their blocking solid from the first open */
     pollTimer = setInterval(function () { if (!doc.hidden) sync(); }, 3000);
     doc.addEventListener('visibilitychange', function () { if (!doc.hidden) sync(); });
   }

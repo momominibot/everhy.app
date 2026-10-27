@@ -143,6 +143,24 @@
       } });
   }
 
+  /* ---------- the bag rests at home: a woven bag on the bedroom floor by the arch door ---------- */
+  var W = root.EbbWorld, G = root.EbbGame;
+  var HOME_BAG = { id: 'homebag', kind: 'homebag', at: { x: 35, y: 70 }, stand: { x: 34, y: 71 }, label: 'Open your bag' };
+  if (W && W.SCENES && W.SCENES.bedroom && !W.SCENES.bedroom.spots.some(function (s) { return s.id === 'homebag'; })) {
+    W.SCENES.bedroom.spots.push(HOME_BAG);
+    G.registerProps('bedroom', function () {
+      var sp = stripMeta('bag');
+      if (!sp) return '';
+      var at = HOME_BAG.at, scale = W.scaleAt(at.y, 'bedroom'), h = 42 * scale;
+      var w = h * sp.w / sp.h, frame = 7; /* the woven tote cell of the bag strip */
+      return '<g class="bag-home">' +
+        '<ellipse cx="' + at.x + '" cy="' + (at.y + 0.25) + '" rx="' + (w * 0.42).toFixed(2) + '" ry="' + (w * 0.12).toFixed(2) + '" fill="rgba(60,40,20,0.16)"/>' +
+        '<svg x="' + (at.x - w / 2).toFixed(2) + '" y="' + (at.y - h).toFixed(2) + '" width="' + w.toFixed(2) + '" height="' + h.toFixed(2) + '" viewBox="' + (frame * sp.w) + ' 0 ' + sp.w + ' ' + sp.h + '" preserveAspectRatio="none">' +
+        '<image href="' + sp.src + '" width="' + (sp.w * sp.frames) + '" height="' + sp.h + '"/></svg></g>';
+    });
+  }
+  G.registerKind('homebag', function () { open(); });
+
   /* ---------- the round button on the scene and the More menu entry ---------- */
   var btn = null;
   function paintButton() {
