@@ -228,3 +228,15 @@ render check cover the logic meanwhile. check_all auto-picks up tools/test-*.js 
   in git; redo it if the sandbox base is rebuilt.
 - Still waiting for Jamie's word: `claude/standalone-tools` and `claude/avatar-3d-sage`. Not merged.
 
+## 27 Oct, fixes and the chicken coop (Doubao continuation; check_all ALL GREEN)
+- #27 home placement, #28 bathroom rework (7faa1ba), #29 guided spring soak (88590af), then #30 the chicken coop
+  (66612d3). Each commit ends with a full green gate.
+- #30 eggs now have a source. A new `coop` scene is its own plate (art/plates/coop.webp): a hen house beside the HDB
+  block, three hens (white/ginger/brown), a fenced run and a water dish. It is reached from the Garden by a "Hens"
+  signpost spot (js/ext/coop.js), not a bottom-edge door, and the coop's door walks back to the garden. Daily laying
+  is pure and roll-driven in js/world/rules.js: HENS=3, LAY_CHANCE=0.75, farm.coop {day,laid,collected}; on a new
+  day each hen lays when its roll is under 0.75 (0-3 eggs), collectEggs moves them into the basket once. The existing
+  boilEgg and the spring egg-throw are reused, so the loop is coop -> basket -> hot spring. tools/smoke_coop.py (14)
+  walks it. A first route that painted a coop prop into the garden plate was dropped (image-edit just reproduces the
+  scene; the prop clipped the buttons), so the coop is a separate place.
+
