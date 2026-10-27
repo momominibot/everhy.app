@@ -103,6 +103,16 @@ TOUCHED.forEach(id => {
   check('timing near the middle gives bigger fish more often', share(3750, 'fishLarge') > share(3010, 'fishLarge'));
   check('even at the edge a big fish is possible', share(3010, 'fishLarge') > 0);
   check('missing is never a loss: reel touches no basket', !('basket' in c));
+
+  /* the catch bar: stop the marker in the middle zone */
+  check('outside the zone it got away', [0, 0.1, 0.36, 0.64, 0.9, 1].every(p => R.catchAt(p, 0.5).result === 'away'));
+  check('inside the zone it lands a fish', [0.37, 0.45, 0.5, 0.55, 0.63].every(p => R.catchAt(p, 0.9).result === 'caught'));
+  check('a catch is small, medium or large', [0.37, 0.5, 0.63].every(p => R.SIZES.indexOf(R.catchAt(p, 0.4).size) >= 0));
+  check('dead centre, low roll: a large fish', R.catchAt(0.5, 0.01).size === 'fishLarge');
+  check('high roll: a small fish', R.catchAt(0.5, 0.99).size === 'fishSmall');
+  check('closeness is 1 at the centre and 0 at the edge', R.catchAt(0.5, 0.5).closeness === 1 && R.catchAt(0.37, 0.5).closeness === 0);
+  const winShare = (p, size) => { let n = 0; for (let i = 0; i < 1000; i++) if (R.catchAt(p, i / 1000).size === size) n++; return n / 1000; };
+  check('the middle gives bigger fish more often', winShare(0.5, 'fishLarge') > winShare(0.38, 'fishLarge'));
 })();
 
 process.on('beforeExit', () => { console.log(`${pass} passed, ${fail} failed`); process.exitCode = fail ? 1 : 0; });

@@ -86,10 +86,15 @@ def main():
         use('jetty', 'fishing'); page.wait_for_selector('.world-sheet', timeout=15000)
         check('fishing sheet opens on the jetty', page.locator('.world-sheet h2').inner_text() == 'Fishing')
         check('she sits on the jetty edge to fish', page.evaluate('() => EbbGame.me().action') == 'sit' and page.evaluate('() => EbbGame.me().pose') == 'fish')
-        page.wait_for_function('() => /nibble!/.test(document.getElementById("fishStatus").textContent)', timeout=8000)
-        page.wait_for_timeout(400); page.click('#reelIn')
+        # on the nibble the catch bar opens and a marker runs back and forth
+        page.wait_for_selector('#fishCatch:not([hidden])', timeout=15000)
+        for _ in range(200):  # stop the marker in the green middle
+            left = page.evaluate('() => parseFloat(document.getElementById("fishMarker").style.left)')
+            if 48 <= left <= 52:
+                page.click('#stopMarker'); break
+            page.wait_for_timeout(16)
         status = page.locator('#fishStatus').inner_text()
-        check('a fish is caught in the window: ' + status, 'caught' in status)
+        check('a fish is caught in the middle: ' + status, 'caught' in status)
         check('nothing goes in the basket until she chooses', fish_count() == 0 and page.locator('#releaseFish').count() == 1)
         page.click('#keepFish')
         check('kept: the fish is in the basket', fish_count() == 1)

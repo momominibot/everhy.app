@@ -13,4 +13,21 @@
 @keyframes world-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.25px); } }
 .world-steam { animation: world-steam 3.2s ease-in-out infinite; }
 @keyframes world-steam { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 0.65; transform: translateY(-1.2px); } }
+
+/* fishing catch bar: a marker runs across the water and she stops it in the middle zone */
+.fish-catch { margin-top: 10px; }
+.fish-bar { position: relative; height: 42px; border-radius: 14px; overflow: hidden;
+  background: linear-gradient(180deg, #bfe6e2 0%, #8fd0cf 100%);
+  box-shadow: inset 0 2px 5px rgba(255,255,255,0.7), inset 0 -3px 6px rgba(46,104,110,0.25); }
+.fish-zone { position: absolute; top: 0; bottom: 0; left: 37%; width: 26%;
+  background: linear-gradient(180deg, rgba(126,200,140,0.65), rgba(96,178,118,0.7));
+  border-left: 1px solid rgba(255,255,255,0.8); border-right: 1px solid rgba(255,255,255,0.8); }
+.fish-mid { position: absolute; top: 4px; bottom: 4px; left: 50%; width: 2px; transform: translateX(-50%);
+  background: rgba(255,255,255,0.9); border-radius: 2px; }
+.fish-marker { position: absolute; top: 0; bottom: 0; left: 0; width: 5px; margin-left: -2.5px;
+  background: linear-gradient(180deg, #ffe08a, #f4a93c); border-radius: 3px;
+  box-shadow: 0 0 6px rgba(244,169,60,0.8); will-change: left; }
+.fish-bar.is-stop .fish-marker { background: linear-gradient(180deg, #ffd0d8, #e8748c); box-shadow: 0 0 6px rgba(232,116,140,0.8); }
+.fish-bar.is-win .fish-marker { background: linear-gradient(180deg, #c8f2cf, #57b572); box-shadow: 0 0 8px rgba(87,181,114,0.9); }
+
 @media (prefers-reduced-motion: reduce) { .world-float, .world-float.bite .world-ripple, .world-steam { animation: none; } }

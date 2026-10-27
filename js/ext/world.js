@@ -211,23 +211,66 @@
     var R0 = R(), timers = [], c = null, t0 = 0, state = 'idle', fx = spot.float ? spot.float.x : spot.at.x + 9, fy = spot.float ? spot.float.y : spot.at.y - 5.5;
     api.sit({ x: spot.at.x, y: spot.at.y + 0.2 }, 'fish'); /* she sits on the jetty edge with the rod */
     function clear() { timers.forEach(clearTimeout); timers = []; }
+    /* the catch marker runs back and forth across the bar; held out here so the sheet's close hook can stop it too */
+    var raf = 0, pos = 0, dir = 1, lastTs = 0, speed = 0.92; /* fraction of the bar per second */
+    function stopLoop() { if (raf) cancelAnimationFrame(raf); raf = 0; lastTs = 0; }
     sheet('Fishing', function (body, buttons) {
-      body.innerHTML = '<p class="world-status" id="fishStatus" role="status"></p>';
+      body.innerHTML = '<p class="world-status" id="fishStatus" role="status"></p>' +
+        '<div class="fish-catch" id="fishCatch" hidden><div class="fish-bar" id="fishBar">' +
+        '<div class="fish-zone"></div><div class="fish-mid"></div><div class="fish-marker" id="fishMarker"></div>' +
+        '</div></div>';
       var status = body.querySelector('#fishStatus');
+      var catchBox = body.querySelector('#fishCatch');
+      var bar = body.querySelector('#fishBar');
+      var marker = body.querySelector('#fishMarker');
       function say(t) { status.textContent = t; }
+      function showBar(on) { catchBox.hidden = !on; }
+      function quit() { state = 'done'; clear(); stopLoop(); if (openSheet) openSheet(); }
       function bite(on) { api.fx(floatFx(fx, fy, on), 36e5); }
+
+      /* the catch marker runs back and forth across the bar; she stops it in the green middle */
+      function frame(ts) {
+        if (!lastTs) lastTs = ts;
+        var dt = (ts - lastTs) / 1000; lastTs = ts;
+        pos += dir * speed * dt;
+        if (pos >= 1) { pos = 1; dir = -1; }
+        if (pos <= 0) { pos = 0; dir = 1; }
+        marker.style.left = (pos * 100).toFixed(2) + '%';
+        raf = requestAnimationFrame(frame);
+      }
+
       function castLine() {
         clear(); c = R0.cast(Math.random(), Math.random()); t0 = Date.now(); state = 'waiting';
+        stopLoop(); showBar(false); bar.classList.remove('is-stop', 'is-win');
         bite(false); say('The float bobs on the water. Wait for a nibble.');
-        buttons([{ id: 'reelIn', label: 'Reel in', primary: true, fn: reelIn }, { label: 'Done', fn: function () { state = 'done'; clear(); if (openSheet) openSheet(); } }]);
-        timers.push(setTimeout(function () { if (state === 'waiting') { bite(true); say('A nibble! Reel in now.'); } }, c.waitMs));
-        timers.push(setTimeout(function () { if (state === 'waiting') finish({ result: 'away' }); }, c.waitMs + c.windowMs));
+        buttons([{ id: 'reelIn', label: 'Reel in', primary: true, fn: earlyReel }, { label: 'Done', fn: quit }]);
+        timers.push(setTimeout(function () { if (state === 'waiting') { bite(true); startCatch(); } }, c.waitMs));
       }
-      function reelIn() { if (state === 'waiting') finish(R0.reel(c, Date.now() - t0, Math.random())); }
+      function earlyReel() { if (state === 'waiting') finish({ result: 'early' }); }
+
+      /* the catch game opens on the nibble; left too long, the fish spits the hook */
+      function startCatch() {
+        state = 'catching';
+        say('A nibble. Stop the marker in the green middle.');
+        pos = 0; dir = 1; lastTs = 0; bar.classList.remove('is-stop', 'is-win');
+        showBar(true);
+        buttons([{ id: 'stopMarker', label: 'Stop', primary: true, fn: stopMarker }, { label: 'Done', fn: quit }]);
+        raf = requestAnimationFrame(frame);
+        timers.push(setTimeout(function () { if (state === 'catching') finish({ result: 'away' }); }, 6000));
+      }
+      function stopMarker() {
+        if (state !== 'catching') return;
+        stopLoop(); state = 'settled';
+        bar.classList.add('is-stop');
+        var res = R0.catchAt(pos, Math.random());
+        if (res.result === 'caught') bar.classList.add('is-win');
+        finish(res);
+      }
       function finish(res) {
-        clear(); state = 'result';
+        clear(); stopLoop(); state = 'result';
+        showBar(false);
         api.fx(res.result === 'caught' && root.EbbProps ? root.EbbProps.sparkles(fx, fy, 7) : '', 1600);
-        var again = [{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: function () { if (openSheet) openSheet(); } }];
+        var again = [{ id: 'castAgain', label: 'Cast again', primary: true, fn: castLine }, { label: 'Done', fn: quit }];
         if (res.result === 'caught') { /* she chooses: keep it for the kitchen, or let it go */
           say('You caught a ' + itemName(res.size) + '. Keep it for the kitchen, or let it go?');
           buttons([{ id: 'keepFish', label: 'Keep it', primary: true, fn: function () {
@@ -245,7 +288,7 @@
         buttons(again);
       }
       castLine();
-    }, function () { clear(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, { cls: 'world-mini', dismissOnBackdrop: false });
+    }, function () { clear(); stopLoop(); state = 'done'; api.fx('', 1); api.stand(spot.stand.y); }, { cls: 'world-mini', dismissOnBackdrop: false });
   });
 
 })(typeof window !== 'undefined' ? window : globalThis);
