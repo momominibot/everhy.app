@@ -88,9 +88,9 @@ def main():
 
         # the Plants shelf: buy an orchid for the bedroom window seat through the picker
         page.click('#tab-plants')
-        prow = page.evaluate("() => [...document.querySelectorAll('.dome-item')].map(li => [li.dataset.plant, li.querySelector('b').textContent, li.querySelector('small').textContent, li.querySelector('button').disabled])")
-        check('six plants with prices, all affordable at 105', prow == [['orchid', 'Orchid', '60 hearts', False], ['monstera', 'Monstera', '70 hearts', False], ['bonsai', 'Bonsai', '80 hearts', False], ['tulips', 'Tulips', '40 hearts', False], ['pothos', 'Pothos', '50 hearts', False], ['cactus', 'Cactus', '40 hearts', False]], str(prow))
-        check('plant icons come from the keyed strip', page.evaluate("() => [...document.querySelectorAll('.dome-plant-icon image')].every(i => i.getAttribute('href') === 'art/dome/plants.webp')"))
+        prow = page.evaluate("() => [...document.querySelectorAll('.dome-plant-card')].map(li => [li.querySelector('.dome-plant-head b').textContent, li.querySelector('.dome-plant-price').textContent, li.querySelector('.dome-plant-buy').disabled])")
+        check('six plants with prices, all affordable at 105', prow == [['Orchid', '60 hearts', False], ['Monstera', '70 hearts', False], ['Bonsai', '80 hearts', False], ['Tulips', '40 hearts', False], ['Pothos', '50 hearts', False], ['Cactus', '40 hearts', False]], str(prow))
+        check('plant art comes from the keyed strip', page.evaluate("() => [...document.querySelectorAll('.dome-plant-big image')].every(i => i.getAttribute('href') === 'art/dome/plants.webp')"))
         page.click('#buy-orchid')
         page.wait_for_selector('.dome-pick')
         pick = page.evaluate("() => [...document.querySelectorAll('.dome-spot')].map(b => [b.id, b.querySelector('small').textContent])")

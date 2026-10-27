@@ -189,20 +189,49 @@
         if (keep && !keep.disabled) keep.focus(); else if (fallback && focusCrop) fallback.focus();
         focusCrop = null;
       }
+      /* a full-size look at one plant, so its leaves and pot are clear; tap the image to open it */
+      function viewPlant(row) {
+        var v = el('div', 'dome-viewer');
+        v.innerHTML = '<div class="dome-viewer-card" role="dialog" aria-modal="true" aria-label="' + row.name + '">' +
+          '<button class="dome-viewer-x" type="button" aria-label="Close">&times;</button>' +
+          '<span class="dome-viewer-img"></span><h3></h3><p></p></div>';
+        var card = v.querySelector('.dome-viewer-card');
+        v.querySelector('.dome-viewer-img').innerHTML = plantIcon(row.frame);
+        v.querySelector('h3').textContent = row.name;
+        v.querySelector('p').textContent = row.line;
+        function shut() { v.remove(); doc.removeEventListener('keydown', onKey); }
+        function onKey(e) { if (e.key === 'Escape') shut(); }
+        v.querySelector('.dome-viewer-x').addEventListener('click', shut);
+        v.addEventListener('click', function (e) { if (e.target === v) shut(); });
+        doc.addEventListener('keydown', onKey);
+        doc.body.appendChild(v);
+        card.querySelector('.dome-viewer-x').focus();
+      }
       function drawPlants(line) {
         var st = api.state(), have = R().balance(st.points), h = R().ensureHome(st.homePlants);
         balanceLine(body);
         if (line) body.appendChild(el('p', 'dome-said', line));
-        var list = el('ul', 'dome-list');
+        body.appendChild(el('p', 'muted dome-tap', 'Tap a plant for a closer look.'));
+        var list = el('ul', 'dome-plants');
         R().plantCatalog().forEach(function (row) {
-          var li = el('li', 'dome-item'); li.dataset.plant = row.plant;
-          var icon = el('span', 'dome-icon dome-plant-icon'); icon.innerHTML = plantIcon(row.frame); li.appendChild(icon);
-          var text = el('span', 'dome-text'); text.appendChild(el('b', '', row.name)); text.appendChild(el('small', '', row.price + ' hearts')); li.appendChild(text);
-          var short = have < row.price, b = el('button', 'btn dome-buy', short ? 'Not yet' : 'Buy'); b.type = 'button'; b.id = 'buy-' + row.plant;
+          var li = el('li', 'dome-plant-card');
+          var big = el('button', 'dome-plant-big'); big.type = 'button';
+          big.setAttribute('aria-label', 'Look closely at the ' + row.name.toLowerCase());
+          big.innerHTML = plantIcon(row.frame);
+          big.addEventListener('click', function () { viewPlant(row); });
+          var col = el('div', 'dome-plant-info');
+          var head = el('div', 'dome-plant-head');
+          head.appendChild(el('b', '', row.name));
+          head.appendChild(el('span', 'dome-plant-price', row.price + ' hearts'));
+          col.appendChild(head);
+          col.appendChild(el('p', 'dome-plant-line', row.line));
+          var short = have < row.price;
+          var b = el('button', 'btn primary dome-plant-buy', short ? 'Not yet' : 'Buy'); b.type = 'button'; b.id = 'buy-' + row.plant;
           b.setAttribute('aria-label', (short ? 'Not enough hearts for the ' : 'Buy the ') + row.name.toLowerCase() + ', ' + row.price + ' hearts');
-          if (short) { b.disabled = true; li.classList.add('short'); li.appendChild(el('small', 'dome-short', R().shortLine(row.price - have))); }
+          if (short) { b.disabled = true; col.appendChild(el('small', 'dome-short', R().shortLine(row.price - have))); }
           b.addEventListener('click', function () { picker({ buy: row.plant, title: 'Where should the ' + row.name.toLowerCase() + ' go?' }); });
-          li.appendChild(b);
+          col.appendChild(b);
+          li.appendChild(big); li.appendChild(col);
           list.appendChild(li);
         });
         body.appendChild(list);
