@@ -144,7 +144,7 @@
     var pt = scenePoint(ev), s = scene(), target = null;
     s.spots.forEach(function (sp) { if (Math.hypot(sp.at.x - pt.x, sp.at.y - pt.y) < 8) target = { pt: sp.stand, then: { spot: sp } }; });
     (s.beds || []).forEach(function (b, i) { var hw = b.w ? b.w / 2 : 7, hh = b.w ? b.w * 0.21 : 4.5; if (Math.abs(b.x - pt.x) < hw && Math.abs(b.y - pt.y) < hh) target = { pt: W.bedStand(b), then: { bed: i } }; });
-    s.doors.forEach(function (dr) { if (W.inRect(pt, [dr.rect[0] - 2, dr.rect[1] - 6, dr.rect[2] + 2, dr.rect[3] + 2])) target = { pt: { x: (dr.rect[0] + dr.rect[2]) / 2, y: (dr.rect[1] + dr.rect[3]) / 2 }, then: null }; });
+    s.doors.forEach(function (dr) { if (W.inRect(pt, [dr.rect[0] - 4, dr.rect[1] - 8, dr.rect[2] + 4, dr.rect[3] + 4])) target = { pt: { x: (dr.rect[0] + dr.rect[2]) / 2, y: (dr.rect[1] + dr.rect[3]) / 2 }, then: null }; });
     walkTo(target ? target.pt : pt, target ? target.then : null);
     if (els.app) els.app.classList.add('moved');
   }

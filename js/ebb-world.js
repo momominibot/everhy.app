@@ -190,14 +190,31 @@
     }
     return null;
   }
-  /* A* on a 1-unit grid, then a string-pulled path of straight legs that each pass segClear */
+  /* A* on a half-unit grid, then a string-pulled path of straight legs that each pass segClear. The half-unit grid is
+   * fine enough to thread the narrow gaps between furniture and the floor edge, and the start and goal are snapped to
+   * the nearest walkable grid cell, so a figure standing on a tight edge is never stranded. */
   function plan(scene, from, to) {
     var goal = nearestWalkable(scene, to); if (!goal) return null;
     var sc = typeof scene === 'string' ? SCENES[scene] : scene, avoid = [];
     ((sc && sc.doors) || []).forEach(function (d) { if (!inRect(goal, d.rect) && !inRect(from, d.rect)) avoid.push(d.rect); });
     if (segClear(scene, from, goal, avoid)) return [goal];
+    var G2 = 2; /* grid cells are half a unit: integer (gx,gy) maps to world (gx/G2, gy/G2) */
     var key = function (x, y) { return x + ',' + y; };
-    var sx = Math.round(from.x), sy = Math.round(from.y), gx = Math.round(goal.x), gy = Math.round(goal.y);
+    /* snap a world point to the nearest walkable grid cell with a clear line from it, searched outward ring by ring */
+    function cellAt(world) {
+      var wx = Math.round(world.x * G2), wy = Math.round(world.y * G2);
+      for (var r = 0; r <= 8; r++) {
+        for (var dx = -r; dx <= r; dx++) for (var dy = -r; dy <= r; dy++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+          var cx = wx + dx, cy = wy + dy, wp = { x: cx / G2, y: cy / G2 };
+          if (walkable(scene, wp) && !inAny(wp, avoid) && segClear(scene, world, wp, avoid)) return { x: cx, y: cy };
+        }
+      }
+      return null;
+    }
+    var startCell = cellAt(from), goalCell = cellAt(goal);
+    if (!startCell || !goalCell) return null;
+    var sx = startCell.x, sy = startCell.y, gx = goalCell.x, gy = goalCell.y;
     var open = [{ x: sx, y: sy, g: 0, f: 0 }], came = {}, cost = {}, seen = {};
     cost[key(sx, sy)] = 0;
     var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
@@ -205,11 +222,11 @@
       open.sort(function (p, q) { return p.f - q.f; });
       var cur = open.shift(), ck = key(cur.x, cur.y);
       if (seen[ck]) continue; seen[ck] = true;
-      /* the goal's own grid cell can lie inside a solid when the goal sits on its edge (a tap on furniture lands on the
-       * nearest walkable point, right at the edge), so a cell beside the goal with a clear line to it also finishes */
-      if ((cur.x === gx && cur.y === gy) || (Math.hypot(cur.x - goal.x, cur.y - goal.y) < 1.5 && segClear(scene, cur, goal, avoid))) {
+      /* finish on the goal cell, or a cell beside the goal with a clear line to it (the goal sits on an edge) */
+      var curW = { x: cur.x / G2, y: cur.y / G2 };
+      if ((cur.x === gx && cur.y === gy) || (Math.hypot(curW.x - goal.x, curW.y - goal.y) < 1 && segClear(scene, curW, goal, avoid))) {
         var cells = [], k = ck;
-        while (k) { var parts = k.split(','); cells.unshift({ x: +parts[0], y: +parts[1] }); k = came[k]; }
+        while (k) { var parts = k.split(','); cells.unshift({ x: +parts[0] / G2, y: +parts[1] / G2 }); k = came[k]; }
         cells.push(goal);
         var path = [], at = from, i = 0;
         while (i < cells.length) { /* farthest cell still in a straight clear line */
@@ -221,7 +238,13 @@
       }
       for (var d = 0; d < dirs.length; d++) {
         var nx = cur.x + dirs[d][0], ny = cur.y + dirs[d][1], nk = key(nx, ny);
-        if (seen[nk] || !walkable(scene, { x: nx, y: ny }) || inAny({ x: nx, y: ny }, avoid)) continue;
+        var nw = { x: nx / G2, y: ny / G2 };
+        if (seen[nk] || !walkable(scene, nw) || inAny(nw, avoid)) continue;
+        /* diagonal moves must not cut the corner between two blocked cells */
+        if (dirs[d][0] && dirs[d][1]) {
+          var ax = { x: cur.x / G2, y: ny / G2 }, ay = { x: nx / G2, y: cur.y / G2 };
+          if (!walkable(scene, ax) || !walkable(scene, ay)) continue;
+        }
         var g = cur.g + (dirs[d][0] && dirs[d][1] ? 1.414 : 1);
         if (cost[nk] !== undefined && cost[nk] <= g) continue;
         cost[nk] = g; came[nk] = ck;
