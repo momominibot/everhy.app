@@ -125,7 +125,7 @@
     jetty: { /* Bedok Jetty at East Coast Park (23 Oct render): the sea with ships on the horizon, the lamp-lit jetty reaching out on the right, a beach, the park connector path curving down. The world extension adds the fishing spot on the deck */
       name: 'Bedok Jetty', plate: 'art/plates/jetty.webp', video: 'art/plates/jetty-live.mp4', aspect: [4, 7], depth: [96, 0.22, 175, 0.33], surface: 'grass', /* the video: waves and palms */
       soundSources: { birds: [[8, 80, 36], [92, 72, 36]], hush: [] },
-      floor: [[10, 100], [60, 100], [60, 108], [72, 108], [72, 98], [62, 88], [66, 82], [90, 89], [90, 100], [84, 100], [84, 108], [97, 108], [97, 175], [3, 175], [3, 108], [10, 108]],
+      floor: [[10, 100], [60, 100], [60, 108], [72, 108], [72, 98], [62, 88], [50, 80], [50, 76], [68, 76], [90, 89], [90, 100], [84, 100], [84, 108], [97, 108], [97, 175], [3, 175], [3, 108], [10, 108]],
       /* left and right palms, the bicycle, bollards */
       solids: [[2, 96, 14, 120], [86, 96, 98, 150], [66, 120, 92, 144], [24, 118, 28, 123], [38, 116, 42, 121], [54, 116, 58, 121], [6, 133, 10, 138], [38, 148, 42, 153], [58, 158, 62, 163], [70, 168, 74, 173]],
       doors: [{ id: 'toMerlion', rect: [26, 170, 60, 175], to: 'merlion', arrive: { x: 60, y: 136 }, label: 'Along the coast to Merlion Park' }],

@@ -21,7 +21,7 @@
   var FISH_SCENE = W.SCENES.jetty ? 'jetty' : 'waterfall'; /* Bedok Jetty when the core has it, else the lake deck */
   if (W.SCENES[FISH_SCENE] && !W.SCENES[FISH_SCENE].spots.some(function (s) { return s.id === 'fishing'; })) {
     W.SCENES[FISH_SCENE].spots.push(FISH_SCENE === 'jetty'
-      ? { id: 'fishing', kind: 'fish', at: { x: 80, y: 88 }, stand: { x: 76, y: 92 }, float: { x: 66, y: 98 }, label: 'Fish from the jetty' }
+      ? { id: 'fishing', kind: 'fish', at: { x: 54, y: 78 }, stand: { x: 54, y: 80 }, float: { x: 40, y: 78 }, label: 'Fish from the jetty' }
       : { id: 'fishing', kind: 'fish', at: { x: 80, y: 103 }, stand: { x: 80, y: 109 }, float: { x: 66, y: 88 }, label: 'Fish from the deck' });
   }
   var SIT_IN_WATER = { x: 70, y: 96 }; /* in the open water of the lower pool, right of the little waterfall; her figure is cut at the waterline */
