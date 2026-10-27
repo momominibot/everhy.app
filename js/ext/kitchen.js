@@ -258,7 +258,18 @@
     });
   }
   if (root.EbbGame._ready) bagUp(); else doc.addEventListener('ebb:ready', bagUp);
+  /* a spa-boiled egg waits in the basket rather than in the kitchen meals list; it is a ready-to-eat dish in its own
+   * right, eaten at the table the same way. */
+  function spaEggIn(api) { var b = api.state().farm.basket; return b && (b.spaEgg || 0) > 0; }
+  function spaEggDish(eaten, at) { return { id: 'spaEgg', dish: 'spaEgg', name: 'Spa-boiled egg', eaten: !!eaten, eatenAt: at || null, spaEgg: true }; }
   root.EbbKitchen = { cooking: function () { return cooking; }, open: function () { return !!current; }, close: function () { if (current) current.close(); }, rules: R, steamFx: steamFx,
-    /* what she cooked and has not eaten yet, oldest first; eat() marks the oldest eaten (js/ext/seats.js, the table) */
-    ready: function (api) { return R().ready(data(api)); }, eat: function (api, at) { var m = R().eat(data(api), at); if (m) api.save(); return m; } };
+    /* what she cooked and has not eaten yet, oldest first; a spa egg in the basket comes after kitchen meals */
+    ready: function (api) { var meals = R().ready(data(api)); if (meals.length) return meals; return spaEggIn(api) ? [spaEggDish(false)] : []; },
+    eat: function (api, at) {
+      var meals = R().ready(data(api));
+      if (meals.length) { var m = R().eat(data(api), at); if (m) api.save(); return m; }
+      var b = api.state().farm.basket;
+      if (b && (b.spaEgg || 0) > 0) { b.spaEgg -= 1; if (b.spaEgg < 1) delete b.spaEgg; api.save(); return spaEggDish(true, at); }
+      return null;
+    } };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -21,7 +21,8 @@ Object.keys(F.CROPS).forEach(c => {
   check(`${c} seed registered`, I.get(I.seedId(c)) && I.get(I.seedId(c)).kind === 'seed' && I.get(I.seedId(c)).icon.strip === 'icons');
 });
 check('crop icon is the ripe frame of its own strip', I.get('turnip').icon.strip === 'turnip' && I.get('turnip').icon.frame === 4);
-['milk', 'spaEgg', 'fishSmall', 'fishMedium', 'fishLarge'].forEach(id => check(`${id} is a find`, I.get(id) && I.get(id).kind === 'find' && I.get(id).icon.strip === 'items'));
+['milk', 'fishSmall', 'fishMedium', 'fishLarge'].forEach(id => check(`${id} is a find`, I.get(id) && I.get(id).kind === 'find' && I.get(id).icon.strip === 'items'));
+check('spaEgg is a ready-to-eat dish', I.get('spaEgg') && I.get('spaEgg').kind === 'dish' && I.get('spaEgg').icon.strip === 'items');
 check('the egg is pantry, from the provision shop', I.get('egg').kind === 'pantry' && /provision shop/.test(I.get('egg').about));
 ['rice', 'ginger', 'chilli'].forEach(id => check(`${id} is pantry`, I.get(id) && I.get(id).kind === 'pantry' && I.get(id).source === 'farm.basket'));
 check('no item talks about a goddess, hens or a shed any more', I.all().every(it => !/goddess|\bhens?\b|\bshed\b/i.test(it.about)) && I.KINDS.every(k => !/goddess|\bhens?\b|\bshed\b|\bbarn\b/i.test(k.about + k.empty)));

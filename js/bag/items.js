@@ -72,7 +72,7 @@
    ['fishSmall', 'Small fish', 2, 'Caught off the end of Bedok Jetty. Small, quick and shiny. Cook it at home.', 'find'],
    ['fishMedium', 'Medium fish', 3, 'Caught off Bedok Jetty with good timing. Cook it at home.', 'find'],
    ['fishLarge', 'Large fish', 4, 'Caught off Bedok Jetty right in the middle of the dip. Cook it at home.', 'find'],
-   ['spaEgg', 'Spa-boiled egg', 5, 'An egg warmed through in the hot spring. The small secret.', 'find']
+   ['spaEgg', 'Spa-boiled egg', 5, 'An egg warmed through in the hot spring. Eat it slowly at the kitchen table.', 'dish']
   ].forEach(function (r) { define({ id: r[0], name: r[1], kind: r[4], icon: { strip: 'items', frame: r[2] }, about: r[3], source: 'farm.basket' }); });
   /* ---------- the provision shop's pantry (js/ext/grocer.js); no drawn icon yet, the bag shows a letter ---------- */
   [['rice', 'Rice', 'A small bag of rice from the provision shop. For egg fried rice.'],
