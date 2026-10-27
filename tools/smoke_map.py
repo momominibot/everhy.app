@@ -100,11 +100,10 @@ with sync_playwright() as p:
     if shots:
         pg.screenshot(path=f'{shots}_after.png')
 
-    # from the More menu, close with Escape, then travel from the list
-    pg.click('#moreBtn')
-    pg.click('#panel-map')
+    # Map lives on its own floating button, not in the More menu (one tap, no double destination, Jamie 26 Oct)
+    btn.click()
     pg.wait_for_timeout(200)
-    check('map opens from More', pg.locator('.map-wrap').is_visible())
+    check('map opens from the button', pg.locator('.map-wrap').is_visible())
     check('farm is now here', 'is-here' in pg.get_attribute('.map-pin[data-pin=farm]', 'class'))
     pg.keyboard.press('Escape')
     check('Escape closes', pg.locator('.map-wrap').count() == 0)

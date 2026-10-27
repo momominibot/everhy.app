@@ -92,7 +92,7 @@ def main():
                 ob = loc.first.bounding_box()
                 check(f'button clear of {other}', not overlap(bb, ob), f'{bb} vs {ob}')
         check('button beside the sound toggle', page.locator('#soundBtn').count() == 0 or abs(page.locator('#soundBtn').bounding_box()['x'] - bb['x']) < 12)
-        check('More menu has a Bag entry', page.locator('#panel-bag').count() == 1)
+        check('More menu has no Bag entry', page.locator('#panel-bag').count() == 0)
         if shots:
             page.screenshot(path=str(shots / 'bag-button-390.png'))
 
@@ -139,7 +139,7 @@ def main():
         # ---------- Plant from the bag goes through the engine ----------
         js("() => { EbbFarm.act(EbbGame.state().farm, 0, EbbStore.today()); EbbGame.api.save(); EbbGame.api.refresh(); }")  # hoe bed 0
         check('bed 0 waits for a seed', js("() => EbbFarm.nextAction(EbbGame.state().farm, 0, EbbStore.today())") == 'plant')
-        page.click('#moreBtn'); page.click('#panel-bag')
+        btn.click()
         page.wait_for_selector('.bag-grid')
         page.click('.bag-item[data-id=seed-turnip]')
         page.click('#bagAct-plant')
