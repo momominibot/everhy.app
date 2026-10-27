@@ -89,7 +89,7 @@ def main():
                 cmd += ["--ref", str(r)]
             t0 = time.time()
             p = subprocess.run(cmd + [prompt], capture_output=True, text=True,
-                               timeout=150)
+                               timeout=260)
             try:
                 said = json.loads(p.stdout.strip().splitlines()[-1]).get("out")
             except (ValueError, IndexError, AttributeError):

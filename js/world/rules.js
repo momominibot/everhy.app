@@ -18,6 +18,28 @@
     farm.basket.egg -= 1; addToBasket(farm, 'spaEgg'); return true;
   }
 
+  /* ---------- chicken coop: three hens lay each morning, the eggs wait to be collected ----------
+   * farm.coop is { day, laid, collected }. On a new day each hen lays an egg when its roll is below LAY_CHANCE,
+   * so 0..3 eggs wait in the nesting box. collectEggs moves every waiting egg into the basket once. */
+  var HENS = 3, LAY_CHANCE = 0.75;
+  function ensureCoop(farm, day, rolls) {
+    if (!farm.coop) farm.coop = { day: '', laid: 0, collected: 0 };
+    if (farm.coop.day !== day) {
+      farm.coop.day = day; farm.coop.laid = 0; farm.coop.collected = 0;
+      for (var i = 0; i < HENS; i++) {
+        var r = rolls && rolls[i] != null ? rolls[i] : 0.5;
+        if (r < LAY_CHANCE) farm.coop.laid += 1;
+      }
+    }
+    return farm.coop;
+  }
+  function coopAvailable(farm, day, rolls) { var c = ensureCoop(farm, day, rolls); return c.laid - c.collected; }
+  function collectEggs(farm, day, rolls) {
+    var c = ensureCoop(farm, day, rolls), n = c.laid - c.collected;
+    if (n > 0) { addToBasket(farm, 'egg', n); c.collected += n; }
+    return n;
+  }
+
   /* ---------- fishing: a cast, a nibble, then the catch game ----------
    * A cast waits waitMs for a nibble. When it bites, the catch bar opens: a marker runs back and forth and she stops it
    * (catchAt). Inside the centered zone it lands a fish; the closer to the middle, the better the chance of a bigger
@@ -43,5 +65,5 @@
     return { result: 'caught', size: sizeFor(closeness, roll), closeness: closeness };
   }
 
-  root.EbbWorldRules = { ITEMS: ITEMS, SIZES: SIZES, ZONE_HALF: ZONE_HALF, addToBasket: addToBasket, boilEgg: boilEgg, cast: cast, sizeFor: sizeFor, catchAt: catchAt, reel: reel };
+  root.EbbWorldRules = { ITEMS: ITEMS, SIZES: SIZES, ZONE_HALF: ZONE_HALF, addToBasket: addToBasket, boilEgg: boilEgg, cast: cast, sizeFor: sizeFor, catchAt: catchAt, reel: reel, HENS: HENS, LAY_CHANCE: LAY_CHANCE, ensureCoop: ensureCoop, coopAvailable: coopAvailable, collectEggs: collectEggs };
 })(typeof window !== 'undefined' ? window : globalThis);
