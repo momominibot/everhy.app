@@ -34,6 +34,8 @@
 
   /* rules load as their own file; the load event waits for them, and nothing below needs them until a tap */
   if (!root.EbbWorldRules) { var sc = doc.createElement('script'); sc.src = 'js/world/rules.js'; sc.async = false; doc.head.appendChild(sc); }
+  /* Erin's guided-soak voice clips, loaded alongside the rules */
+  if (!root.EbbSpringVoice) { var svc = doc.createElement('script'); svc.src = 'js/spring/voice.js'; svc.async = false; doc.head.appendChild(svc); }
   function R() { return root.EbbWorldRules; }
   function data(api) {
     var st = api.state();
@@ -123,9 +125,22 @@
     return close;
   }
   function p(text, cls) { var el = doc.createElement('p'); el.textContent = text; if (cls) el.className = cls; return el; }
+  function nowIso() { return new Date().toISOString(); }
 
   /* ---------- hot spring ---------- */
   var soaking = false;
+  /* a slow guided soak: warm water, breath, and letting go. Timed like the brushing routine and voiced by Erin. */
+  var SOAK_SEC = 90;
+  var SOAK_CUES = [
+    [0.00, 'Let the warm water hold you. Feel it rise soft around your shoulders.'],
+    [0.12, 'Breathe in slowly for four. One, two, three, four.'],
+    [0.24, 'And let it go. Soft shoulders, soft jaw, soft hands.'],
+    [0.38, 'Feel the warmth move through you. Nothing to do, nowhere to be.'],
+    [0.52, 'Another slow breath. The water is warm, and you are held.'],
+    [0.66, 'Let the day sit on the surface. It can drift away.'],
+    [0.82, 'One more breath, deep and easy. Rest in the warmth.'],
+    [0.95, 'When you are ready, climb out gently. Slow and unhurried.']
+  ];
   /* she sits in the water the way games do it: her figure is cut off at the waterline with a soft edge (a mask on #me),
    * and a light ring and a thin veil of water sit on the surface. Nothing is painted over her legs. */
   function waterGeom() {
@@ -173,10 +188,71 @@
       if (api.spin) api.spin(up); else up(); /* and out again with a spin, back in her own clothes */
     }
     sheet('Hot spring', function (body, buttons, close) {
+      /* one reused audio element for the guided soak, on unless she has muted Erin */
+      var vo = null;
+      function voiceOn() { return api.state().routineVoice !== false; }
+      function soakClip(text) {
+        return (root.EbbSpringVoice && root.EbbSpringVoice.clips && root.EbbSpringVoice.clips[text]) || null;
+      }
+      function hush() { if (vo) { try { vo.pause(); } catch (e) { } } }
+      function say(text) {
+        hush(); var c = soakClip(text);
+        if (!voiceOn() || !c) return;
+        try { vo = vo || new Audio(); vo.src = c.src; var pr = vo.play(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { }
+      }
+      function voiceButton() {
+        var b = doc.createElement('button'); b.type = 'button'; b.className = 'btn small rt-voice';
+        function paint() { b.textContent = voiceOn() ? 'Mute Erin' : 'Erin\u2019s voice'; }
+        b.addEventListener('click', function (e) { e.stopPropagation(); api.state().routineVoice = !voiceOn(); api.save(); if (!voiceOn()) hush(); paint(); });
+        paint(); return b;
+      }
+
+      /* the guided soak: a live cue and a countdown while she sits in the warm water */
+      function guided() {
+        var RR = root.EbbRoutineRules;
+        if (!RR) { draw('The guided soak is still being readied. One moment.'); return; }
+        var t = RR.timer(SOAK_SEC);
+        body.innerHTML = '';
+        var head = doc.createElement('div'); head.className = 'rt-head';
+        var sub = doc.createElement('small'); sub.className = 'muted'; sub.textContent = 'A slow breath in the warm water';
+        head.appendChild(sub);
+        if (root.EbbSpringVoice) head.appendChild(voiceButton());
+        body.appendChild(head);
+        var cap = doc.createElement('p'); cap.className = 'rt-cue'; cap.setAttribute('aria-live', 'polite');
+        var clock = doc.createElement('p'); clock.className = 'rt-clock';
+        body.appendChild(cap); body.appendChild(clock);
+        var shown = -1, done = false, iv = null;
+        function onVis() { RR.setHidden(t, doc.hidden, Date.now()); }
+        doc.addEventListener('visibilitychange', onVis);
+        RR.setHidden(t, doc.hidden, Date.now());
+        function paint() {
+          var i = RR.cueAt(SOAK_CUES, t);
+          if (i !== shown) { shown = i; cap.textContent = SOAK_CUES[i][1]; if (!t.paused) say(SOAK_CUES[i][1]); }
+          clock.textContent = RR.clockText(t);
+        }
+        function stopGuided() {
+          if (iv) clearInterval(iv); hush(); doc.removeEventListener('visibilitychange', onVis);
+        }
+        buttons([
+          { id: 'pauseSoak', label: 'Pause', fn: function (b) { if (t.paused) RR.resume(t, Date.now()); else { RR.pause(t, Date.now()); hush(); } b.textContent = t.paused ? 'Resume' : 'Pause'; paint(); } },
+          { id: 'endGuided', label: 'Back to the soak', primary: true, fn: function () { stopGuided(); draw(); } }
+        ]);
+        iv = setInterval(function () {
+          RR.tick(t, Date.now()); paint();
+          if (t.ended && !done) {
+            done = true; stopGuided();
+            var o = { practice: 'spring-soak', anchor: 'routine', scriptVersion: 'spring-1', plannedSec: SOAK_SEC, activeSec: RR.activeSec(t), status: 'finished', start: nowIso(), end: nowIso(), source: 'spring' };
+            try { root.EbbStore.addPractice(o); } catch (e) { }
+            draw('Rest as long as you like. The water stays warm.');
+          }
+        }, 250);
+        paint();
+      }
+
       function draw(line) {
         body.innerHTML = '';
         body.appendChild(p(line || 'Warm water up to her shoulders. Stay as long as you like.'));
-        var list = [];
+        var list = [{ id: 'guidedSoak', label: 'Breathe with the water', fn: guided }];
         if ((api.state().farm.basket.egg || 0) > 0) list.push({ id: 'dropEgg', label: 'Lower an egg into the water', fn: function () {
           if (!R().boilEgg(api.state().farm)) return;
           var w = data(api); w.spaEggFound = true; api.save(); api.refresh();

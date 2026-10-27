@@ -114,6 +114,12 @@ def main():
         page.click('#dropEgg')
         b2 = basket(); check('a spa egg made from the egg', b2.get('spaEgg') == 1 and b2.get('egg') == 0)
         page.wait_for_timeout(2600); shot('05-soak')
+        # the guided soak: a live cue and a countdown in the warm water
+        page.click('#guidedSoak'); page.wait_for_selector('.world-sheet .rt-clock')
+        check('guided soak shows a cue', 'warm water' in page.locator('.world-sheet .rt-cue').inner_text())
+        check('guided soak shows a running clock', 'left' in page.locator('.world-sheet .rt-clock').inner_text())
+        check('guided soak cues have Erin clips', page.evaluate('() => Object.keys(EbbSpringVoice.clips).length') == 8)
+        page.click('#endGuided'); page.wait_for_selector('#leaveSpring')
         page.click('#leaveSpring'); page.wait_for_selector('.world-sheet', state='detached')
         page.wait_for_function('() => !EbbGame.api.spinning() && EbbGame.me().action !== "sit"', timeout=5000)  # and spins out again
         check('climbs out standing on the floor', page.evaluate('() => EbbGame.me().action') != 'sit' and page.evaluate('() => EbbWorld.walkable("spring", EbbGame.me())'))
