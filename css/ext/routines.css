@@ -64,7 +64,8 @@ html[data-text="larger"] .rt-text b { font-size: 19px; }
 .routine-wrap.running .rt-back:empty { display: none; }
 .routine-wrap.running .sheet-actions { margin-top: 4px; gap: 8px; }
 .routine-wrap.running .sheet-actions .btn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
-/* Erin's voice toggle: on the prompt card and at the right of the step heading */
-.rt-head .rt-voice { margin-left: auto; min-height: 30px; padding: 4px 10px; font-size: 12px; }
-.routine-wrap.running .rt-head .rt-voice { min-height: 28px; padding: 3px 10px; font-size: 12px; }
+/* Erin's voice toggle: a small speaker icon on the prompt card and at the right of the step heading */
+.rt-voice { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.rt-voice svg { width: 19px; height: 19px; }
+.rt-head .rt-voice { margin-left: auto; }
 .rt-cardrow .rt-voice { margin-right: auto; }

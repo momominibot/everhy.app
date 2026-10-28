@@ -16,8 +16,9 @@
 .transit-dots i.on { background: var(--teal); transform: scale(1.15); }
 .transit-clock { color: var(--soft); font-variant-numeric: tabular-nums; margin: 0; }
 .transit-back { margin: 0; min-height: 1.2em; }
-/* the mute toggle in the running practice; aligned under the cue, not the action row */
-.transit-voice { align-self: flex-start; min-height: 32px; padding: 5px 12px; font-size: 13px; }
+/* the mute toggle in the running practice: a speaker icon aligned under the cue, not the action row */
+.transit-voice { align-self: flex-start; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.transit-voice svg { width: 19px; height: 19px; }
 /* the action area: Arrive stays while she rides, Get up joins it while she sits; its own row above the hint, clear of the corner buttons */
 .transit-bar { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); bottom: max(178px, calc(env(safe-area-inset-bottom) + 168px)); display: flex; gap: 8px; align-items: center; justify-content: center; max-width: calc(100% - 24px); }
 .transit-bar .btn { white-space: nowrap; }

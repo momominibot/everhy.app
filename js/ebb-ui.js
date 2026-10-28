@@ -8,6 +8,12 @@
   /* mount a full-screen overlay inside the phone frame so it is clipped to the 390x844 app on a desktop; falls back
    * to the body before the app exists */
   root.EbbMount = function (el) { var app = doc.querySelector('.app'); (app || doc.body).appendChild(el); return el; };
+  /* a small speaker icon for the Erin voice toggles: waves when her voice is on, a cross when it is off */
+  root.EbbSpeakerIcon = function (isOn) {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z" fill="currentColor"/>' +
+      (isOn ? '<path d="M14.8 9.3a3.8 3.8 0 0 1 0 5.4M17.4 6.9a7.2 7.2 0 0 1 0 10.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'
+        : '<path d="M15.2 9.6l4.8 4.8m0-4.8l-4.8 4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>') + '</svg>';
+  };
 
   var SWATCH = {
     top: ['#f2a39b', '#f4d6a0', '#9cc7c0', '#c9b6e6', '#fbf7ef', '#e8836f'],

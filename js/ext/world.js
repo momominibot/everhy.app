@@ -202,7 +202,13 @@
       }
       function voiceButton() {
         var b = doc.createElement('button'); b.type = 'button'; b.className = 'btn small rt-voice';
-        function paint() { b.textContent = voiceOn() ? 'Mute Erin' : 'Erin\u2019s voice'; }
+        function paint() {
+          var on = voiceOn();
+          b.innerHTML = root.EbbSpeakerIcon(on);
+          b.setAttribute('aria-pressed', on ? 'false' : 'true');
+          b.setAttribute('aria-label', on ? 'Mute Erin' : 'Play Erin\u2019s voice');
+          b.title = on ? 'Mute Erin' : 'Erin\u2019s voice';
+        }
         b.addEventListener('click', function (e) { e.stopPropagation(); api.state().routineVoice = !voiceOn(); api.save(); if (!voiceOn()) hush(); paint(); });
         paint(); return b;
       }

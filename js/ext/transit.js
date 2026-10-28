@@ -73,7 +73,13 @@
   /* the mute toggle shown in the running practice; the choice is saved so it stays off next ride */
   function voiceBtn(audio, t) {
     var b = el('button', 'btn small transit-voice'); b.type = 'button'; b.dataset.act = 'voice';
-    function paint() { b.textContent = voiceOn() ? 'Mute Erin' : 'Erin\u2019s voice'; b.setAttribute('aria-pressed', voiceOn() ? 'false' : 'true'); }
+    function paint() {
+      var on = voiceOn();
+      b.innerHTML = root.EbbSpeakerIcon(on);
+      b.setAttribute('aria-pressed', on ? 'false' : 'true');
+      b.setAttribute('aria-label', on ? 'Mute Erin' : 'Play Erin\u2019s voice');
+      b.title = on ? 'Mute Erin' : 'Erin\u2019s voice';
+    }
     b.addEventListener('click', function (e) {
       e.stopPropagation();
       api.state().transitVoice = !voiceOn(); api.save();
