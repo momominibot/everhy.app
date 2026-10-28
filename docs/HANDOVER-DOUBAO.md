@@ -11,6 +11,17 @@ EveRhy is Dr Patrick's mindfulness and cycle wellness app as a cosy clay Singapo
 HTML/CSS/JS, no build step). Open it with `python3 tools/devserver.py 8096` and http://localhost:8096 at phone size
 (390 x 844). The 3D test page is http://localhost:8096/proto/avatar3d.html (on the 3D branch, see below).
 
+## 0. 28 Oct update (current)
+
+- Published live on GitHub Pages: https://momominibot.github.io/everhy.app/ (repo momominibot/everhy.app, public,
+  Pages from main root). All paths are relative, so it runs under the subpath.
+- Latest commits: `a6b3136` Sit her on the Little Guilin bench seat (offset y 13 -> 9 in js/seats/rules.js);
+  `a62dd10` small speaker icon for the Erin voice toggles; `ea07f83` map inert and sheet pop inside the phone frame;
+  `7befff4` eat the spa-boiled egg at the table.
+- The full `check_all.sh` was last ALL GREEN at `ea07f83`. After it, only the speaker-icon and the bench offset
+  changed; node test-seats (62) and smoke_seats (29/29) pass. Re-run check_all before any larger change.
+- A stray `http:/` folder at repo root is scratch from a malformed curl (not tracked); safe to delete on cleanup.
+
 ## 1. Where main is (25 Oct)
 
 main = everything up to 24 Oct + the garden weeds:
