@@ -76,7 +76,7 @@ def main():
         page.wait_for_selector('.routine-steps.editing')
         check('editor shows the five steps with controls', page.locator('.routine-steps.editing .rt-step').count() == 5 and page.locator('.rt-ctl').count() == 15)
         check('first Up and last Down are disabled', page.locator('.rt-step[data-id="wake"] [data-ctl="up"]').is_disabled() and page.locator('.rt-step[data-id="intention"] [data-ctl="down"]').is_disabled())
-        check('one step to add (How did you sleep)', page.locator('.rt-addbtn').count() == 1 and page.locator('.rt-addbtn').get_attribute('data-add') == 'sleeplog')
+        check('two steps to add (How did you sleep, meditation)', page.locator('.rt-addbtn').count() == 2 and [page.locator('.rt-addbtn').nth(i).get_attribute('data-add') for i in range(2)] == ['sleeplog', 'meditate_am'])
         shot(page, 'routines-02-editor')
         page.locator('.rt-step[data-id="stretch"] [data-ctl="down"]').click()
         page.wait_for_timeout(100)

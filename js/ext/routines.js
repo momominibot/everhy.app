@@ -207,7 +207,14 @@
     if (c.kind === 'timed') timed(step, c, spot);
     else if (c.kind === 'text') text(step, c);
     else if (c.kind === 'log') log(step, c, spot);
+    else if (c.kind === 'meditate') meditate(step, c);
     else if (c.kind === 'bed') { api.toast('Lights down. Goodnight.', 3200); complete(step, null, null, nowIso()); }
+  }
+  /* a routine step that hands over to the meditation library; the step is done when a practice finishes */
+  function meditate(step, c) {
+    var E = root.EbbMeditate;
+    if (!E || !E.open) { complete(step, null, null, nowIso()); return; }
+    E.open({ onDone: function () { complete(step, null, null, nowIso()); }, onCancel: function () { skip(step); } });
   }
   function head(c, rn) { var h = el('div', 'rt-head'); h.appendChild(el('b', '', c.label)); h.appendChild(el('small', 'muted', 'Step ' + (rn.index + 1) + ' of ' + rn.steps.length)); if (clipFor((c.cues || [[0, '']])[0][1])) h.appendChild(voiceBtn()); return h; }
 

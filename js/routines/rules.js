@@ -42,7 +42,11 @@
     gratitude: { routine: 'evening', label: 'One good thing', where: 'Bedside', scene: 'bedroom', spot: 'bedside', kind: 'text', secs: 0,
       blurb: 'One good thing from today, however small. Only you ever see it.', placeholder: 'One good thing today was…' },
     bed: { routine: 'evening', label: 'Lights down, to bed', where: 'In bed', scene: 'bedroom', spot: 'bed', kind: 'bed', secs: 0,
-      blurb: 'The routine ends here. Goodnight.' }
+      blurb: 'The routine ends here. Goodnight.' },
+    meditate_am: { routine: 'morning', label: 'A short meditation', where: 'Any room', scene: null, spot: null, kind: 'meditate', secs: 0,
+      blurb: 'A few quiet minutes, picked from the meditation library.' },
+    meditate_pm: { routine: 'evening', label: 'A short meditation', where: 'Any room', scene: null, spot: null, kind: 'meditate', secs: 0,
+      blurb: 'A few quiet minutes, picked from the meditation library.' }
   };
   var ROUTINES = {
     morning: { label: 'Morning routine', short: 'Morning', hours: [5, 11], defaults: ['wake', 'stretch', 'water', 'sounds', 'intention'],

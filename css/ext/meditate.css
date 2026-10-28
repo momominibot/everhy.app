@@ -1,0 +1,44 @@
+/* Meditation library: the filter rows, the practice cards, the running view, and the finished screen. */
+.meditate-body { display: flex; flex-direction: column; gap: 12px; }
+.meditate-body p { margin: 0; }
+.meditate-body .muted { color: var(--soft); }
+/* filters: a label over a wrapping row of pills */
+.md-filter { display: flex; flex-direction: column; gap: 6px; }
+.md-filter-label { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); }
+.md-filter .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.md-filter .pill { min-height: 38px; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.md-filter .pill.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.md-filter .pill:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+/* practice cards */
+.md-list { display: flex; flex-direction: column; gap: 10px; }
+.md-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); color: var(--ink); font: inherit; cursor: pointer; }
+.md-card b { font-size: 16px; }
+.md-card small { color: var(--soft); font-size: 13px; line-height: 1.35; }
+.md-meta { font-size: 12px; color: var(--soft); font-weight: 700; margin-top: 2px; }
+.md-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.md-card:active { transform: scale(0.99); }
+/* running a practice */
+.md-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.md-head b { font-size: 17px; }
+.md-head small { color: var(--soft); }
+.md-head .md-voice { margin-left: auto; }
+.md-cue { font-size: 20px; font-weight: 600; line-height: 1.4; min-height: 4.2em; }
+.md-clock { color: var(--soft); font-variant-numeric: tabular-nums; font-weight: 700; }
+.meditate-sheet .sheet-actions .btn { flex: 1 1 auto; }
+/* finished screen */
+.md-finish { font-size: 18px; font-weight: 700; }
+/* Erin's voice toggle: a small speaker icon */
+.md-voice { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.md-voice svg { width: 19px; height: 19px; }
+/* while a practice runs: a compact cream panel, so the room and she stay in view (same as a running routine) */
+.meditate-wrap.running { background: none; }
+.meditate-wrap.running .sheet { background: color-mix(in srgb, var(--cream) 90%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  max-height: 30vh; padding: 12px 16px calc(10px + env(safe-area-inset-bottom)); gap: 4px; }
+.meditate-wrap.running .sheet h2 { font-size: 13px; margin: 0; color: var(--soft); font-weight: 700; }
+.meditate-wrap.running .md-head b { font-size: 16px; }
+.meditate-wrap.running .md-cue { font-size: 16px; min-height: 2.8em; margin: 4px 0; }
+.meditate-wrap.running .md-clock { margin: 0; font-size: 13px; }
+.meditate-wrap.running .sheet-actions { margin-top: 4px; gap: 8px; }
+.meditate-wrap.running .sheet-actions .btn { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+html[data-text="large"] .md-card b { font-size: 18px; }
+html[data-text="larger"] .md-card b { font-size: 20px; }

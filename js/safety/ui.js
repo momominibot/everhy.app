@@ -122,7 +122,7 @@
   var CYCLE = [['Usually 21 to 25 days', 23], ['26 to 30 days', 28], ['31 to 35 days', 33], ['It varies a lot', 'varies'], ['Not sure', 'not_sure']];
   var GOALS = [['Understand my cycle', 'understand'], ['Trying to get pregnant', 'conceive'], ['Avoiding pregnancy', 'avoid'], ['Ease my symptoms', 'symptoms'], ['Mostly here to relax', 'relax']];
   var STAGES = [['Regular periods', 'cycling'], ['Teen, still settling', 'teen'], ['Pregnant', 'pregnant'], ['Had a baby recently or breastfeeding', 'postpartum'], ['Perimenopause', 'perimenopause'], ['Menopause (12+ months without a period)', 'menopause'], ['Not sure', 'unknown']];
-  var AGES = [['Under 18', 16, 'under18'], ['18 to 34', 18, '18-34'], ['35 to 44', 35, '35-44'], ['45 to 54', 45, '45-54'], ['55 or over', 55, '55+']];
+  var AGES = [['Under 16', 0, 'under16'], ['16 or 17', 16, 'under18'], ['18 to 34', 18, '18-34'], ['35 to 44', 35, '35-44'], ['45 to 54', 45, '45-54'], ['55 or over', 55, '55+']];
   var CONTRA = [['None', 'none'], ['Condoms', 'condom'], ['Pill with breaks', 'combined_pill'], ['Pill without breaks', 'pill_continuous'], ['Mini pill', 'mini_pill'], ['Hormonal IUD', 'hormonal_iud'], ['Copper IUD', 'copper_iud'], ['Implant', 'implant'], ['Injection', 'injection'], ['Something else', 'other']];
   var FLAGS = [['PCOS (also called PMOS)', 'pcos'], ['Endometriosis', 'endometriosis'], ['Fibroids', 'fibroids'], ['Thyroid condition', 'thyroid'], ['Using HRT', 'hrt']];
   var TONES = [['Gentle', 'gentle'], ['Cheerful', 'cheerful'], ['Straight to the point', 'direct']];
@@ -166,6 +166,24 @@
           'Hi, I’m Ovia. I’ll ask a few quick things so the app fits you. It takes about a minute, and you can skip any question.', !opts.redo);
         chips([['Let’s start', 1]], function (v) { if (v === '__later') finish(true); else nx(); }, [['Not now', '__later']]);
       });
+      /* hard minimum age gate: asked first, before anything is saved; under 16 stops the flow */
+      steps.push(function (nx) {
+        say('First, how old are you?');
+        chips(AGES.map(function (a) { return [a[0], a]; }), function (v) {
+          if (v[2] === 'under16') { draft.ageBlocked = true; return under16(); }
+          draft.ageRow = v; nx();
+        }, SKIP);
+      });
+      function under16() {
+        say('EveRhy is made for ages 16 and up, so this is as far as we can go together. If something is on your mind, please talk to a trusted grown-up.');
+        reply.innerHTML = '';
+        var row = el('div', 'pills sf-chips');
+        row.appendChild(button('Close', 'btn primary', function () {
+          p.age = 0; p.ageBand = 'under16'; b.ageBlockedAt = new Date().toISOString(); save();
+          close(); /* no onboarded event: the gate is the end of the flow for an under-16 user */
+        }));
+        reply.appendChild(row); row.querySelector('button').focus();
+      }
       steps.push(function (nx) { consentStep('core', 'onboarding', nx); });
       function consentStep(id, source, nx) {
         var pur = C.PURPOSES.filter(function (x) { return x.id === id; })[0];
@@ -208,7 +226,6 @@
         });
       });
       steps.push(function (nx) { ask('Which of these fits you best right now?', STAGES, 'lifeStage', nx); });
-      steps.push(function (nx) { ask('How old are you?', AGES.map(function (a) { return [a[0], a]; }), 'ageRow', nx, null); });
       steps.push(function (nx) { ask('Are you using any contraception? This only helps EveRhy avoid alerts that don’t apply to you.', CONTRA, 'contraception', nx); });
       steps.push(function (nx) {
         if (!health()) return nx();

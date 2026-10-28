@@ -17,10 +17,10 @@ const D = '2026-10-23', D2 = '2026-10-24';
 
 /* ---------- catalogue and defaults ---------- */
 const ids = Object.keys(R.CATALOG);
-check('twelve catalogue steps, six each', ids.length === 12 && R.catalog('morning').length === 6 && R.catalog('evening').length === 6);
+check('fourteen catalogue steps, seven each', ids.length === 14 && R.catalog('morning').length === 7 && R.catalog('evening').length === 7);
 ids.forEach(id => {
   const c = R.CATALOG[id];
-  check(`${id} has a label, a place and a kind`, c.label && c.where && ['timed', 'text', 'log', 'bed'].includes(c.kind) && (c.routine === 'morning' || c.routine === 'evening'));
+  check(`${id} has a label, a place and a kind`, c.label && c.where && ['timed', 'text', 'log', 'bed', 'meditate'].includes(c.kind) && (c.routine === 'morning' || c.routine === 'evening'));
   if (c.scene) {
     const s = W.SCENES[c.scene], sp = s && s.spots.find(x => x.id === c.spot);
     check(`${id} maps to a real spot ${c.scene}/${c.spot}`, !!sp && !!sp.stand);
@@ -80,7 +80,7 @@ check('panel label carries the step count', R.panelLabel('morning', R.defaults('
   check('move past the ends refused', !R.moveStep(list, 0, -1) && !R.moveStep(list, 4, 1) && list[0].id === 'wake' && list[4].id === 'intention');
   check('set seconds clamps to the range', R.setSecs(list, 0, 45) && list[0].secs === 45 && R.setSecs(list, 0, 1) && list[0].secs === 30);
   check('set seconds on an untimed step refused', !R.setSecs(list, 4, 30));
-  check('addable lists what is missing', R.addable('morning', list).join() === 'sleeplog');
+  check('addable lists what is missing', R.addable('morning', list).join() === 'sleeplog,meditate_am');
   R.removeStep(list, 4); R.removeStep(list, 3);
   check('down to three', list.length === 3 && !R.removeStep(list, 0) && list.length === 3);
   check('total seconds', R.totalSecs(R.defaults('morning')) === 30 + 60 + 20 + 45 && R.totalSecs(R.defaults('evening')) === 15 + 20 + 120);
